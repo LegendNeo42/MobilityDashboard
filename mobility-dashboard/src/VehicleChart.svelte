@@ -11,8 +11,14 @@
   let dataBySemester = $state<Map<string, VehicleModalSplitRow[]> | null>(null);
   let semesterOptions = $state<string[]>([]);
   let semesterTime = $state<string>("");
+  let measureMode = $state<"absolute" | "percent">("absolute");
 
   let sortMode = $state<"fixed" | "frequency">("fixed");
+  let totalN = $derived.by(() => {
+    if (!dataBySemester || !semesterTime) return 0;
+    const base = dataBySemester.get(semesterTime) ?? [];
+    return base.reduce((sum, r) => sum + r.count, 0);
+  });
 
   onMount(async () => {
     try {
@@ -26,31 +32,39 @@
     }
   });
 
-  let baseValues = $derived.by(() => {
-    if (!dataBySemester || !semesterTime) return [] as VehicleModalSplitRow[];
-    return dataBySemester.get(semesterTime) ?? [];
-  });
-
   let values = $derived.by(() => {
     if (!dataBySemester || !semesterTime) return [];
     const base = dataBySemester.get(semesterTime) ?? [];
 
-    return base.map((r) => ({
-      ...r,
-      // fixed: 1..9, frequency: höchste count soll oben -> negative count
-      sort_key:
-        sortMode === "fixed"
-          ? r.vehicle_order
-          : -r.count + r.vehicle_order * 0.001,
-    }));
+    const total = totalN; // aus derived
+    const percent = (c: number) => (total > 0 ? (c / total) * 100 : 0);
+    const round1 = (x: number) => Math.round(x * 10) / 10;
+
+    return base.map((r) => {
+      const p1 = round1(percent(r.count));
+
+      const mvRaw = measureMode === "absolute" ? r.count : p1;
+      const metric_value = Number.isFinite(mvRaw) ? mvRaw : 0;
+
+      return {
+        ...r,
+        percent_1: p1,
+        metric_value,
+        sort_key:
+          sortMode === "fixed"
+            ? r.vehicle_order
+            : -r.count + r.vehicle_order * 0.001,
+      };
+    });
   });
 
   // Spec ist KONSTANT -> kein Re-Embed bei Semester/Sortierung
   const spec: any = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     width: "container",
     height: 460,
     autosize: { type: "fit-x", contains: "padding" },
+    padding: { left: 95, right: 20, top: 10, bottom: 40 },
 
     data: { name: "table" },
 
@@ -64,15 +78,17 @@
         axis: { labelLimit: 220 },
       },
       x: {
-        field: "count",
+        field: "metric_value",
         type: "quantitative",
-        title: "Anzahl der Nennungen (Hauptverkehrsmittel)",
-        axis: { tickMinStep: 1, grid: true },
+        title: "Wert",
+        axis: { grid: true },
         scale: { zero: true },
       },
+
       tooltip: [
         { field: "vehicle_label", type: "nominal", title: "Verkehrsmittel" },
         { field: "count", type: "quantitative", title: "Anzahl" },
+        { field: "percent_1", type: "quantitative", title: "Anteil (%)" },
       ],
     },
   };
@@ -100,6 +116,8 @@
       "fixed"
         ? "Fix"
         : "Häufigkeit"}
+      • Maß: {measureMode === "absolute" ? "Absolut" : "Prozent"}
+      • N: {totalN}
     </p>
 
     <div class="controls">
@@ -117,6 +135,13 @@
         <select bind:value={sortMode}>
           <option value="fixed">Fixe Reihenfolge</option>
           <option value="frequency">Nach Häufigkeit</option>
+        </select>
+      </label>
+      <label style="margin-left: 12px;">
+        Maß:
+        <select bind:value={measureMode}>
+          <option value="absolute">Absolut</option>
+          <option value="percent">Prozent</option>
         </select>
       </label>
 
