@@ -62,3 +62,65 @@ export async function loadVehicleRows(): Promise<VehicleRow[]> {
 
   return cache;
 }
+export type VehicleModalSplitRow = {
+  vehicle: string;
+  vehicle_label: string;
+  vehicle_order: number;
+  count: number;
+};
+
+// deine gewünschte fixe Reihenfolge (Motorrad direkt nach Auto-Mitfahrer)
+const VEHICLE_LABELS: Record<string, { label: string; order: number }> = {
+  "car-driver": { label: "Auto (Fahrer:in)", order: 1 },
+  "car-passenger": { label: "Auto (Mitfahrer:in)", order: 2 },
+  motorbike: { label: "Motorrad", order: 3 },
+  bus: { label: "Bus", order: 4 },
+  "train-short": { label: "Bahn (Nahverkehr)", order: 5 },
+  "train-far": { label: "Bahn (Fernverkehr)", order: 6 },
+  bicycle: { label: "Fahrrad", order: 7 },
+  ebike: { label: "E-Bike", order: 8 },
+  walk: { label: "Zu Fuß", order: 9 }
+};
+
+let modalSplitCache: Map<string, VehicleModalSplitRow[]> | null = null;
+
+export async function loadVehicleModalSplitBySemesterTime(): Promise<
+  Map<string, VehicleModalSplitRow[]>
+> {
+  if (modalSplitCache) return modalSplitCache;
+
+  const rows = await loadVehicleRows();
+
+  // semester_time -> vehicle -> count
+  const counts = new Map<string, Map<string, number>>();
+
+  for (const r of rows) {
+    if (!r.is_main_vehicle) continue;
+
+    const st = r.semester_time;
+    let m = counts.get(st);
+    if (!m) {
+      m = new Map<string, number>();
+      counts.set(st, m);
+    }
+    m.set(r.vehicle, (m.get(r.vehicle) ?? 0) + 1);
+  }
+
+  const out = new Map<string, VehicleModalSplitRow[]>();
+  for (const [st, m] of counts) {
+    const arr: VehicleModalSplitRow[] = [];
+    for (const [vehicle, count] of m) {
+      const info = VEHICLE_LABELS[vehicle] ?? { label: vehicle, order: 999 };
+      arr.push({
+        vehicle,
+        vehicle_label: info.label,
+        vehicle_order: info.order,
+        count
+      });
+    }
+    out.set(st, arr);
+  }
+
+  modalSplitCache = out;
+  return out;
+}
