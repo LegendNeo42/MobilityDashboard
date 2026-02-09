@@ -5,6 +5,10 @@
     loadVehicleModalSplitBySemesterTime,
     type VehicleModalSplitRow,
   } from "./lib/data/vehicle";
+  import {
+    loadVehicleUsageByGroup,
+    type VehicleUsageByGroupRow,
+  } from "./lib/data/vehicle";
 
   let error = $state<string | null>(null);
 
@@ -12,12 +16,28 @@
   let semesterOptions = $state<string[]>([]);
   let semesterTime = $state<string>("");
   let measureMode = $state<"absolute" | "percent">("absolute");
+  let viewMode = $state<"modalSplit" | "usageByGroup">("modalSplit");
+  let usageRows = $state<VehicleUsageByGroupRow[] | null>(null);
 
   let sortMode = $state<"fixed" | "frequency">("fixed");
   let totalN = $derived.by(() => {
     if (!dataBySemester || !semesterTime) return 0;
     const base = dataBySemester.get(semesterTime) ?? [];
     return base.reduce((sum, r) => sum + r.count, 0);
+  });
+  let groupValues = $derived.by(() => {
+    if (!usageRows || !semesterTime) return [];
+    return usageRows
+      .filter((r) => r.semester_time === semesterTime)
+      .map((r) => ({
+        ...r,
+        // für stabile Reihenfolge auf x:
+        vehicle_sort: r.vehicle_order,
+        group_sort: r.group_order,
+      }));
+  });
+  let chartValues = $derived.by(() => {
+    return viewMode === "modalSplit" ? modalValues : groupValues;
   });
 
   onMount(async () => {
@@ -27,12 +47,13 @@
 
       semesterOptions = Array.from(m.keys()).sort();
       semesterTime = semesterOptions[0] ?? "";
+      usageRows = await loadVehicleUsageByGroup();
     } catch (e) {
       error = e instanceof Error ? e.message : String(e);
     }
   });
 
-  let values = $derived.by(() => {
+  let modalValues = $derived.by(() => {
     if (!dataBySemester || !semesterTime) return [];
     const base = dataBySemester.get(semesterTime) ?? [];
 
@@ -93,6 +114,49 @@
     },
   };
 
+  const specUsageByGroup: any = {
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
+    width: "container",
+    height: 460,
+    autosize: { type: "fit-x", contains: "padding" },
+    padding: { left: 95, right: 20, top: 10, bottom: 50 },
+
+    data: { name: "table" },
+
+    mark: { type: "bar" },
+
+    encoding: {
+      x: {
+        field: "vehicle_label",
+        type: "nominal",
+        title: null,
+        sort: { field: "vehicle_sort", order: "ascending" },
+        axis: { labelAngle: 0, labelLimit: 140 },
+      },
+      xOffset: {
+        field: "group_label",
+      },
+      y: {
+        field: "people",
+        type: "quantitative",
+        title: "Anzahl Personen",
+        axis: { tickMinStep: 1, grid: true },
+        scale: { zero: true },
+      },
+      color: {
+        field: "group_label",
+        type: "nominal",
+        title: "Personengruppe",
+        sort: { field: "group_sort", order: "ascending" },
+      },
+      tooltip: [
+        { field: "vehicle_label", type: "nominal", title: "Verkehrsmittel" },
+        { field: "group_label", type: "nominal", title: "Personengruppe" },
+        { field: "people", type: "quantitative", title: "Anzahl Personen" },
+      ],
+    },
+  };
+
   function formatSemesterTime(s: string) {
     const map: Record<string, string> = {
       ws_vl: "WS (Vorlesungszeit)",
@@ -144,14 +208,24 @@
           <option value="percent">Prozent</option>
         </select>
       </label>
+      <label style="margin-left: 12px;">
+        Ansicht:
+        <select bind:value={viewMode}>
+          <option value="modalSplit">Hauptverkehrsmittel</option>
+          <option value="usageByGroup">Nutzung nach Personengruppe</option>
+        </select>
+      </label>
 
       <span style="margin-left: 12px; opacity: 0.7;"
-        >Zeilen: {values.length}</span
+        >Zeilen: {modalValues.length}</span
       >
     </div>
 
     <div class="card">
-      <VegaLiteChart {spec} dataName="table" dataValues={values}
+      <VegaLiteChart
+        spec={viewMode === "modalSplit" ? spec : specUsageByGroup}
+        dataName="table"
+        dataValues={chartValues}
       ></VegaLiteChart>
     </div>
   </div>

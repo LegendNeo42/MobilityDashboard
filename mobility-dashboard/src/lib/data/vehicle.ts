@@ -72,7 +72,7 @@ export type VehicleModalSplitRow = {
 // deine gewünschte fixe Reihenfolge (Motorrad direkt nach Auto-Mitfahrer)
 const VEHICLE_LABELS: Record<string, { label: string; order: number }> = {
   "car-driver": { label: "Auto (Fahrer:in)", order: 1 },
-  "car-passenger": { label: "Auto (Mitfahrer:in)", order: 2 },
+  "car-passenger": { label: "Auto (Beifahrer:in)", order: 2 },
   motorbike: { label: "Motorrad", order: 3 },
   bus: { label: "Bus", order: 4 },
   "train-short": { label: "Bahn (Nahverkehr)", order: 5 },
@@ -124,3 +124,71 @@ export async function loadVehicleModalSplitBySemesterTime(): Promise<
   modalSplitCache = out;
   return out;
 }
+export type VehicleUsageByGroupRow = {
+  semester_time: string;
+  vehicle: string;
+  vehicle_label: string;
+  vehicle_order: number;
+  employment_status: string;
+  group_label: string;
+  group_order: number;
+  people: number; // distinct participant_id
+};
+
+
+// employment_status → deutscher Name + Reihenfolge (anpassen wenn deine Codes anders sind)
+const GROUP_LABELS: Record<string, { label: string; order: number }> = {
+  prof: { label: "Prof", order: 1 },
+  staff: { label: "Wiss. Mitarbeiter", order: 2 },
+  support: { label: "Wiss. stützend", order: 3 },
+  stud: { label: "Studierende", order: 4 },
+};
+
+let usageByGroupCache: VehicleUsageByGroupRow[] | null = null;
+
+export async function loadVehicleUsageByGroup(): Promise<VehicleUsageByGroupRow[]> {
+  if (usageByGroupCache) return usageByGroupCache;
+
+  const rows = await loadVehicleRows();
+
+  // Key: semester|group|vehicle  -> Set(participant_id)
+  const sets = new Map<string, Set<string>>();
+
+  for (const r of rows) {
+    const st = r.semester_time;
+    const g = r.employment_status;
+    const v = r.vehicle;
+    const pid = String(r.participant_id);
+
+    const key = `${st}|${g}|${v}`;
+    let s = sets.get(key);
+    if (!s) {
+      s = new Set<string>();
+      sets.set(key, s);
+    }
+    s.add(pid);
+  }
+
+  const out: VehicleUsageByGroupRow[] = [];
+  for (const [key, s] of sets) {
+    const [semester_time, employment_status, vehicle] = key.split("|");
+
+    const vInfo = VEHICLE_LABELS[vehicle] ?? { label: vehicle, order: 999 };
+    const gInfo = GROUP_LABELS[employment_status] ?? { label: employment_status, order: 999 };
+
+    out.push({
+      semester_time,
+      vehicle,
+      vehicle_label: vInfo.label,
+      vehicle_order: vInfo.order,
+      employment_status,
+      group_label: gInfo.label,
+      group_order: gInfo.order,
+      people: s.size,
+    });
+  }
+
+  usageByGroupCache = out;
+  return out;
+}
+
