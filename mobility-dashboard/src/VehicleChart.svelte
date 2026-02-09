@@ -89,6 +89,7 @@
         type: "nominal",
         title: "Personengruppe",
         scale: { domain: ["Studierende", "Mitarbeitende", "Professor:innen"] },
+        legend: { title: "Personengruppe (Klick: ein/aus)" },
       },
 
       tooltip: [
@@ -119,22 +120,20 @@
     <h2 class="title">Nutzung von Verkehrsmitteln nach Personengruppe</h2>
     <p class="subtitle">Filter: {formatSemesterTime(semesterTime)}</p>
 
-    <div class="controls">
-      <label>
-        Semester-Zeit:
-        <select bind:value={semesterTime}>
-          {#each semesterOptions as opt}
-            <option value={opt}>{formatSemesterTime(opt)}</option>
-          {/each}
-        </select>
-      </label>
-
-      <span style="margin-left: 12px; opacity: 0.7;"
-        >Zeilen: {values.length}</span
-      >
-    </div>
 
     <div class="card">
+      <div class="cardHeader">
+        <label>
+          Semester-Zeit:
+          <select bind:value={semesterTime}>
+            {#each semesterOptions as opt}
+              <option value={opt}>{formatSemesterTime(opt)}</option>
+            {/each}
+          </select>
+        </label>
+
+        <span class="cardHint">Legende rechts: Klick = ein/ausblenden</span>
+      </div>
       <VegaLiteChart
         spec={specUsageByGroup}
         dataName="table"
@@ -160,12 +159,22 @@
     font-size: 13px;
     opacity: 0.75;
   }
-  .controls {
-    margin-bottom: 12px;
-  }
+
   .card {
     background: white;
     border-radius: 12px;
     padding: 12px;
+  }
+  .cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .cardHint {
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
   }
 </style>
