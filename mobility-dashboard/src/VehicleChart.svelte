@@ -11,6 +11,7 @@
   let usageRows = $state<VehicleUsageByGroupRow[] | null>(null);
   let semesterOptions = $state<string[]>([]);
   let semesterTime = $state<string>("");
+  let sortMode = $state<"fixed" | "frequency">("fixed");
 
   onMount(async () => {
     try {
@@ -32,7 +33,7 @@
       .filter((r) => r.semester_time === semesterTime)
       .map((r) => ({
         ...r,
-        vehicle_sort: r.vehicle_order,
+        vehicle_sort: r.vehicle_order, // bleibt fix in den Daten
         group_sort: r.group_order,
       }));
   });
@@ -42,15 +43,13 @@
     width: "container",
     height: 460,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 5, right: 20, top: 10, bottom: 55 },
+    padding: { left: 90, right: 20, top: 10, bottom: 55 },
     params: [
+      { name: "sortMode", value: "fixed" },
+
       {
         name: "groupShow",
-        select: {
-          type: "point",
-          fields: ["group_label"],
-          toggle: "true", // <- togglen ohne Shift :contentReference[oaicite:1]{index=1}
-        },
+        select: { type: "point", fields: ["group_label"], toggle: "true" },
         bind: "legend",
         value: [
           { group_label: "Studierende" },
@@ -60,7 +59,18 @@
       },
     ],
 
-    transform: [{ filter: { param: "groupShow" } }],
+    transform: [
+      { filter: { param: "groupShow" } },
+      {
+        joinaggregate: [{ op: "sum", field: "people", as: "vehicle_total" }],
+        groupby: ["vehicle_label"],
+      },
+      {
+        calculate:
+          "sortMode === 'fixed' ? datum.vehicle_order : -datum.vehicle_total + datum.vehicle_order * 0.001",
+        as: "vehicle_sort_val",
+      },
+    ],
 
     data: { name: "table" },
 
@@ -71,7 +81,7 @@
         field: "vehicle_label",
         type: "nominal",
         title: null,
-        sort: { field: "vehicle_sort", order: "ascending" },
+        sort: { field: "vehicle_sort_val", order: "ascending" },
         axis: { labelLimit: 260 },
       },
       yOffset: { field: "group_label" },
@@ -96,6 +106,7 @@
         { field: "vehicle_label", type: "nominal", title: "Verkehrsmittel" },
         { field: "group_label", type: "nominal", title: "Personengruppe" },
         { field: "people", type: "quantitative", title: "Anzahl Personen" },
+        { field: "vehicle_sort_val", type: "quantitative", title: "SortKey" },
       ],
     },
   };
@@ -120,7 +131,6 @@
     <h2 class="title">Nutzung von Verkehrsmitteln nach Personengruppe</h2>
     <p class="subtitle">Filter: {formatSemesterTime(semesterTime)}</p>
 
-
     <div class="card">
       <div class="cardHeader">
         <label>
@@ -131,6 +141,13 @@
             {/each}
           </select>
         </label>
+        <label style="margin-left: 12px;">
+          Sortierung:
+          <select bind:value={sortMode}>
+            <option value="fixed">Fixe Reihenfolge</option>
+            <option value="frequency">Nach Häufigkeit</option>
+          </select>
+        </label>
 
         <span class="cardHint">Legende rechts: Klick = ein/ausblenden</span>
       </div>
@@ -138,7 +155,8 @@
         spec={specUsageByGroup}
         dataName="table"
         dataValues={values}
-      ></VegaLiteChart>
+        signals={{ sortMode }}
+      />
     </div>
   </div>
 {/if}
