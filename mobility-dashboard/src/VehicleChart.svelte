@@ -12,6 +12,7 @@
   let semesterOptions = $state<string[]>([]);
   let semesterTime = $state<string>("");
   let sortMode = $state<"fixed" | "frequency">("fixed");
+  let measureMode = $state<"absolute" | "percent">("absolute");
 
   onMount(async () => {
     try {
@@ -46,6 +47,7 @@
     padding: { left: 90, right: 20, top: 10, bottom: 55 },
     params: [
       { name: "sortMode", value: "fixed" },
+      { name: "measureMode", value: "absolute" },
 
       {
         name: "groupShow",
@@ -70,6 +72,24 @@
           "sortMode === 'fixed' ? datum.vehicle_order : -datum.vehicle_total + datum.vehicle_order * 0.001",
         as: "vehicle_sort_val",
       },
+      {
+        joinaggregate: [{ op: "sum", field: "people", as: "group_total" }],
+        groupby: ["group_label"],
+      },
+      {
+        calculate:
+          "datum.group_total > 0 ? (datum.people / datum.group_total) * 100 : 0",
+        as: "people_percent",
+      },
+      {
+        calculate: "round(datum.people_percent * 10) / 10",
+        as: "people_percent_1",
+      },
+      {
+        calculate:
+          "measureMode === 'absolute' ? datum.people : datum.people_percent_1",
+        as: "metric_value",
+      },
     ],
 
     data: { name: "table" },
@@ -87,11 +107,21 @@
       yOffset: { field: "group_label" },
 
       x: {
-        field: "people",
+        field: "metric_value",
         type: "quantitative",
-        title: "Anzahl Personen",
-        axis: { tickMinStep: 1, grid: true },
-        scale: { zero: true },
+        title: "Wert",
+        axis: {
+          grid: true,
+          tickMinStep: 1,
+          labelExpr:
+            "measureMode === 'absolute' ? format(datum.value, ',d') : format(datum.value, '.0f') + '%'",
+        },
+        scale: {
+          zero: true,
+          domainRaw: {
+            signal: "measureMode === 'percent' ? [0, 100] : null",
+          },
+        },
       },
 
       color: {
@@ -106,7 +136,12 @@
         { field: "vehicle_label", type: "nominal", title: "Verkehrsmittel" },
         { field: "group_label", type: "nominal", title: "Personengruppe" },
         { field: "people", type: "quantitative", title: "Anzahl Personen" },
-        { field: "vehicle_sort_val", type: "quantitative", title: "SortKey" },
+        {
+          field: "people_percent_1",
+          type: "quantitative",
+          title: "Anteil in Gruppe (%)",
+          format: ".1f",
+        },
       ],
     },
   };
@@ -148,6 +183,13 @@
             <option value="frequency">Nach Häufigkeit</option>
           </select>
         </label>
+        <label style="margin-left: 12px;">
+          Maß:
+          <select bind:value={measureMode}>
+            <option value="absolute">Absolut</option>
+            <option value="percent">Prozent</option>
+          </select>
+        </label>
 
         <span class="cardHint">Legende rechts: Klick = ein/ausblenden</span>
       </div>
@@ -155,7 +197,7 @@
         spec={specUsageByGroup}
         dataName="table"
         dataValues={values}
-        signals={{ sortMode }}
+        signals={{ sortMode, measureMode }}
       />
     </div>
   </div>
@@ -184,15 +226,10 @@
     padding: 12px;
   }
   .cardHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 8px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
   .cardHint {
-    font-size: 12px;
-    opacity: 0.7;
-    white-space: nowrap;
+    margin-left: auto;
   }
 </style>
