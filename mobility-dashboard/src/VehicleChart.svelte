@@ -34,7 +34,7 @@
       .filter((r) => r.semester_time === semesterTime)
       .map((r) => ({
         ...r,
-        vehicle_sort: r.vehicle_order, // bleibt fix in den Daten
+        vehicle_sort: r.vehicle_order, // stays fix
         group_sort: r.group_order,
       }));
   });

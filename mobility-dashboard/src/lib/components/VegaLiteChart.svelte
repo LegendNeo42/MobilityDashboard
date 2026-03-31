@@ -3,7 +3,7 @@
   import { changeset } from "vega";
   import { untrack } from "svelte";
 
-  // ✅ WICHTIG: reaktive Props (nicht const props = $props())
+  // reaktive Props (const props = $props())
   let {
     spec,
     dataName = "table",
@@ -40,7 +40,7 @@
     await v.change(name, cs).runAsync();
   }
 
-  // 1) Embed nur wenn spec/el/dataName sich ändern (nicht bei data/signals)
+  // Embed only if spec/el/dataName changes (not for data/signals)
   $effect(() => {
     if (!el || !spec) return;
 
@@ -57,7 +57,7 @@
         view = null;
       }
 
-      // ✅ initiale Daten direkt ins Spec -> keine "Infinite extent" Warnings
+      // initial data direct in Spec -> no Infinite extent Warnings
       const initVals = untrack(() => dataValues ?? []);
       const initSigs = untrack(() => signals);
 
@@ -92,9 +92,9 @@
     };
   });
 
-  // 2) Datenupdates (Semesterzeit)
+  //2 Data update (Semesterzeit)
   $effect(() => {
-    // ✅ wichtig: erst reactive props lesen (damit Svelte Dependencies trackt)
+    // first read reactive props
     const v = view;
     const name = dataName;
     const vals = dataValues ?? [];
@@ -110,9 +110,9 @@
     })();
   });
 
-  // 3) Signalupdates (Fix/Häufigkeit)
+  // update signal (Fix/Häufigkeit)
   $effect(() => {
-    // ✅ wichtig: erst reactive props lesen (damit Svelte Dependencies trackt)
+    // first read reactive props
     const v = view;
     const sigs = signals ?? null;
 

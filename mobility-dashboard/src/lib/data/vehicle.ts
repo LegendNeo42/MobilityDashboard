@@ -32,7 +32,7 @@ function toStrOrNull(v: string | undefined): string | null {
   return s ? s : null;
 }
 
-// simple cache: wird nur einmal geladen
+// simple cache: only load once
 let cache: VehicleRow[] | null = null;
 
 export async function loadVehicleRows(): Promise<VehicleRow[]> {
@@ -64,7 +64,7 @@ export async function loadVehicleRows(): Promise<VehicleRow[]> {
 }
 
 
-// deine gewünschte fixe Reihenfolge (Motorrad direkt nach Auto-Mitfahrer)
+// fix order for vehicle labels
 const VEHICLE_LABELS: Record<string, { label: string; order: number }> = {
   "car-driver": { label: "Auto (Fahrer:in)", order: 1 },
   "car-passenger": { label: "Auto (Beifahrer:in)", order: 2 },
@@ -106,7 +106,7 @@ function groupBucket(status: string): GroupBucket | null {
       return { key: "prof", label: "Professor:innen", order: 3 };
     case "other":
     default:
-      return null; // rausfiltern
+      return null;
   }
 }
 
@@ -145,7 +145,7 @@ export async function loadVehicleUsageByGroup(): Promise<
 
     const vInfo = VEHICLE_LABELS[vehicle] ?? { label: vehicle, order: 999 };
 
-    // group_key kommt jetzt nur noch aus unseren Buckets:
+    // groupKey only comes from the predefined buckets:
     const g =
       group_key === "student"
         ? { label: "Studierende", order: 1 }
@@ -158,7 +158,7 @@ export async function loadVehicleUsageByGroup(): Promise<
       vehicle,
       vehicle_label: vInfo.label,
       vehicle_order: vInfo.order,
-      employment_status: group_key, // bleibt Feldname, ist jetzt aber bucket-key
+      employment_status: group_key, // stays field name but is now bucket-key
       group_label: g.label,
       group_order: g.order,
       people: s.size,
