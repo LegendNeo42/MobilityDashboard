@@ -1,80 +1,182 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #18212b;
+  background: #f3f5f7;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-html, body {
+html,
+body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  display: block; /* wichtig: nicht flex-center */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+* {
+  box-sizing: border-box;
 }
 
-.card {
-  padding: 2em;
+button,
+select,
+input {
+  font: inherit;
 }
-
 
 #app {
   width: 100%;
-  max-width: none;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.appShell {
+  min-height: 100vh;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 20px 24px;
+}
+
+.heroEyebrow,
+.sectionEyebrow {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #46617c;
+}
+
+.hero h1,
+.sectionHeader h2 {
+  margin: 0;
+  line-height: 1.15;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.heroSubtitle,
+.heroText,
+.sectionText,
+.chartNote,
+.chartMeta,
+.statusMessage {
+  margin: 0;
+  color: #506070;
+}
+
+.heroSubtitle {
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+.heroText {
+  max-width: 760px;
+  margin-top: 12px;
+}
+
+.dashboardMain {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 48px;
+}
+
+.dashboardSection + .dashboardSection {
+  margin-top: 24px;
+}
+
+.sectionHeader {
+  margin-bottom: 16px;
+}
+
+.sectionText {
+  max-width: 720px;
+  margin-top: 10px;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #d8e0e8;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(24, 33, 43, 0.05);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.field span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #314252;
+}
+
+.field select {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #c8d2dc;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #18212b;
+}
+
+.chartMetaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.chartMeta strong {
+  color: #18212b;
+}
+
+.chartNote {
+  margin-top: 10px;
+  margin-bottom: 16px;
+  max-width: 780px;
+  font-size: 0.95rem;
+}
+
+.statusMessage {
+  padding: 12px 0;
+}
+
+.chartHost {
+  width: 100%;
+  min-height: 520px;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-top: 32px;
   }
-  a:hover {
-    color: #747bff;
+
+  .panel {
+    padding: 16px;
   }
-  button {
-    background-color: #f9f9f9;
+
+  .field {
+    width: 100%;
   }
 }

@@ -1,6 +1,8 @@
 <script lang="ts">
-  import VehicleChart from "./VehicleChart.svelte";
+  import AppShell from "./app/AppShell.svelte";
+  import VehicleUsageSection from "./features/vehicle-usage/VehicleUsageSection.svelte";
 </script>
 
-<VehicleChart />
-
+<AppShell>
+  <VehicleUsageSection />
+</AppShell>
