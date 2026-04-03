@@ -4,7 +4,7 @@ export function createVehicleUsageByGroupSpec() {
     width: "container",
     height: 460,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 90, right: 20, top: 10, bottom: 55 },
+    padding: { left: 90, right: 20, top: 10, bottom: 35 },
     params: [
       { name: "sortMode", value: "fixed" },
       { name: "measureMode", value: "absolute" },
@@ -63,7 +63,7 @@ export function createVehicleUsageByGroupSpec() {
       x: {
         field: "metric_value",
         type: "quantitative",
-        title: "Anzahl Personen / Anteil (%)",
+        title: null,
         axis: {
           grid: true,
           tickMinStep: 1,

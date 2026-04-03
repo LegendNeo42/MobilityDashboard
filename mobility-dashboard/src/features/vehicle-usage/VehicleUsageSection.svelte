@@ -9,12 +9,20 @@
   import { formatSemesterTime } from "../../utils/semester";
 
   const chartSpec = createVehicleUsageByGroupSpec();
+  const allGroupLabels = ["Studierende", "Mitarbeitende", "Professor:innen"];
 
   let error = $state<string | null>(null);
   let dataset = $state<VehicleUsageByGroupDataset | null>(null);
   let semesterTime = $state("");
   let sortMode = $state<"fixed" | "frequency">("fixed");
   let measureMode = $state<"absolute" | "percent">("absolute");
+  let selectedGroupLabels = $state<string[]>([...allGroupLabels]);
+
+  let xAxisTitle = $derived.by(() =>
+    measureMode === "absolute"
+      ? "Anzahl Personen"
+      : "Anteil an Fahrzeugnennungen (%)",
+  );
 
   onMount(async () => {
     try {
@@ -32,21 +40,57 @@
     return dataset.rows.filter((row) => row.semester_time === semesterTime);
   });
 
+  let visibleValues = $derived.by(() => {
+    return values.filter((row) => selectedGroupLabels.includes(row.group_label));
+  });
+
   let participantsInSelection = $derived.by(() => {
     if (!dataset || !semesterTime) return 0;
 
     return dataset.groupSummaries
-      .filter((summary) => summary.semester_time === semesterTime)
+      .filter(
+        (summary) =>
+          summary.semester_time === semesterTime &&
+          selectedGroupLabels.includes(summary.group_label),
+      )
       .reduce((total, summary) => total + summary.participants, 0);
   });
 
   let visibleVehicleCount = $derived.by(() => {
-    const vehicleKeys = new Set(values.map((row) => row.vehicle));
+    const vehicleKeys = new Set(visibleValues.map((row) => row.vehicle));
     return vehicleKeys.size;
   });
 
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
+  }
+
+  function extractSelectedGroupLabels(signalValue: unknown): string[] {
+    if (
+      signalValue &&
+      typeof signalValue === "object" &&
+      Array.isArray((signalValue as { group_label?: unknown }).group_label)
+    ) {
+      return (signalValue as { group_label: unknown[] }).group_label.filter(
+        (value): value is string => typeof value === "string",
+      );
+    }
+
+    if (
+      signalValue &&
+      typeof signalValue === "object" &&
+      typeof (signalValue as { group_label?: unknown }).group_label === "string"
+    ) {
+      return [(signalValue as { group_label: string }).group_label];
+    }
+
+    return [];
+  }
+
+  function handleChartSignalChange(name: string, value: unknown) {
+    if (name !== "groupShow") return;
+
+    selectedGroupLabels = extractSelectedGroupLabels(value);
   }
 </script>
 
@@ -121,7 +165,13 @@
         dataName="table"
         dataValues={values}
         signals={{ sortMode, measureMode }}
+        watchedSignals={["groupShow"]}
+        onSignalChange={handleChartSignalChange}
       />
+
+      <p style="margin: 8px 0 0; text-align: center; font-weight: 600;">
+        {xAxisTitle}
+      </p>
     </div>
   {/if}
 </section>
