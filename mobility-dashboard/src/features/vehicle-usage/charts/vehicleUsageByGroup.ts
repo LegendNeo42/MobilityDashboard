@@ -89,7 +89,7 @@ export function createVehicleUsageByGroupSpec() {
         {
           field: "usage_share_percent_1",
           type: "quantitative",
-          title: "Anteil an Fahrzeugnennungen (%)",
+          title: "Anteil innerhalb der Gruppe (%)",
           format: ".1f",
         },
       ],

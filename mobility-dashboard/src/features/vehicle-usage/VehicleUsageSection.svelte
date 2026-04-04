@@ -20,7 +20,7 @@
   let xAxisTitle = $derived.by(() =>
     measureMode === "absolute"
       ? "Anzahl Personen"
-      : "Anteil an Fahrzeugnennungen (%)",
+      : "Anteil innerhalb der Gruppe (%)",
   );
 
   onMount(async () => {
@@ -156,8 +156,9 @@
       </div>
 
       <p class="chartNote">
-        Prozentwerte zeigen den Anteil an Fahrzeugnennungen innerhalb der jeweiligen
-        Personengruppe. Mehrfachnennungen pro Person sind möglich.
+        Prozentwerte zeigen den Anteil der Personen innerhalb der jeweiligen
+        Personengruppe, die das jeweilige Verkehrsmittel genannt haben.
+        Mehrfachnennungen pro Person sind möglich.
       </p>
 
       <VegaLiteChart
