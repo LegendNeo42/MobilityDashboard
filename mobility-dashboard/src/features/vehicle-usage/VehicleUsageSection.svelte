@@ -1,22 +1,21 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import VegaLiteChart from "../../components/charts/VegaLiteChart.svelte";
-  import {
-    loadVehicleUsageByGroupData,
-    type VehicleUsageByGroupDataset,
-  } from "../../data/vehicle";
+  import { loadVehicleUsageByGroupData } from "../../data/vehicle";
+  import type { VehicleUsageByGroupDataset } from "../../data/vehicle";
+  import { measureModes, statusGroupLabels } from "../../data/domain";
+  import type { MeasureMode } from "../../data/domain";
   import { createVehicleUsageByGroupSpec } from "./charts/vehicleUsageByGroup";
   import { formatSemesterTime } from "../../utils/semester";
 
   const chartSpec = createVehicleUsageByGroupSpec();
-  const allGroupLabels = ["Studierende", "Mitarbeitende", "Professor:innen"];
 
   let error = $state<string | null>(null);
   let dataset = $state<VehicleUsageByGroupDataset | null>(null);
   let semesterTime = $state("");
   let sortMode = $state<"fixed" | "frequency">("fixed");
-  let measureMode = $state<"absolute" | "percent">("absolute");
-  let selectedGroupLabels = $state<string[]>([...allGroupLabels]);
+  let measureMode = $state<MeasureMode>("absolute");
+  let selectedGroupLabels = $state<string[]>([...statusGroupLabels]);
 
   let xAxisTitle = $derived.by(() =>
     measureMode === "absolute"
@@ -137,8 +136,9 @@
         <label class="field">
           <span>Maß</span>
           <select bind:value={measureMode}>
-            <option value="absolute">Absolut</option>
-            <option value="percent">Prozent</option>
+            {#each measureModes as option}
+              <option value={option.key}>{option.label}</option>
+            {/each}
           </select>
         </label>
       </div>

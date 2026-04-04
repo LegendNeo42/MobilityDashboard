@@ -1,3 +1,5 @@
+import { statusGroupLabels } from "../../../data/domain";
+
 export function createVehicleUsageByGroupSpec() {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
@@ -12,11 +14,7 @@ export function createVehicleUsageByGroupSpec() {
         name: "groupShow",
         select: { type: "point", fields: ["group_label"], toggle: "true" },
         bind: "legend",
-        value: [
-          { group_label: "Studierende" },
-          { group_label: "Mitarbeitende" },
-          { group_label: "Professor:innen" },
-        ],
+        value: statusGroupLabels.map((group_label) => ({ group_label })),
       },
     ],
     transform: [
@@ -81,7 +79,7 @@ export function createVehicleUsageByGroupSpec() {
         field: "group_label",
         type: "nominal",
         title: "Personengruppe",
-        scale: { domain: ["Studierende", "Mitarbeitende", "Professor:innen"] },
+        scale: { domain: statusGroupLabels },
         legend: { title: "Personengruppe (Klick: ein/aus)" },
       },
       tooltip: [
