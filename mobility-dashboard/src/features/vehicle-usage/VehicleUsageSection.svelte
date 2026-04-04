@@ -20,7 +20,7 @@
   let xAxisTitle = $derived.by(() =>
     measureMode === "absolute"
       ? "Anzahl Personen"
-      : "Anteil innerhalb der Gruppe (%)",
+      : "Anteil in der Gruppe (%)",
   );
 
   onMount(async () => {
