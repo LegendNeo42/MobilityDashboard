@@ -39,6 +39,7 @@ export type VehicleUsageByGroupRow = {
   group_label: string;
   group_order: number;
   people: number;
+  participants: number;
 };
 
 export type VehicleUsageGroupSummary = {
@@ -186,8 +187,10 @@ export function buildVehicleUsageByGroupDataset(
     const [semester_time, groupKey, vehicle] = key.split("|");
     const group = getStatusGroupByKey(groupKey);
     const transportMode = getTransportModeDefinition(vehicle);
+    const participantSummaryKey = `${semester_time}|${groupKey}`;
+    const groupParticipants = participantSets.get(participantSummaryKey);
 
-    if (!group) continue;
+    if (!group || !groupParticipants) continue;
 
     usageRows.push({
       semester_time,
@@ -198,6 +201,7 @@ export function buildVehicleUsageByGroupDataset(
       group_label: group.label,
       group_order: group.order,
       people: participants.size,
+      participants: groupParticipants.size,
     });
   }
 
@@ -237,6 +241,15 @@ export function buildVehicleUsageByGroupDataset(
     }),
     semesterOptions: sortSemesterTimes(Array.from(semesterTimes)),
   };
+}
+
+export async function loadVehicleUsageByGroupData(): Promise<VehicleUsageByGroupDataset> {
+  if (usageByGroupCache) return usageByGroupCache;
+
+  const rows = await loadVehicleRows();
+  usageByGroupCache = buildVehicleUsageByGroupDataset(rows);
+
+  return usageByGroupCache;
 }
 
 export function buildModalSplitByDistanceDataset(
@@ -352,10 +365,10 @@ export function buildModalSplitByDistanceDataset(
         b.semester_time,
       );
       if (semesterComparison !== 0) return semesterComparison;
-      if (a.group_order !== b.group_order) return a.group_order - b.group_order;
       if (a.distance_bucket_order !== b.distance_bucket_order) {
         return a.distance_bucket_order - b.distance_bucket_order;
       }
+      if (a.group_order !== b.group_order) return a.group_order - b.group_order;
       return a.vehicle_order - b.vehicle_order;
     }),
     bucketSummaries: bucketSummaries.sort((a, b) => {
@@ -364,26 +377,20 @@ export function buildModalSplitByDistanceDataset(
         b.semester_time,
       );
       if (semesterComparison !== 0) return semesterComparison;
-      if (a.group_order !== b.group_order) return a.group_order - b.group_order;
-      return a.distance_bucket_order - b.distance_bucket_order;
+      if (a.distance_bucket_order !== b.distance_bucket_order) {
+        return a.distance_bucket_order - b.distance_bucket_order;
+      }
+      return a.group_order - b.group_order;
     }),
     semesterOptions: sortSemesterTimes(Array.from(semesterTimes)),
   };
 }
 
-export async function loadVehicleUsageByGroupData(): Promise<VehicleUsageByGroupDataset> {
-  if (usageByGroupCache) return usageByGroupCache;
-
-  usageByGroupCache = buildVehicleUsageByGroupDataset(await loadVehicleRows());
-  return usageByGroupCache;
-}
-
 export async function loadModalSplitByDistanceData(): Promise<ModalSplitByDistanceDataset> {
   if (modalSplitByDistanceCache) return modalSplitByDistanceCache;
 
-  modalSplitByDistanceCache = buildModalSplitByDistanceDataset(
-    await loadVehicleRows(),
-  );
+  const rows = await loadVehicleRows();
+  modalSplitByDistanceCache = buildModalSplitByDistanceDataset(rows);
 
   return modalSplitByDistanceCache;
 }

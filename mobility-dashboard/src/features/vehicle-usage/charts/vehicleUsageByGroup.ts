@@ -25,12 +25,8 @@ export function createVehicleUsageByGroupSpec() {
         as: "vehicle_sort_val",
       },
       {
-        joinaggregate: [{ op: "sum", field: "people", as: "group_total" }],
-        groupby: ["group_label"],
-      },
-      {
         calculate:
-          "datum.group_total > 0 ? (datum.people / datum.group_total) * 100 : 0",
+          "datum.participants > 0 ? (datum.people / datum.participants) * 100 : 0",
         as: "usage_share_percent",
       },
       {
