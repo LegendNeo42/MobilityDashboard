@@ -1,4 +1,7 @@
-import { statusGroupLabels } from "../../../data/domain";
+import {
+  statusGroupColors,
+  statusGroupLabels,
+} from "../../../data/domain";
 
 export function createVehicleUsageByGroupSpec() {
   return {
@@ -10,15 +13,8 @@ export function createVehicleUsageByGroupSpec() {
     params: [
       { name: "sortMode", value: "fixed" },
       { name: "measureMode", value: "absolute" },
-      {
-        name: "groupShow",
-        select: { type: "point", fields: ["group_label"], toggle: "true" },
-        bind: "legend",
-        value: statusGroupLabels.map((group_label) => ({ group_label })),
-      },
     ],
     transform: [
-      { filter: { param: "groupShow" } },
       {
         joinaggregate: [{ op: "sum", field: "people", as: "vehicle_total" }],
         groupby: ["vehicle_label"],
@@ -79,8 +75,11 @@ export function createVehicleUsageByGroupSpec() {
         field: "group_label",
         type: "nominal",
         title: "Personengruppe",
-        scale: { domain: statusGroupLabels },
-        legend: { title: "Personengruppe (Klick: ein/aus)" },
+        scale: {
+          domain: statusGroupLabels,
+          range: statusGroupColors,
+        },
+        legend: null,
       },
       tooltip: [
         { field: "vehicle_label", type: "nominal", title: "Verkehrsmittel" },

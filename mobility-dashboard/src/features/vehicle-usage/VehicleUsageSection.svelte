@@ -3,10 +3,12 @@
   import VegaLiteChart from "../../components/charts/VegaLiteChart.svelte";
   import { loadVehicleUsageByGroupData } from "../../data/vehicle";
   import type { VehicleUsageByGroupDataset } from "../../data/vehicle";
-  import { measureModes, statusGroupLabels } from "../../data/domain";
-  import type { MeasureMode } from "../../data/domain";
   import { createVehicleUsageByGroupSpec } from "./charts/vehicleUsageByGroup";
   import { formatSemesterTime } from "../../utils/semester";
+  import {
+    dashboardFilters,
+    selectedStatusGroupKeys,
+  } from "../../stores/dashboardFilters";
 
   const chartSpec = createVehicleUsageByGroupSpec();
 
@@ -14,11 +16,9 @@
   let dataset = $state<VehicleUsageByGroupDataset | null>(null);
   let semesterTime = $state("");
   let sortMode = $state<"fixed" | "frequency">("fixed");
-  let measureMode = $state<MeasureMode>("absolute");
-  let selectedGroupLabels = $state<string[]>([...statusGroupLabels]);
 
   let xAxisTitle = $derived.by(() =>
-    measureMode === "absolute"
+    $dashboardFilters.measureMode === "absolute"
       ? "Anzahl Personen"
       : "Anteil in der Gruppe (%)",
   );
@@ -40,7 +40,9 @@
   });
 
   let visibleValues = $derived.by(() => {
-    return values.filter((row) => selectedGroupLabels.includes(row.group_label));
+    return values.filter((row) =>
+      $selectedStatusGroupKeys.includes(row.employment_status),
+    );
   });
 
   let participantsInSelection = $derived.by(() => {
@@ -50,7 +52,7 @@
       .filter(
         (summary) =>
           summary.semester_time === semesterTime &&
-          selectedGroupLabels.includes(summary.group_label),
+          $selectedStatusGroupKeys.includes(summary.employment_status),
       )
       .reduce((total, summary) => total + summary.participants, 0);
   });
@@ -62,34 +64,6 @@
 
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
-  }
-
-  function extractSelectedGroupLabels(signalValue: unknown): string[] {
-    if (
-      signalValue &&
-      typeof signalValue === "object" &&
-      Array.isArray((signalValue as { group_label?: unknown }).group_label)
-    ) {
-      return (signalValue as { group_label: unknown[] }).group_label.filter(
-        (value): value is string => typeof value === "string",
-      );
-    }
-
-    if (
-      signalValue &&
-      typeof signalValue === "object" &&
-      typeof (signalValue as { group_label?: unknown }).group_label === "string"
-    ) {
-      return [(signalValue as { group_label: string }).group_label];
-    }
-
-    return [];
-  }
-
-  function handleChartSignalChange(name: string, value: unknown) {
-    if (name !== "groupShow") return;
-
-    selectedGroupLabels = extractSelectedGroupLabels(value);
   }
 </script>
 
@@ -132,15 +106,6 @@
             <option value="frequency">Nach Häufigkeit</option>
           </select>
         </label>
-
-        <label class="field">
-          <span>Maß</span>
-          <select bind:value={measureMode}>
-            {#each measureModes as option}
-              <option value={option.key}>{option.label}</option>
-            {/each}
-          </select>
-        </label>
       </div>
 
       <div class="chartMetaRow">
@@ -156,18 +121,16 @@
       </div>
 
       <p class="chartNote">
-        Prozentwerte zeigen den Anteil der Personen innerhalb der jeweiligen
-        Personengruppe, die das jeweilige Verkehrsmittel genannt haben.
-        Mehrfachnennungen pro Person sind möglich.
+        Prozentwerte zeigen den Anteil der Personen innerhalb der jeweils
+        gefilterten Personengruppe, die das jeweilige Verkehrsmittel genannt
+        haben. Mehrfachnennungen pro Person sind möglich.
       </p>
 
       <VegaLiteChart
         spec={chartSpec}
         dataName="table"
-        dataValues={values}
-        signals={{ sortMode, measureMode }}
-        watchedSignals={["groupShow"]}
-        onSignalChange={handleChartSignalChange}
+        dataValues={visibleValues}
+        signals={{ sortMode, measureMode: $dashboardFilters.measureMode }}
       />
 
       <p style="margin: 8px 0 0; text-align: center; font-weight: 600;">

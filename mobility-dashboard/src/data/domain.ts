@@ -5,6 +5,7 @@ export type StatusGroupDefinition = {
   key: StatusGroupKey;
   label: string;
   order: number;
+  color: string;
   sourceStatuses: string[];
 };
 
@@ -33,18 +34,21 @@ export const statusGroupDefinitions: StatusGroupDefinition[] = [
     key: "student",
     label: "Studierende",
     order: 1,
+    color: "#4c78a8",
     sourceStatuses: ["student"],
   },
   {
     key: "employee",
     label: "Mitarbeitende",
     order: 2,
+    color: "#f58518",
     sourceStatuses: ["wimi", "niwi"],
   },
   {
     key: "prof",
     label: "Professor:innen",
     order: 3,
+    color: "#54a24b",
     sourceStatuses: ["prof"],
   },
 ];
@@ -77,19 +81,32 @@ export const distanceBucketDefinitions: DistanceBucketDefinition[] = [
   { key: "100+", label: "100 km und mehr", order: 8, min: 100, max: null },
 ];
 
-export const publicTransportBarrierDefinitions: PublicTransportBarrierDefinition[] = [
-  { key: "travel_time", label: "Fahrt dauert zu lange", order: 1 },
-  { key: "transition_time", label: "Zu viel Umstiegszeit", order: 2 },
-  { key: "low_frequency", label: "Zu seltene Verbindungen", order: 3 },
-  { key: "reliability", label: "Verbindungen sind unzuverlässig", order: 4 },
-  { key: "too_crowded", label: "Zu voll", order: 5 },
-  { key: "comfort", label: "Zu unkomfortabel", order: 6 },
-  { key: "unsafe", label: "Unsicheres Gefühl", order: 7 },
-  { key: "no_station", label: "Kein guter Haltepunkt erreichbar", order: 8 },
-  { key: "too_expensive", label: "Zu teuer", order: 9 },
-  { key: "live_near_uni", label: "Wohne nah an der Universität", order: 10 },
-  { key: "other", label: "Sonstiges", order: 11 },
-];
+export const publicTransportBarrierDefinitions: PublicTransportBarrierDefinition[] =
+  [
+    { key: "travel_time", label: "Fahrt dauert zu lange", order: 1 },
+    { key: "transition_time", label: "Zu viel Umstiegszeit", order: 2 },
+    { key: "low_frequency", label: "Zu seltene Verbindungen", order: 3 },
+    {
+      key: "reliability",
+      label: "Verbindungen sind unzuverlässig",
+      order: 4,
+    },
+    { key: "too_crowded", label: "Zu voll", order: 5 },
+    { key: "comfort", label: "Zu unkomfortabel", order: 6 },
+    { key: "unsafe", label: "Unsicheres Gefühl", order: 7 },
+    {
+      key: "no_station",
+      label: "Kein guter Haltepunkt erreichbar",
+      order: 8,
+    },
+    { key: "too_expensive", label: "Zu teuer", order: 9 },
+    {
+      key: "live_near_uni",
+      label: "Wohne nah an der Universität",
+      order: 10,
+    },
+    { key: "other", label: "Sonstiges", order: 11 },
+  ];
 
 const statusGroupBySourceStatus = new Map<string, StatusGroupDefinition>();
 const statusGroupByKey = new Map<StatusGroupKey, StatusGroupDefinition>();
@@ -114,6 +131,10 @@ for (const definition of publicTransportBarrierDefinitions) {
 
 export const statusGroupLabels = statusGroupDefinitions.map(
   (definition) => definition.label,
+);
+
+export const statusGroupColors = statusGroupDefinitions.map(
+  (definition) => definition.color,
 );
 
 export function getStatusGroupBySourceStatus(
