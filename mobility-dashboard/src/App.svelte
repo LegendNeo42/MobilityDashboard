@@ -6,7 +6,7 @@
 </script>
 
 <AppShell>
-  <section id="overview" class="dashboardSection">
+  <section id="overview" class="dashboardSection dashboardSection--overview">
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.overviewSection.eyebrow}</p>
       <h2>{dashboardContent.overviewSection.title}</h2>
@@ -25,7 +25,7 @@
 
   <DashboardFilterBar />
 
-  <section id="analysis" class="dashboardSection">
+  <section id="analysis" class="dashboardSection dashboardSection--analysis">
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.analysisSection.eyebrow}</p>
       <h2>{dashboardContent.analysisSection.title}</h2>
@@ -35,7 +35,7 @@
     <VehicleUsageSection />
   </section>
 
-  <section id="region" class="dashboardSection">
+  <section id="region" class="dashboardSection dashboardSection--region">
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.regionSection.eyebrow}</p>
       <h2>{dashboardContent.regionSection.title}</h2>
@@ -51,7 +51,7 @@
     </div>
   </section>
 
-  <section id="context" class="dashboardSection">
+  <section id="context" class="dashboardSection dashboardSection--context">
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.contextSection.eyebrow}</p>
       <h2>{dashboardContent.contextSection.title}</h2>

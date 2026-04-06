@@ -3,12 +3,9 @@
   import VegaLiteChart from "../../components/charts/VegaLiteChart.svelte";
   import { loadVehicleUsageByGroupData } from "../../data/vehicle";
   import type { VehicleUsageByGroupDataset } from "../../data/vehicle";
-  import { createVehicleUsageByGroupSpec } from "./charts/vehicleUsageByGroup";
+  import { dashboardFilters, selectedStatusGroupKeys } from "../../stores/dashboardFilters";
   import { formatSemesterTime } from "../../utils/semester";
-  import {
-    dashboardFilters,
-    selectedStatusGroupKeys,
-  } from "../../stores/dashboardFilters";
+  import { createVehicleUsageByGroupSpec } from "./charts/vehicleUsageByGroup";
 
   const chartSpec = createVehicleUsageByGroupSpec();
 
@@ -80,15 +77,11 @@
   </div>
 
   {#if error}
-    <div class="panel">
-      <p class="statusMessage">Fehler: {error}</p>
-    </div>
+    <p class="statusMessage">Fehler: {error}</p>
   {:else if !dataset}
-    <div class="panel">
-      <p class="statusMessage">Lade Daten…</p>
-    </div>
+    <p class="statusMessage">Lade Daten…</p>
   {:else}
-    <div class="panel">
+    <div class="chartSectionBody">
       <div class="toolbar">
         <label class="field">
           <span>Semester-Zeit</span>
@@ -126,16 +119,16 @@
         haben. Mehrfachnennungen pro Person sind möglich.
       </p>
 
-      <VegaLiteChart
-        spec={chartSpec}
-        dataName="table"
-        dataValues={visibleValues}
-        signals={{ sortMode, measureMode: $dashboardFilters.measureMode }}
-      />
+      <div class="chartFrame">
+        <VegaLiteChart
+          spec={chartSpec}
+          dataName="table"
+          dataValues={visibleValues}
+          signals={{ sortMode, measureMode: $dashboardFilters.measureMode }}
+        />
+      </div>
 
-      <p style="margin: 8px 0 0; text-align: center; font-weight: 600;">
-        {xAxisTitle}
-      </p>
+      <p class="chartAxisTitle">{xAxisTitle}</p>
     </div>
   {/if}
 </section>

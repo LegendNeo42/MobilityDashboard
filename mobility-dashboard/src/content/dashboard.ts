@@ -7,27 +7,35 @@ export const dashboardContent = {
   sectionLinks: [
     {
       id: "overview",
+      theme: "overview",
       eyebrow: "Einstieg",
       title: "Überblick",
       text: "Zentrale Bereiche des Dashboards auf einen Blick.",
+      action: "Zum Abschnitt",
     },
     {
       id: "analysis",
+      theme: "analysis",
       eyebrow: "Analysen",
       title: "Kerncharts",
       text: "Vergleichen Sie Verkehrsmittel und weitere Muster in den Umfragedaten.",
+      action: "Zu den Charts",
     },
     {
       id: "region",
+      theme: "region",
       eyebrow: "Region",
       title: "PLZ-Perspektive",
       text: "Räumliche Unterschiede und Herkunftsbereiche im Überblick.",
+      action: "Zur Regionalsicht",
     },
     {
       id: "context",
+      theme: "context",
       eyebrow: "Kontext",
       title: "Einordnung",
       text: "Hinweise zur Datengrundlage und zur Interpretation der Ergebnisse.",
+      action: "Zum Kontext",
     },
   ],
   overviewSection: {
