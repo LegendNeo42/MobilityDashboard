@@ -36,16 +36,20 @@ input {
 
 .appShell {
   min-height: 100vh;
+  background:
+    linear-gradient(180deg, #f7f9fb 0%, #f3f5f7 220px),
+    #f3f5f7;
 }
 
 .hero {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 20px 24px;
+  padding: 48px 20px 32px;
 }
 
 .heroEyebrow,
-.sectionEyebrow {
+.sectionEyebrow,
+.heroNavEyebrow {
   margin: 0 0 8px;
   font-size: 0.8rem;
   font-weight: 700;
@@ -55,7 +59,9 @@ input {
 }
 
 .hero h1,
-.sectionHeader h2 {
+.sectionHeader h2,
+.heroNavCard h2,
+.overviewCard h3 {
   margin: 0;
   line-height: 1.15;
 }
@@ -69,7 +75,10 @@ input {
 .sectionText,
 .chartNote,
 .chartMeta,
-.statusMessage {
+.statusMessage,
+.heroNavCard p,
+.overviewCard p,
+.placeholderList {
   margin: 0;
   color: #506070;
 }
@@ -82,6 +91,44 @@ input {
 .heroText {
   max-width: 760px;
   margin-top: 12px;
+}
+
+.heroNav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.heroNavCard {
+  display: block;
+  min-height: 100%;
+  padding: 18px;
+  border: 1px solid #d8e0e8;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(24, 33, 43, 0.04);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.heroNavCard:hover {
+  transform: translateY(-1px);
+  border-color: #b5c3d1;
+  box-shadow: 0 14px 34px rgba(24, 33, 43, 0.08);
+}
+
+.heroNavCard h2 {
+  font-size: 1.1rem;
+  color: #18212b;
+}
+
+.heroNavCard p {
+  margin-top: 10px;
+  font-size: 0.95rem;
 }
 
 .dashboardMain {
@@ -103,12 +150,43 @@ input {
   margin-top: 10px;
 }
 
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.overviewCard {
+  min-height: 100%;
+}
+
+.overviewCard h3 {
+  font-size: 1rem;
+}
+
+.overviewCard p {
+  margin-top: 10px;
+}
+
 .panel {
   background: #ffffff;
   border: 1px solid #d8e0e8;
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(24, 33, 43, 0.05);
+}
+
+.placeholderPanel {
+  display: grid;
+  gap: 10px;
+}
+
+.placeholderList {
+  padding-left: 18px;
+}
+
+.placeholderList li + li {
+  margin-top: 8px;
 }
 
 .toolbar {
@@ -224,7 +302,8 @@ input {
     padding-top: 32px;
   }
 
-  .panel {
+  .panel,
+  .heroNavCard {
     padding: 16px;
   }
 
