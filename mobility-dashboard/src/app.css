@@ -127,7 +127,6 @@ input {
   margin-bottom: 0;
 }
 
-
 .heroNav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -269,6 +268,98 @@ input {
 .sectionText {
   max-width: 720px;
   margin-top: 10px;
+}
+
+.surveySummaryPanel {
+  margin-bottom: 16px;
+}
+
+.surveySummaryHeader h3,
+.contextPanel h3,
+.surveyInfoValue,
+.surveyInfoLabel,
+.contextFactList dt,
+.contextFactList dd {
+  margin: 0;
+}
+
+.surveySummaryHeader h3,
+.contextPanel h3 {
+  font-size: 1.08rem;
+  line-height: 1.2;
+  color: #18212b;
+}
+
+.surveySummaryGrid,
+.contextGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.surveySummaryGrid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.surveyInfoCard {
+  padding: 16px;
+  border: 1px solid #d8e0e8;
+  border-radius: 14px;
+  background: #f9fbfd;
+}
+
+.surveyInfoLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #46617c;
+}
+
+.surveyInfoValue {
+  margin-top: 6px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #18212b;
+}
+
+.surveyInfoValue--small {
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+.contextGrid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.contextPanel {
+  min-height: 100%;
+}
+
+.contextFactList {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+}
+
+.contextFactList dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #46617c;
+}
+
+.contextFactList dd {
+  margin-top: 4px;
+  color: #243446;
+}
+
+.contextList {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #506070;
+}
+
+.contextList li + li {
+  margin-top: 8px;
 }
 
 .overviewGrid {

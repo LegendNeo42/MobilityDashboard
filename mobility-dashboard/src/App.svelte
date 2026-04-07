@@ -2,6 +2,8 @@
   import AppShell from "./app/AppShell.svelte";
   import { dashboardContent } from "./content/dashboard";
   import DashboardFilterBar from "./features/dashboard-filters/DashboardFilterBar.svelte";
+  import SurveyOverviewSummary from "./features/survey-metadata/SurveyOverviewSummary.svelte";
+  import SurveyTransparencySection from "./features/survey-metadata/SurveyTransparencySection.svelte";
   import VehicleUsageSection from "./features/vehicle-usage/VehicleUsageSection.svelte";
 </script>
 
@@ -12,6 +14,8 @@
       <h2>{dashboardContent.overviewSection.title}</h2>
       <p class="sectionText">{dashboardContent.overviewSection.text}</p>
     </div>
+
+    <SurveyOverviewSummary />
 
     <div class="overviewGrid">
       {#each dashboardContent.overviewSection.cards as card}
@@ -58,12 +62,6 @@
       <p class="sectionText">{dashboardContent.contextSection.text}</p>
     </div>
 
-    <div class="panel placeholderPanel">
-      <ul class="placeholderList">
-        {#each dashboardContent.contextSection.bullets as item}
-          <li>{item}</li>
-        {/each}
-      </ul>
-    </div>
+    <SurveyTransparencySection />
   </section>
 </AppShell>
