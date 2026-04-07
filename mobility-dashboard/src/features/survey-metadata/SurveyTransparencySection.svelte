@@ -7,9 +7,9 @@
   let error = $state<string | null>(null);
   let metadata = $state<SurveyMetadata | null>(null);
 
-  const semesterContextText = $derived.by(() => {
-    if (!metadata) return "";
-    return metadata.semesterTimes.map(formatSemesterTime).join(" · ");
+  const semesterContextLabels = $derived.by(() => {
+    if (!metadata) return [];
+    return metadata.semesterTimes.map(formatSemesterTime);
   });
 
   function formatInteger(value: number): string {
@@ -56,7 +56,11 @@
         </div>
         <div>
           <dt>Semesterkontexte</dt>
-          <dd>{semesterContextText}</dd>
+          <dd class="surveyContextList">
+            {#each semesterContextLabels as label}
+              <div>{label}</div>
+            {/each}
+          </dd>
         </div>
       </dl>
     </article>
@@ -100,11 +104,11 @@
       <h3>Hinweise zur Darstellung im Dashboard</h3>
       <ul class="contextList">
         <li>
-          Die ersten Vergleichsansichten konzentrieren sich auf Studierende,
+          Die Vergleichsansichten konzentrieren sich auf Studierende,
           Mitarbeitende und Professor:innen.
         </li>
         <li>
-          Die kleine Restgruppe <strong>Other</strong> wird dort aus Übersichtsgründen
+          Die Restgruppe <strong>Other</strong> wird aus Übersichtsgründen
           nicht separat gezeigt. Sie umfasst
           <strong>{formatInteger(metadata.otherGroupResponses)}</strong> gültige
           Antworten.

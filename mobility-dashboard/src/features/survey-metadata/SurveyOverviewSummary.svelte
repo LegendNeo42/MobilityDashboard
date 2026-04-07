@@ -7,9 +7,9 @@
   let error = $state<string | null>(null);
   let metadata = $state<SurveyMetadata | null>(null);
 
-  const semesterContextText = $derived.by(() => {
-    if (!metadata) return "";
-    return metadata.semesterTimes.map(formatSemesterTime).join(" · ");
+  const semesterContextLabels = $derived.by(() => {
+    if (!metadata) return [];
+    return metadata.semesterTimes.map(formatSemesterTime);
   });
 
   function formatInteger(value: number): string {
@@ -53,7 +53,11 @@
 
       <article class="surveyInfoCard">
         <p class="surveyInfoLabel">Semesterkontexte im Datensatz</p>
-        <p class="surveyInfoValue surveyInfoValue--small">{semesterContextText}</p>
+        <div class="surveyInfoValue surveyInfoValue--small surveyContextList surveyContextList--compact">
+          {#each semesterContextLabels as label}
+            <div>{label}</div>
+          {/each}
+        </div>
       </article>
     </div>
   {/if}

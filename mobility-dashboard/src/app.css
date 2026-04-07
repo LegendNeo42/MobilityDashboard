@@ -327,6 +327,20 @@ input {
   font-weight: 500;
 }
 
+.surveyContextList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.surveyContextList--compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  column-gap: 16px;
+  row-gap: 4px;
+  align-items: start;
+}
+
 .contextGrid {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
@@ -557,5 +571,9 @@ input {
 
   .statusGroupField {
     flex-basis: 100%;
+  }
+
+  .surveyContextList--compact {
+    grid-template-columns: 1fr;
   }
 }

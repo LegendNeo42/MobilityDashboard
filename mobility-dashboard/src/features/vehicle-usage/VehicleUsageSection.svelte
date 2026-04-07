@@ -106,7 +106,8 @@
           Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
         </p>
         <p class="chartMeta">
-          n = <strong>{formatInteger(participantsInSelection)}</strong>
+          Personen in der aktuellen Auswahl:
+          <strong>n = {formatInteger(participantsInSelection)}</strong>
         </p>
         <p class="chartMeta">
           Verkehrsmittel im Datensatz: <strong>{visibleVehicleCount}</strong>
@@ -114,9 +115,9 @@
       </div>
 
       <p class="chartNote">
-        Prozentwerte zeigen den Anteil der Personen innerhalb der jeweils
-        gefilterten Personengruppe, die das jeweilige Verkehrsmittel genannt
-        haben. Mehrfachnennungen pro Person sind möglich.
+        Prozentwerte zeigen den Anteil innerhalb jeder jeweils sichtbaren
+        Personengruppe. Das oben angezeigte <strong>n</strong> fasst alle aktuell
+        sichtbaren Gruppen zusammen. Mehrfachnennungen pro Person sind möglich.
       </p>
 
       <div class="chartFrame">
