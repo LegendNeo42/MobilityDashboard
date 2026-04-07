@@ -116,8 +116,7 @@
 
       <p class="chartNote">
         Prozentwerte zeigen den Anteil innerhalb jeder jeweils sichtbaren
-        Personengruppe. Das oben angezeigte <strong>n</strong> fasst alle aktuell
-        sichtbaren Gruppen zusammen. Mehrfachnennungen pro Person sind möglich.
+        Personengruppe. <br> Mehrfachnennungen pro Person sind möglich.
       </p>
 
       <div class="chartFrame">

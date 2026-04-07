@@ -7,7 +7,6 @@ export type SurveyMetadata = {
   validResponses: number;
   approxFreeTextResponses: number;
   semesterTimes: string[];
-  vehicleDatasetResponses: number;
   otherGroupResponses: number;
 };
 
@@ -53,30 +52,31 @@ function countUniqueParticipantsByStatus(
 export async function loadSurveyMetadata(): Promise<SurveyMetadata> {
   if (surveyMetadataCache) return surveyMetadataCache;
 
-  surveyMetadataCache = Promise.all([
-    loadCsvRows("/data/data_days_present.csv"),
-    loadCsvRows("/data/data_vehicle.csv"),
-  ]).then(([dayPresentRows, vehicleRows]) => {
-    const semesterTimes = sortSemesterTimes(
-      Array.from(
-        new Set(
-          dayPresentRows
-            .map((row) => row.semester_time?.trim())
-            .filter((value): value is string => Boolean(value)),
+  surveyMetadataCache = loadCsvRows("/data/data_days_present.csv").then(
+    (dayPresentRows) => {
+      const semesterTimes = sortSemesterTimes(
+        Array.from(
+          new Set(
+            dayPresentRows
+              .map((row) => row.semester_time?.trim())
+              .filter((value): value is string => Boolean(value)),
+          ),
         ),
-      ),
-    );
+      );
 
-    return {
-      surveyLabel: SURVEY_LABEL,
-      surveyPeriodLabel: SURVEY_PERIOD_LABEL,
-      validResponses: countUniqueParticipantIds(dayPresentRows),
-      approxFreeTextResponses: APPROX_FREE_TEXT_RESPONSES,
-      semesterTimes,
-      vehicleDatasetResponses: countUniqueParticipantIds(vehicleRows),
-      otherGroupResponses: countUniqueParticipantsByStatus(dayPresentRows, "other"),
-    };
-  });
+      return {
+        surveyLabel: SURVEY_LABEL,
+        surveyPeriodLabel: SURVEY_PERIOD_LABEL,
+        validResponses: countUniqueParticipantIds(dayPresentRows),
+        approxFreeTextResponses: APPROX_FREE_TEXT_RESPONSES,
+        semesterTimes,
+        otherGroupResponses: countUniqueParticipantsByStatus(
+          dayPresentRows,
+          "other",
+        ),
+      };
+    },
+  );
 
   return surveyMetadataCache;
 }
