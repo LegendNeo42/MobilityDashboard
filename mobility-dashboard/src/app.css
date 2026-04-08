@@ -63,8 +63,7 @@ input {
 
 .hero h1,
 .sectionHeader h2,
-.heroNavCard h2,
-.overviewCard h3 {
+.heroNavCard h2 {
   margin: 0;
   line-height: 1.12;
 }
@@ -274,7 +273,6 @@ input {
   margin-bottom: 16px;
 }
 
-.surveySummaryHeader h3,
 .contextPanel h3,
 .surveyInfoValue,
 .surveyInfoLabel,
@@ -283,28 +281,35 @@ input {
   margin: 0;
 }
 
-.surveySummaryHeader h3,
 .contextPanel h3 {
   font-size: 1.08rem;
   line-height: 1.2;
   color: #18212b;
 }
 
-.surveySummaryGrid,
-.contextGrid {
+.overviewSummaryStack,
+.contextGrid,
+.overviewDetailGrid {
   display: grid;
   gap: 14px;
 }
 
-.surveySummaryGrid {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-.surveyInfoCard {
+.participationRow {
   padding: 16px;
   border: 1px solid #d8e0e8;
   border-radius: 14px;
   background: #f9fbfd;
+}
+
+.participationLabel,
+.participationMeta,
+.participationValue,
+.highlightText,
+.surveyInfoValue,
+.surveyInfoLabel,
+.contextFactList dt,
+.contextFactList dd {
+  margin: 0;
 }
 
 .surveyInfoLabel {
@@ -322,9 +327,82 @@ input {
   color: #18212b;
 }
 
-.surveyInfoValue--small {
-  font-size: 0.98rem;
-  font-weight: 500;
+.participationMeta {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: #506070;
+}
+
+.overviewDetailGrid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+}
+
+.participationHeader {
+  margin-bottom: 16px;
+}
+
+.participationList {
+  display: grid;
+  gap: 10px;
+}
+
+.participationRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.participationLabel {
+  font-weight: 600;
+  color: #18212b;
+}
+
+.participationValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #18212b;
+}
+
+.participationFootnote {
+  margin: 14px 0 0;
+  color: #506070;
+}
+
+.highlightPanel {
+  display: grid;
+  gap: 16px;
+}
+
+.highlightText {
+  margin-top: 10px;
+  color: #314252;
+}
+
+.overviewBridgePanel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.overviewBridgeLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #314252;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.overviewBridgeLink:hover,
+.overviewBridgeLink:focus-visible {
+  background: #243446;
 }
 
 .surveyContextList {
@@ -374,24 +452,6 @@ input {
 
 .contextList li + li {
   margin-top: 8px;
-}
-
-.overviewGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.overviewCard {
-  min-height: 100%;
-}
-
-.overviewCard h3 {
-  font-size: 1rem;
-}
-
-.overviewCard p {
-  margin-top: 10px;
 }
 
 .panel {
@@ -553,6 +613,12 @@ input {
   color: #243446;
 }
 
+@media (max-width: 860px) {
+  .overviewDetailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 700px) {
   .hero {
     padding-top: 32px;
@@ -575,5 +641,13 @@ input {
 
   .surveyContextList--compact {
     grid-template-columns: 1fr;
+  }
+
+  .overviewBridgePanel {
+    align-items: stretch;
+  }
+
+  .overviewBridgeLink {
+    width: 100%;
   }
 }

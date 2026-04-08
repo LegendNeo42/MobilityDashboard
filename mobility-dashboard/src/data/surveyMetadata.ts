@@ -1,5 +1,14 @@
 import { loadCsvRows } from "./csv";
+import { statusGroupDefinitions } from "./domain";
+import type { StatusGroupKey } from "./domain";
 import { sortSemesterTimes } from "../utils/semester";
+
+export type SurveyStatusGroupSummary = {
+  key: StatusGroupKey;
+  label: string;
+  participants: number;
+  shareOfValidResponses: number;
+};
 
 export type SurveyMetadata = {
   surveyLabel: string;
@@ -8,6 +17,8 @@ export type SurveyMetadata = {
   approxFreeTextResponses: number;
   semesterTimes: string[];
   otherGroupResponses: number;
+  statusGroupSummaries: SurveyStatusGroupSummary[];
+  mainGroupResponses: number;
 };
 
 const SURVEY_LABEL = "Mobilitätsumfrage der Universität Regensburg";
@@ -16,10 +27,10 @@ const APPROX_FREE_TEXT_RESPONSES = 4500;
 
 let surveyMetadataCache: Promise<SurveyMetadata> | null = null;
 
-function countUniqueParticipantIds(
+function collectUniqueParticipantIds(
   rows: Array<Record<string, string>>,
   fieldName = "participant_id",
-): number {
+): Set<string> {
   const participantIds = new Set<string>();
 
   for (const row of rows) {
@@ -28,7 +39,7 @@ function countUniqueParticipantIds(
     participantIds.add(participantId);
   }
 
-  return participantIds.size;
+  return participantIds;
 }
 
 function countUniqueParticipantsByStatus(
@@ -49,11 +60,56 @@ function countUniqueParticipantsByStatus(
   return participantIds.size;
 }
 
+function buildStatusGroupSummaries(
+  rows: Array<Record<string, string>>,
+  validResponses: number,
+): SurveyStatusGroupSummary[] {
+  const participantIdsByGroup = new Map<StatusGroupKey, Set<string>>();
+
+  for (const definition of statusGroupDefinitions) {
+    participantIdsByGroup.set(definition.key, new Set<string>());
+  }
+
+  for (const row of rows) {
+    const participantId = row.participant_id?.trim();
+    const sourceStatus = row.employment_status?.trim();
+
+    if (!participantId || !sourceStatus) continue;
+
+    const group = statusGroupDefinitions.find((definition) =>
+      definition.sourceStatuses.includes(sourceStatus),
+    );
+
+    if (!group) continue;
+
+    participantIdsByGroup.get(group.key)?.add(participantId);
+  }
+
+  return statusGroupDefinitions.map((definition) => {
+    const participants = participantIdsByGroup.get(definition.key)?.size ?? 0;
+
+    return {
+      key: definition.key,
+      label: definition.label,
+      participants,
+      shareOfValidResponses:
+        validResponses > 0 ? (participants / validResponses) * 100 : 0,
+    };
+  });
+}
+
 export async function loadSurveyMetadata(): Promise<SurveyMetadata> {
   if (surveyMetadataCache) return surveyMetadataCache;
 
   surveyMetadataCache = loadCsvRows("/data/data_days_present.csv").then(
     (dayPresentRows) => {
+      const validResponseIds = collectUniqueParticipantIds(dayPresentRows);
+      const validResponses = validResponseIds.size;
+      const statusGroupSummaries = buildStatusGroupSummaries(
+        dayPresentRows,
+        validResponses,
+      );
+
       const semesterTimes = sortSemesterTimes(
         Array.from(
           new Set(
@@ -67,12 +123,17 @@ export async function loadSurveyMetadata(): Promise<SurveyMetadata> {
       return {
         surveyLabel: SURVEY_LABEL,
         surveyPeriodLabel: SURVEY_PERIOD_LABEL,
-        validResponses: countUniqueParticipantIds(dayPresentRows),
+        validResponses,
         approxFreeTextResponses: APPROX_FREE_TEXT_RESPONSES,
         semesterTimes,
         otherGroupResponses: countUniqueParticipantsByStatus(
           dayPresentRows,
           "other",
+        ),
+        statusGroupSummaries,
+        mainGroupResponses: statusGroupSummaries.reduce(
+          (total, group) => total + group.participants,
+          0,
         ),
       };
     },

@@ -16,15 +16,6 @@
     </div>
 
     <SurveyOverviewSummary />
-
-    <div class="overviewGrid">
-      {#each dashboardContent.overviewSection.cards as card}
-        <article class="panel overviewCard">
-          <h3>{card.title}</h3>
-          <p>{card.text}</p>
-        </article>
-      {/each}
-    </div>
   </section>
 
   <DashboardFilterBar />

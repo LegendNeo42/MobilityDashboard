@@ -42,20 +42,6 @@ export const dashboardContent = {
     eyebrow: "Überblick",
     title: "Schneller Einstieg in die wichtigsten Bereiche",
     text: "Von hier aus gelangen Sie zu den zentralen Auswertungen, räumlichen Perspektiven und methodischen Hinweisen.",
-    cards: [
-      {
-        title: "Filter verwenden",
-        text: "Wählen Sie Personengruppen und Darstellungsarten für die aktuellen Ansichten aus.",
-      },
-      {
-        title: "Ergebnisse vergleichen",
-        text: "Betrachten Sie Unterschiede zwischen Verkehrsmitteln und Gruppen in den zentralen Diagrammen.",
-      },
-      {
-        title: "Daten einordnen",
-        text: "Ergänzende Hinweise helfen bei der Interpretation von Anteilen, Fallzahlen und Begriffen.",
-      },
-    ],
   },
   analysisSection: {
     eyebrow: "Analysen",
