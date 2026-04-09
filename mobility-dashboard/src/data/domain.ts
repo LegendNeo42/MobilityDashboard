@@ -29,6 +29,28 @@ export type PublicTransportBarrierDefinition = {
   order: number;
 };
 
+export type PublicTransportImprovementDefinition = {
+  key: string;
+  label: string;
+  order: number;
+};
+
+export type ImportanceResponseKey =
+  | "very_unimportant"
+  | "rather_unimportant"
+  | "neutral"
+  | "rather_important"
+  | "very_important";
+
+export type SurveyResponseSpecialKey = "no_opinion" | "no_answer";
+
+export type ImportanceResponseDefinition = {
+  key: ImportanceResponseKey;
+  rawValue: string;
+  label: string;
+  order: number;
+};
+
 export const statusGroupDefinitions: StatusGroupDefinition[] = [
   {
     key: "student",
@@ -108,10 +130,61 @@ export const publicTransportBarrierDefinitions: PublicTransportBarrierDefinition
     { key: "other", label: "Sonstiges", order: 11 },
   ];
 
+export const publicTransportImprovementDefinitions: PublicTransportImprovementDefinition[] =
+  [
+    { key: "connection", label: "Direktere Verbindungen", order: 1 },
+    { key: "reliability", label: "Zuverlässigere Verbindungen", order: 2 },
+    { key: "park_and_ride", label: "Park-and-Ride-Angebote", order: 3 },
+    { key: "frequency", label: "Häufigere Verbindungen", order: 4 },
+    { key: "lower_price", label: "Günstigere Preise", order: 5 },
+  ];
+
+export const importanceResponseDefinitions: ImportanceResponseDefinition[] = [
+  {
+    key: "very_unimportant",
+    rawValue: "-2",
+    label: "Sehr unwichtig",
+    order: 1,
+  },
+  {
+    key: "rather_unimportant",
+    rawValue: "-1",
+    label: "Eher unwichtig",
+    order: 2,
+  },
+  {
+    key: "neutral",
+    rawValue: "0",
+    label: "Neutral",
+    order: 3,
+  },
+  {
+    key: "rather_important",
+    rawValue: "1",
+    label: "Eher wichtig",
+    order: 4,
+  },
+  {
+    key: "very_important",
+    rawValue: "2",
+    label: "Sehr wichtig",
+    order: 5,
+  },
+];
+
 const statusGroupBySourceStatus = new Map<string, StatusGroupDefinition>();
 const statusGroupByKey = new Map<StatusGroupKey, StatusGroupDefinition>();
 const transportModeByKey = new Map<string, TransportModeDefinition>();
 const barrierByKey = new Map<string, PublicTransportBarrierDefinition>();
+const publicTransportImprovementByKey = new Map<
+  string,
+  PublicTransportImprovementDefinition
+>();
+const importanceResponseByKey = new Map<
+  ImportanceResponseKey,
+  ImportanceResponseDefinition
+>();
+const importanceResponseByRawValue = new Map<string, ImportanceResponseDefinition>();
 
 for (const definition of statusGroupDefinitions) {
   statusGroupByKey.set(definition.key, definition);
@@ -127,6 +200,15 @@ for (const definition of transportModeDefinitions) {
 
 for (const definition of publicTransportBarrierDefinitions) {
   barrierByKey.set(definition.key, definition);
+}
+
+for (const definition of publicTransportImprovementDefinitions) {
+  publicTransportImprovementByKey.set(definition.key, definition);
+}
+
+for (const definition of importanceResponseDefinitions) {
+  importanceResponseByKey.set(definition.key, definition);
+  importanceResponseByRawValue.set(definition.rawValue, definition);
 }
 
 export const statusGroupLabels = statusGroupDefinitions.map(
@@ -173,4 +255,22 @@ export function getPublicTransportBarrierDefinition(
   value: string,
 ): PublicTransportBarrierDefinition {
   return barrierByKey.get(value) ?? { key: value, label: value, order: 999 };
+}
+
+export function getPublicTransportImprovementDefinition(
+  value: string,
+): PublicTransportImprovementDefinition | null {
+  return publicTransportImprovementByKey.get(value) ?? null;
+}
+
+export function getImportanceResponseDefinitionByRawValue(
+  value: string,
+): ImportanceResponseDefinition | null {
+  return importanceResponseByRawValue.get(value) ?? null;
+}
+
+export function getImportanceResponseDefinitionByKey(
+  value: string,
+): ImportanceResponseDefinition | null {
+  return importanceResponseByKey.get(value as ImportanceResponseKey) ?? null;
 }
