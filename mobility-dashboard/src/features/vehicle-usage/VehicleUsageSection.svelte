@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import DashboardChartSection from "../../components/charts/DashboardChartSection.svelte";
   import VegaLiteChart from "../../components/charts/VegaLiteChart.svelte";
   import { loadVehicleUsageByGroupData } from "../../data/vehicle";
   import type { VehicleUsageByGroupDataset } from "../../data/vehicle";
@@ -17,7 +18,7 @@
   let xAxisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
       ? "Anzahl Personen"
-      : "Anteil in der Gruppe (%)",
+      : "Anteil innerhalb der Personengruppe (%)",
   );
 
   onMount(async () => {
@@ -64,71 +65,58 @@
   }
 </script>
 
-<section class="dashboardSection">
-  <div class="sectionHeader">
-    <div>
-      <p class="sectionEyebrow">Verkehrsmittel</p>
-      <h2>Nutzung von Verkehrsmitteln nach Personengruppe</h2>
-      <p class="sectionText">
-        Die Ansicht vergleicht, welche Verkehrsmittel von Studierenden,
-        Mitarbeitenden und Professor:innen im gewählten Zeitraum genutzt werden.
+{#if error}
+  <p class="statusMessage">Fehler: {error}</p>
+{:else if !dataset}
+  <p class="statusMessage">Lade Daten…</p>
+{:else}
+  <DashboardChartSection
+    eyebrow="Verkehrsmittel"
+    title="Nutzung von Verkehrsmitteln nach Personengruppe"
+    description="Die Ansicht vergleicht, welche Verkehrsmittel von Studierenden, Mitarbeitenden und Professor:innen im gewählten Zeitraum genutzt werden."
+    note="Die absoluten Werte basieren auf eindeutigen Personen in der aktuellen Auswahl. Prozentwerte zeigen den Anteil innerhalb jeder sichtbaren Personengruppe. Mehrfachnennungen pro Person sind möglich."
+    axisTitle={xAxisTitle}
+    hasToolbar={true}
+    hasMeta={true}
+  >
+    {#snippet toolbar()}
+      <label class="field">
+        <span>Semester-Zeit</span>
+        <select bind:value={semesterTime}>
+          {#each dataset.semesterOptions as option}
+            <option value={option}>{formatSemesterTime(option)}</option>
+          {/each}
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Sortierung</span>
+        <select bind:value={sortMode}>
+          <option value="fixed">Fixe Reihenfolge</option>
+          <option value="frequency">Nach Häufigkeit</option>
+        </select>
+      </label>
+    {/snippet}
+
+    {#snippet meta()}
+      <p class="chartMeta">
+        Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
       </p>
-    </div>
-  </div>
-
-  {#if error}
-    <p class="statusMessage">Fehler: {error}</p>
-  {:else if !dataset}
-    <p class="statusMessage">Lade Daten…</p>
-  {:else}
-    <div class="chartSectionBody">
-      <div class="toolbar">
-        <label class="field">
-          <span>Semester-Zeit</span>
-          <select bind:value={semesterTime}>
-            {#each dataset.semesterOptions as option}
-              <option value={option}>{formatSemesterTime(option)}</option>
-            {/each}
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Sortierung</span>
-          <select bind:value={sortMode}>
-            <option value="fixed">Fixe Reihenfolge</option>
-            <option value="frequency">Nach Häufigkeit</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="chartMetaRow">
-        <p class="chartMeta">
-          Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
-        </p>
-        <p class="chartMeta">
-          Personen in der aktuellen Auswahl:
-          <strong>n = {formatInteger(participantsInSelection)}</strong>
-        </p>
-        <p class="chartMeta">
-          Verkehrsmittel im Datensatz: <strong>{visibleVehicleCount}</strong>
-        </p>
-      </div>
-
-      <p class="chartNote">
-        Prozentwerte zeigen den Anteil innerhalb jeder jeweils sichtbaren
-        Personengruppe. <br> Mehrfachnennungen pro Person sind möglich.
+      <p class="chartMeta">
+        Personen in der aktuellen Auswahl:
+        <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
+      <p class="chartMeta">
+        Verkehrsmittel in der aktuellen Auswahl:
+        <strong>{visibleVehicleCount}</strong>
+      </p>
+    {/snippet}
 
-      <div class="chartFrame">
-        <VegaLiteChart
-          spec={chartSpec}
-          dataName="table"
-          dataValues={visibleValues}
-          signals={{ sortMode, measureMode: $dashboardFilters.measureMode }}
-        />
-      </div>
-
-      <p class="chartAxisTitle">{xAxisTitle}</p>
-    </div>
-  {/if}
-</section>
+    <VegaLiteChart
+      spec={chartSpec}
+      dataName="table"
+      dataValues={visibleValues}
+      signals={{ sortMode, measureMode: $dashboardFilters.measureMode }}
+    />
+  </DashboardChartSection>
+{/if}

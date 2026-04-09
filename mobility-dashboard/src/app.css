@@ -462,6 +462,10 @@ input {
   box-shadow: 0 10px 30px rgba(24, 33, 43, 0.05);
 }
 
+.chartModule + .chartModule {
+  margin-top: 20px;
+}
+
 .placeholderPanel {
   display: grid;
   gap: 10px;
@@ -637,17 +641,5 @@ input {
 
   .statusGroupField {
     flex-basis: 100%;
-  }
-
-  .surveyContextList--compact {
-    grid-template-columns: 1fr;
-  }
-
-  .overviewBridgePanel {
-    align-items: stretch;
-  }
-
-  .overviewBridgeLink {
-    width: 100%;
   }
 }
