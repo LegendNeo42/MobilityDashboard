@@ -99,8 +99,14 @@
           Distanz darstellen.
         </li>
         <li>
-          Die übrigen Auswertungen bleiben unverändert. Der Filter gilt nur für die
-          Distanzansicht.
+          Zusätzlich werden Angaben mit <strong>Zu Fuß</strong> und einer Distanz von
+          <strong>mehr als 50 km</strong> nicht angezeigt. Solche Werte sind als
+          täglicher Fußweg nicht plausibel und deuten eher auf uneinheitliche oder
+          fehlerhafte Eingaben hin.
+        </li>
+        <li>
+          Die übrigen Auswertungen bleiben unverändert. Diese Filter gelten nur für
+          die Distanzansicht.
         </li>
       </ul>
     </article>

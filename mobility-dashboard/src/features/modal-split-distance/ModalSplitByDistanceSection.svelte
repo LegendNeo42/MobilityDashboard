@@ -72,6 +72,18 @@
       .reduce((total, summary) => total + summary.participants, 0);
   });
 
+  let excludedLongWalkCount = $derived.by(() => {
+    if (!dataset || !semesterTime) return 0;
+
+    return dataset.longWalkSummaries
+      .filter(
+        (summary) =>
+          summary.semester_time === semesterTime &&
+          $selectedStatusGroupKeys.includes(summary.employment_status),
+      )
+      .reduce((total, summary) => total + summary.participants, 0);
+  });
+
   let visibleValues = $derived.by(() => {
     const bucketParticipantsByKey = new Map<string, number>();
 
@@ -141,7 +153,7 @@
     eyebrow="Distanz"
     title="Hauptverkehrsmittel nach angegebener Distanz"
     description="Die Ansicht zeigt, wie sich das wichtigste Verkehrsmittel je Person über die selbst angegebenen Distanzklassen verteilt."
-    note="Die Auswertung verwendet nur das wichtigste Verkehrsmittel je Person. Exakte 0,0-km-Angaben sind ausgeschlossen. Weitere Hinweise zur Distanzdarstellung finden Sie im Abschnitt Kontext und Datengrundlage."
+    note="Die Auswertung verwendet nur das wichtigste Verkehrsmittel je Person. Fehlerhafte Daten wurden bereinigt. Weitere Hinweise finden Sie im Abschnitt Kontext und Datengrundlage."
     axisTitle="Selbst angegebene Distanz beim Hauptverkehrsmittel"
     hasToolbar={true}
     hasMeta={true}
@@ -164,10 +176,6 @@
       <p class="chartMeta">
         Personen mit positiver Distanz in der aktuellen Auswahl:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
-      </p>
-      <p class="chartMeta">
-        Ausgeschlossene 0,0-km-Angaben:
-        <strong>{formatInteger(excludedZeroDistanceCount)}</strong>
       </p>
       <p class="chartMeta">
         Distanzklassen mit Daten:

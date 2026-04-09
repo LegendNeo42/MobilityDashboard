@@ -89,10 +89,19 @@ export type ModalSplitByDistanceZeroSummary = {
   participants: number;
 };
 
+export type ModalSplitByDistanceLongWalkSummary = {
+  semester_time: string;
+  employment_status: StatusGroupKey;
+  group_label: string;
+  group_order: number;
+  participants: number;
+};
+
 export type ModalSplitByDistanceDataset = {
   rows: ModalSplitByDistanceRow[];
   bucketSummaries: ModalSplitByDistanceBucketSummary[];
   zeroDistanceSummaries: ModalSplitByDistanceZeroSummary[];
+  longWalkSummaries: ModalSplitByDistanceLongWalkSummary[];
   semesterOptions: string[];
 };
 
@@ -268,6 +277,7 @@ export function buildModalSplitByDistanceDataset(
   const bucketParticipantSets = new Map<string, Set<string>>();
   const bucketMetaByKey = new Map<string, { label: string; order: number }>();
   const zeroDistanceParticipantSets = new Map<string, Set<string>>();
+  const longWalkParticipantSets = new Map<string, Set<string>>();
   const semesterTimes = new Set<string>();
 
   for (const row of rows) {
@@ -289,6 +299,17 @@ export function buildModalSplitByDistanceDataset(
         zeroDistanceParticipantSets.set(zeroDistanceKey, zeroDistanceParticipants);
       }
       zeroDistanceParticipants.add(participantKey);
+      continue;
+    }
+
+    if (row.vehicle === "walk" && row.distance_km != null && row.distance_km > 50) {
+      const longWalkKey = [row.semester_time, row.status_group].join("|");
+      let longWalkParticipants = longWalkParticipantSets.get(longWalkKey);
+      if (!longWalkParticipants) {
+        longWalkParticipants = new Set<string>();
+        longWalkParticipantSets.set(longWalkKey, longWalkParticipants);
+      }
+      longWalkParticipants.add(participantKey);
       continue;
     }
 
@@ -397,6 +418,22 @@ export function buildModalSplitByDistanceDataset(
     });
   }
 
+  const longWalkSummaries: ModalSplitByDistanceLongWalkSummary[] = [];
+  for (const [key, participants] of longWalkParticipantSets.entries()) {
+    const [semester_time, groupKey] = key.split("|");
+    const group = getStatusGroupByKey(groupKey);
+
+    if (!group) continue;
+
+    longWalkSummaries.push({
+      semester_time,
+      employment_status: group.key,
+      group_label: group.label,
+      group_order: group.order,
+      participants: participants.size,
+    });
+  }
+
   return {
     rows: modalSplitRows.sort((a, b) => {
       const semesterComparison = compareSemesterTimes(
@@ -422,6 +459,14 @@ export function buildModalSplitByDistanceDataset(
       return a.group_order - b.group_order;
     }),
     zeroDistanceSummaries: zeroDistanceSummaries.sort((a, b) => {
+      const semesterComparison = compareSemesterTimes(
+        a.semester_time,
+        b.semester_time,
+      );
+      if (semesterComparison !== 0) return semesterComparison;
+      return a.group_order - b.group_order;
+    }),
+    longWalkSummaries: longWalkSummaries.sort((a, b) => {
       const semesterComparison = compareSemesterTimes(
         a.semester_time,
         b.semester_time,
