@@ -6,6 +6,7 @@
   import SurveyTransparencySection from "./features/survey-metadata/SurveyTransparencySection.svelte";
   import VehicleUsageSection from "./features/vehicle-usage/VehicleUsageSection.svelte";
   import ModalSplitByDistanceSection from "./features/modal-split-distance/ModalSplitByDistanceSection.svelte";
+  import PublicTransportBarriersSection from "./features/public-transport-barriers/PublicTransportBarriersSection.svelte";
 </script>
 
 <AppShell>
@@ -30,6 +31,7 @@
 
     <VehicleUsageSection />
     <ModalSplitByDistanceSection />
+    <PublicTransportBarriersSection />
   </section>
 
   <section id="region" class="dashboardSection dashboardSection--region">
