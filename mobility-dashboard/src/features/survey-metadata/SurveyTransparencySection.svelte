@@ -82,6 +82,30 @@
     </article>
 
     <article class="panel contextPanel">
+      <h3>Hinweis zur Distanzdarstellung</h3>
+      <ul class="contextList">
+        <li>
+          Das Distanzdiagramm basiert auf der Distanz, die Teilnehmende für ihr
+          jeweiliges Hauptverkehrsmittel angegeben haben.
+        </li>
+        <li>
+          Diese Angabe entspricht deshalb nicht zwingend der gesamten Distanz zwischen
+          Wohnort und Universität, sondern der beim Hauptverkehrsmittel erfassten
+          Strecke.
+        </li>
+        <li>
+          Exakte <strong>0,0-km-Angaben</strong> werden aus der Distanzanalyse
+          ausgeschlossen, weil sie keine sinnvoll interpretierbare zurückgelegte
+          Distanz darstellen.
+        </li>
+        <li>
+          Die übrigen Auswertungen bleiben unverändert. Der Filter gilt nur für die
+          Distanzansicht.
+        </li>
+      </ul>
+    </article>
+
+    <article class="panel contextPanel">
       <h3>Wichtige Grenzen der Daten</h3>
       <ul class="contextList">
         <li>Die Angaben beruhen auf Selbstauskünften der Teilnehmenden.</li>
