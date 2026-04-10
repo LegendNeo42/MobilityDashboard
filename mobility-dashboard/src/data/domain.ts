@@ -35,6 +35,12 @@ export type PublicTransportImprovementDefinition = {
   order: number;
 };
 
+export type BicycleImprovementDefinition = {
+  key: string;
+  label: string;
+  order: number;
+};
+
 export type ImportanceResponseKey =
   | "very_unimportant"
   | "rather_unimportant"
@@ -139,6 +145,18 @@ export const publicTransportImprovementDefinitions: PublicTransportImprovementDe
     { key: "lower_price", label: "Günstigere Preise", order: 5 },
   ];
 
+export const bicycleImprovementDefinitions: BicycleImprovementDefinition[] = [
+  { key: "covered_parking", label: "Überdachte Fahrradstellplätze", order: 1 },
+  { key: "save_parking", label: "Sichere Fahrradstellplätze", order: 2 },
+  { key: "cycling_network", label: "Bessere Radwegeverbindungen", order: 3 },
+  { key: "repair_stations", label: "Reparaturstationen", order: 4 },
+  { key: "showers", label: "Duschen am Campus", order: 5 },
+  { key: "ebike_charging", label: "Lademöglichkeiten für E-Bikes", order: 6 },
+  { key: "bike_sharing_stations", label: "Leihfahrrad-Stationen", order: 7 },
+  { key: "bike_sharing_ebike", label: "Leih-E-Bikes", order: 8 },
+  { key: "bike_sharing_cargo", label: "Lastenrad-Sharing", order: 9 },
+];
+
 export const importanceResponseDefinitions: ImportanceResponseDefinition[] = [
   {
     key: "very_unimportant",
@@ -180,6 +198,7 @@ const publicTransportImprovementByKey = new Map<
   string,
   PublicTransportImprovementDefinition
 >();
+const bicycleImprovementByKey = new Map<string, BicycleImprovementDefinition>();
 const importanceResponseByKey = new Map<
   ImportanceResponseKey,
   ImportanceResponseDefinition
@@ -204,6 +223,10 @@ for (const definition of publicTransportBarrierDefinitions) {
 
 for (const definition of publicTransportImprovementDefinitions) {
   publicTransportImprovementByKey.set(definition.key, definition);
+}
+
+for (const definition of bicycleImprovementDefinitions) {
+  bicycleImprovementByKey.set(definition.key, definition);
 }
 
 for (const definition of importanceResponseDefinitions) {
@@ -261,6 +284,12 @@ export function getPublicTransportImprovementDefinition(
   value: string,
 ): PublicTransportImprovementDefinition | null {
   return publicTransportImprovementByKey.get(value) ?? null;
+}
+
+export function getBicycleImprovementDefinition(
+  value: string,
+): BicycleImprovementDefinition | null {
+  return bicycleImprovementByKey.get(value) ?? null;
 }
 
 export function getImportanceResponseDefinitionByRawValue(

@@ -8,6 +8,7 @@
   import ModalSplitByDistanceSection from "./features/modal-split-distance/ModalSplitByDistanceSection.svelte";
   import PublicTransportBarriersSection from "./features/public-transport-barriers/PublicTransportBarriersSection.svelte";
   import PublicTransportImprovementsSection from "./features/public-transport-improvements/PublicTransportImprovementsSection.svelte";
+  import BicycleImprovementsSection from "./features/bicycle-improvements/BicycleImprovementsSection.svelte";
 </script>
 
 <AppShell>
@@ -34,6 +35,7 @@
     <ModalSplitByDistanceSection />
     <PublicTransportBarriersSection />
     <PublicTransportImprovementsSection />
+    <BicycleImprovementsSection />
   </section>
 
   <section id="region" class="dashboardSection dashboardSection--region">

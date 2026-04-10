@@ -4,13 +4,21 @@ const responseLabels = importanceResponseDefinitions.map(
   (definition) => definition.label,
 );
 
-export function createPublicTransportImprovementSpec() {
+export function createPublicTransportImprovementSpec(options?: {
+  height?: number;
+  paddingLeft?: number;
+  labelLimit?: number;
+}) {
+  const height = options?.height ?? 340;
+  const paddingLeft = options?.paddingLeft ?? 210;
+  const labelLimit = options?.labelLimit ?? 250;
+
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     width: "container",
-    height: 340,
+    height,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 210, right: 24, top: 10, bottom: 35 },
+    padding: { left: paddingLeft, right: 24, top: 10, bottom: 35 },
     params: [{ name: "measureMode", value: "absolute" }],
     data: { name: "table" },
     transform: [
@@ -36,7 +44,7 @@ export function createPublicTransportImprovementSpec() {
           order: "ascending",
         },
         axis: {
-          labelLimit: 250,
+          labelLimit,
         },
       },
       x: {
