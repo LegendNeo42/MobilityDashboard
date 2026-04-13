@@ -1,0 +1,1004 @@
+{
+  "generatedAt": "2026-04-13T16:14:28.221Z",
+  "sourceFile": "qualitative_feedback_plz.csv",
+  "includedSourceFields": [
+    {
+      "key": "feedback_opnv",
+      "label": "ÖPNV: Verbesserungswünsche",
+      "order": 1,
+      "statements": 507
+    },
+    {
+      "key": "feedback_no_opnv",
+      "label": "ÖPNV: Gründe gegen Nutzung",
+      "order": 2,
+      "statements": 390
+    },
+    {
+      "key": "feedback_bicycle",
+      "label": "Fahrrad: allgemeine Hinweise",
+      "order": 3,
+      "statements": 273
+    },
+    {
+      "key": "feedback_bicycle_campus",
+      "label": "Fahrrad am Campus",
+      "order": 4,
+      "statements": 655
+    },
+    {
+      "key": "feedback_deutschlandticket",
+      "label": "Deutschlandticket",
+      "order": 5,
+      "statements": 130
+    },
+    {
+      "key": "feedback_mobility",
+      "label": "Allgemeines Mobilitätsfeedback",
+      "order": 6,
+      "statements": 353
+    },
+    {
+      "key": "feedback_car",
+      "label": "Auto und Parken",
+      "order": 7,
+      "statements": 661
+    },
+    {
+      "key": "commute",
+      "label": "Pendelkontext",
+      "order": 8,
+      "statements": 762
+    }
+  ],
+  "totals": {
+    "rawParticipants": 2775,
+    "preparedStatements": 3731,
+    "excludedStatements": 43,
+    "participantsWithPreparedStatements": 1624,
+    "dashboardSelectableStatements": 3612,
+    "dashboardSelectableParticipants": 1580,
+    "excludedStatusStatements": 119,
+    "excludedStatusParticipants": 44,
+    "excludedEmploymentStatuses": [
+      {
+        "key": "other",
+        "label": "other",
+        "statements": 119,
+        "participants": 44
+      }
+    ]
+  },
+  "themes": [
+    {
+      "key": "public_transport_reliability_frequency_directness",
+      "label": "ÖPNV: Zuverlässigkeit, Taktung und Direktverbindungen",
+      "order": 1,
+      "statements": 1253,
+      "participants": 908,
+      "shareOfDashboardSelectableStatements": 34.69,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 719,
+          "participants": 516
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 464,
+          "participants": 339
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 70,
+          "participants": 53
+        }
+      ],
+      "excludedStatusStatements": 40,
+      "excludedStatusParticipants": 26,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 40,
+          "participants": 26
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 352
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 340
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 283
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 124
+        },
+        {
+          "key": "feedback_deutschlandticket",
+          "label": "Deutschlandticket",
+          "statements": 96
+        },
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 36
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 11
+        },
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 11
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Linien die Regensburg umranden, sodass man nicht erstmal zum hbf fahren muss um vom Umkreis rgb (beispielsweise Tegernheim) zur uni zu kommen",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Die Zuverlässigkeit ist hauptsächlich zu Stoßzeiten (~8:00 und ~17:00) ein Problem während die Taktung vormittags nach 9:00 zu langsam ist.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "An den RVV: der 5er fährt offiziell bis zur Schwaenstraße. Bleibt aber in der realität am Jahnstadion und schmeißt da alle raus. Eine Sauerei",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        }
+      ]
+    },
+    {
+      "key": "bicycle_infrastructure_parking",
+      "label": "Fahrrad: Infrastruktur und Stellplätze",
+      "order": 5,
+      "statements": 772,
+      "participants": 624,
+      "shareOfDashboardSelectableStatements": 21.37,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 367,
+          "participants": 306
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 327,
+          "participants": 262
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 78,
+          "participants": 56
+        }
+      ],
+      "excludedStatusStatements": 22,
+      "excludedStatusParticipants": 20,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 22,
+          "participants": 20
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 527
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 175
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 43
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 18
+        },
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 6
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 3
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Ein Leihradsystem in Regensburg wäre großartig! Ich habe damit an meinem vorherigen Studienort (Lüneburg) hervorragende Erfahrungen gemacht!",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Wie bereits 5 mal erwähnt: Fahrrad ist in Rgbg einfach am besten, wäre klasse wenn da weiter an den Möglichkeiten gearbeitet werden könnte",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Fahrradstellplatzsituation ist mangelhaft. Sichere, moderne Fahrradstellplätze, an denen das Fahrrad vor Diebstahl und Wetter geschützt ist.",
+          "sourceField": "feedback_bicycle_campus",
+          "sourceFieldLabel": "Fahrrad am Campus",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        }
+      ]
+    },
+    {
+      "key": "parking_car_context",
+      "label": "Parken und Auto-Kontext",
+      "order": 7,
+      "statements": 631,
+      "participants": 587,
+      "shareOfDashboardSelectableStatements": 17.47,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 330,
+          "participants": 312
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 258,
+          "participants": 238
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 43,
+          "participants": 37
+        }
+      ],
+      "excludedStatusStatements": 23,
+      "excludedStatusParticipants": 23,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 23,
+          "participants": 23
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 560
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 24
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 23
+        },
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 13
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 7
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 4
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Alle KFZ aus den Tiefstrassen raus! Dann wäre Platz für Fahrräder! Und auf der Westseite der Uni ein Parkhaus für KFZ ( Physik, WN Gebäude).",
+          "sourceField": "feedback_bicycle_campus",
+          "sourceFieldLabel": "Fahrrad am Campus",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Mir wurde das Fahrrad an der Uni gestohlen. Daher fände ich Videoüberwachte oder abgesperrte Abstellplätze z.B. in der Tiefgarage sehr sinnvoll.",
+          "sourceField": "feedback_bicycle_campus",
+          "sourceFieldLabel": "Fahrrad am Campus",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Man sollte viel mehr für einen Anreiz sorgen, nicht das Auto zu benutzen, um nicht noch mehr Grünflächen für das \"Autoabstellen\" zu opfern.",
+          "sourceField": "feedback_car",
+          "sourceFieldLabel": "Auto und Parken",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        }
+      ]
+    },
+    {
+      "key": "other_mobility_context",
+      "label": "Sonstiger Mobilitätskontext",
+      "order": 10,
+      "statements": 286,
+      "participants": 264,
+      "shareOfDashboardSelectableStatements": 7.92,
+      "statusGroups": [
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 145,
+          "participants": 134
+        },
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 99,
+          "participants": 95
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 42,
+          "participants": 35
+        }
+      ],
+      "excludedStatusStatements": 14,
+      "excludedStatusParticipants": 13,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 14,
+          "participants": 13
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 158
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 109
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 18
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 1
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Möglicherweise wäre am Biologiegebäude den steilen Hang hinunter ein Weg oder eine Treppe zum Eingang bei der Fakultätsverwaltung ganz nett.",
+          "sourceField": "feedback_mobility",
+          "sourceFieldLabel": "Allgemeines Mobilitätsfeedback",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Die Fußwege im direkten Umfeld der Universität könnten besser befestigt werden, damit man ohne Pfützen, Matsch und Gefahr zu Fuß gehen kann.",
+          "sourceField": "feedback_mobility",
+          "sourceFieldLabel": "Allgemeines Mobilitätsfeedback",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Eine Nachrüstung der Parkhäuser und möglichst vieler Dächer der UR mit PV-Anlagen zum nachhaltigem Laden von E-Fahrzeugen wäre wünschenswert.",
+          "sourceField": "feedback_mobility",
+          "sourceFieldLabel": "Allgemeines Mobilitätsfeedback",
+          "statusGroup": "prof",
+          "statusGroupLabel": "Professor:innen"
+        }
+      ]
+    },
+    {
+      "key": "bicycle_safety",
+      "label": "Fahrrad: Sicherheit",
+      "order": 4,
+      "statements": 196,
+      "participants": 184,
+      "shareOfDashboardSelectableStatements": 5.43,
+      "statusGroups": [
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 111,
+          "participants": 104
+        },
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 68,
+          "participants": 66
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 17,
+          "participants": 14
+        }
+      ],
+      "excludedStatusStatements": 5,
+      "excludedStatusParticipants": 4,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 5,
+          "participants": 4
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 122
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 39
+        },
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 25
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 7
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 3
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Der in die Straße gezwängte \"Radweg\" von Richtung Kumpfmühl zur Uni ist für Autofahrer und Radfahrer gleichermaßen gefährlich und eine Zumutung.",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Fahrradwege hin zur Uni sind teilweise zu gefährlich, da man trotz \"Fahrradweg\" noch auf der Straße fahren muss und von Bussen überholt wird.",
+          "sourceField": "feedback_mobility",
+          "sourceFieldLabel": "Allgemeines Mobilitätsfeedback",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Gerade die Strecke von der Uni entlang der Galgenbergstraße hinab in die Stadt ist gefährlich, da hier ein gutes Stück lang kein Fahrradweg existiert.",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        }
+      ]
+    },
+    {
+      "key": "ticketing_price",
+      "label": "Tickets und Preise",
+      "order": 3,
+      "statements": 166,
+      "participants": 150,
+      "shareOfDashboardSelectableStatements": 4.6,
+      "statusGroups": [
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 94,
+          "participants": 87
+        },
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 61,
+          "participants": 55
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 11,
+          "participants": 8
+        }
+      ],
+      "excludedStatusStatements": 6,
+      "excludedStatusParticipants": 5,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 6,
+          "participants": 5
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 79
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 43
+        },
+        {
+          "key": "feedback_deutschlandticket",
+          "label": "Deutschlandticket",
+          "statements": 20
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 15
+        },
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 5
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 3
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 1
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Das Deutschlandticket muss unbedingt langfristig finanziert bleiben um den ÖPVN als echte Alternative zur individuellen Fahrt zu etablieren.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Wenn bei nützung der ÖPNV mind. 2x so viel Fahrweg und 3x längere Fahrzeit habe, ist es einfach nicht atraktiv, zudem ist auch noch teuer.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Pünkliche Abfahrt wäre mir sehr wichtig. Also weder zu frühe Abfahrt, noch zu spät. Ein günstigeres Deutschlandticket wäre auch wünschenswert.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        }
+      ]
+    },
+    {
+      "key": "winter_conditions",
+      "label": "Winter und Witterung",
+      "order": 6,
+      "statements": 165,
+      "participants": 145,
+      "shareOfDashboardSelectableStatements": 4.57,
+      "statusGroups": [
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 93,
+          "participants": 81
+        },
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 65,
+          "participants": 60
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 7,
+          "participants": 4
+        }
+      ],
+      "excludedStatusStatements": 2,
+      "excludedStatusParticipants": 1,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 2,
+          "participants": 1
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 82
+        },
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 31
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 21
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 8
+        },
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 8
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 7
+        },
+        {
+          "key": "feedback_deutschlandticket",
+          "label": "Deutschlandticket",
+          "statements": 5
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 3
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Dringend mit der Stadt gemeinsam besseres Konzept erarbeiten (Reform der Wege, aber z.B. auch gezielter Schneeräummaßnahmen auf Radwegen...)",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Bei ssehr schlechter witterung (eisregen) wenn Radwege nicht gestreut oder geräumt werden sollte der ÖPNV sehr günstig / umsonst sein.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "bei regnerischem Winterwetter und wenn meine Wohnung mit dem ÖPNV besser angebunden wäre, ja. So fahre ich bei Wind und Wetter lieber Fahrrad",
+          "sourceField": "feedback_deutschlandticket",
+          "sourceFieldLabel": "Deutschlandticket",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        }
+      ]
+    },
+    {
+      "key": "direct_connections_university_locations",
+      "label": "Verbindungen zwischen Hochschulstandorten",
+      "order": 8,
+      "statements": 70,
+      "participants": 64,
+      "shareOfDashboardSelectableStatements": 1.94,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 44,
+          "participants": 40
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 25,
+          "participants": 23
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 1,
+          "participants": 1
+        }
+      ],
+      "excludedStatusStatements": 4,
+      "excludedStatusParticipants": 3,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 4,
+          "participants": 3
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 27
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 14
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 11
+        },
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 9
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 7
+        },
+        {
+          "key": "feedback_deutschlandticket",
+          "label": "Deutschlandticket",
+          "statements": 1
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 1
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Mehr Fahrradstraßen, Möglichkeit von OTH bis zum Klinikum über den Campus zu fahren. (Treppen im Weg) Um abseits der Straße fahren zu können.",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Es wäre sinnvoll auch Rampen für Fahrräder auf dem Campus zu haben, damit man ihn komplett überqueren kann und nicht über Treppen fahren muss",
+          "sourceField": "feedback_bicycle",
+          "sourceFieldLabel": "Fahrrad: allgemeine Hinweise",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Bessere Bus-Verbindung zwischen Uni und Sedanstraße. Ist in 30 Minuten (also zwischen zwei Veranstaltungen) nur mit viel Stress und rennen zu schaffen",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        }
+      ]
+    },
+    {
+      "key": "accessibility_campus_access",
+      "label": "Barrierefreiheit und Zugang",
+      "order": 9,
+      "statements": 43,
+      "participants": 36,
+      "shareOfDashboardSelectableStatements": 1.19,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 27,
+          "participants": 20
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 13,
+          "participants": 13
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 3,
+          "participants": 3
+        }
+      ],
+      "excludedStatusStatements": 1,
+      "excludedStatusParticipants": 1,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 1,
+          "participants": 1
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_car",
+          "label": "Auto und Parken",
+          "statements": 13
+        },
+        {
+          "key": "feedback_mobility",
+          "label": "Allgemeines Mobilitätsfeedback",
+          "statements": 7
+        },
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 6
+        },
+        {
+          "key": "commute",
+          "label": "Pendelkontext",
+          "statements": 6
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 5
+        },
+        {
+          "key": "feedback_bicycle_campus",
+          "label": "Fahrrad am Campus",
+          "statements": 4
+        },
+        {
+          "key": "feedback_bicycle",
+          "label": "Fahrrad: allgemeine Hinweise",
+          "statements": 2
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Wichtig wäre für mich vor allem eine verbesserte Barrierefreiheit. Teils werden Busse ohne Rampe eingesetzt, damit ist der ÖPNV für mich nicht nutzbar.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "gefährliche Stellen für Rollstuhlfahrer gibt es leider zu viele, nicht genügend abgesenkte Bordsteine, Kopfsteinpflaster, auch im Gebäude,....",
+          "sourceField": "commute",
+          "sourceFieldLabel": "Pendelkontext",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Diverse Ampeln sind für einen Blinden nicht barrierefrei (T-Kreuzung bei Jakobstrasse, Kreuzung an der Bus-Station Otto-Hahn-Strasse).",
+          "sourceField": "commute",
+          "sourceFieldLabel": "Pendelkontext",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        }
+      ]
+    },
+    {
+      "key": "crowding",
+      "label": "ÖPNV: Auslastung und Überfüllung",
+      "order": 2,
+      "statements": 30,
+      "participants": 29,
+      "shareOfDashboardSelectableStatements": 0.83,
+      "statusGroups": [
+        {
+          "key": "student",
+          "label": "Studierende",
+          "statements": 22,
+          "participants": 21
+        },
+        {
+          "key": "employee",
+          "label": "Mitarbeitende",
+          "statements": 7,
+          "participants": 7
+        },
+        {
+          "key": "prof",
+          "label": "Professor:innen",
+          "statements": 1,
+          "participants": 1
+        }
+      ],
+      "excludedStatusStatements": 2,
+      "excludedStatusParticipants": 2,
+      "excludedEmploymentStatuses": [
+        {
+          "key": "other",
+          "label": "other",
+          "statements": 2,
+          "participants": 2
+        }
+      ],
+      "sourceFields": [
+        {
+          "key": "feedback_opnv",
+          "label": "ÖPNV: Verbesserungswünsche",
+          "statements": 24
+        },
+        {
+          "key": "feedback_no_opnv",
+          "label": "ÖPNV: Gründe gegen Nutzung",
+          "statements": 6
+        }
+      ],
+      "quotes": [
+        {
+          "text": "Busse oft überfüllt, campuslinien fallen teilweise ohne Ankündigung aus, Linie 6 und C1 fahren tagsüber fast gleichzeitig, evtl besser takten",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        },
+        {
+          "text": "Verbesserte Taktung auch während der vorlesungsfreien Zeit, ggf. zu Stoßzeiten Aufstockung damit die Busse nicht maßlos überfüllt sind",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "employee",
+          "statusGroupLabel": "Mitarbeitende"
+        },
+        {
+          "text": "Es sollten mehr Busse zur Universität fahren, denn während des Semesters sind die Busse massiv überfüllt, sodass man dort oft nicht mehr einsteigen kann.",
+          "sourceField": "feedback_opnv",
+          "sourceFieldLabel": "ÖPNV: Verbesserungswünsche",
+          "statusGroup": "student",
+          "statusGroupLabel": "Studierende"
+        }
+      ]
+    }
+  ]
+}
