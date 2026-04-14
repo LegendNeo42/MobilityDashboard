@@ -138,6 +138,8 @@ const themeDefinitionByKey = new Map(
   themeDefinitions.map((definition) => [definition.key, definition]),
 );
 
+const quotesPerStatusGroup = 5;
+
 const nonInformativeValues = new Set([
   '',
   '-',
@@ -569,6 +571,29 @@ function summarizeExcludedEmploymentStatuses(statements) {
     });
 }
 
+function buildDashboardStatusGroupParticipantTotals(rows) {
+  return dashboardStatusGroupDefinitions.map((definition) => {
+    const participantIds = new Set();
+
+    for (const row of rows) {
+      const participantId = normalizeWhitespace(row.id);
+      const employmentStatus = normalizeWhitespace(row.employment_status);
+      const statusGroup = getDashboardStatusGroup(employmentStatus);
+
+      if (statusGroup?.key !== definition.key) continue;
+      if (!participantId) continue;
+
+      participantIds.add(participantId);
+    }
+
+    return {
+      key: definition.key,
+      label: definition.label,
+      participants: participantIds.size,
+    };
+  });
+}
+
 function buildPreparedStatements(rows) {
   const preparedStatements = [];
   const droppedStatements = [];
@@ -656,7 +681,12 @@ function buildPreparedStatements(rows) {
   };
 }
 
-function buildThemeSummary(preparedStatements, rawParticipantCount, excludedStatements) {
+function buildThemeSummary(
+  preparedStatements,
+  rawParticipantCount,
+  excludedStatements,
+  dashboardStatusGroupParticipantTotals,
+) {
   const participantsWithPreparedStatements = new Set();
   const dashboardSelectableParticipants = new Set();
   const excludedStatusParticipants = new Set();
@@ -750,23 +780,26 @@ function buildThemeSummary(preparedStatements, rawParticipantCount, excludedStat
       })
       .map(({ order, ...entry }) => entry);
 
-    const quotes = selectableThemeStatements
-      .filter(isQuoteCandidate)
-      .sort((a, b) => scoreQuoteCandidate(a) - scoreQuoteCandidate(b))
-      .filter((statement, index, list) => {
-        const firstIndex = list.findIndex(
-          (candidate) => candidate.comment_clean === statement.comment_clean,
-        );
-        return firstIndex === index;
-      })
-      .slice(0, 3)
-      .map((statement) => ({
-        text: statement.comment_clean,
-        sourceField: statement.source_field,
-        sourceFieldLabel: statement.source_field_label,
-        statusGroup: statement.status_group || null,
-        statusGroupLabel: statement.status_group_label || null,
-      }));
+    const quotes = dashboardStatusGroupDefinitions.flatMap((groupDefinition) => {
+      return selectableThemeStatements
+        .filter((statement) => statement.status_group === groupDefinition.key)
+        .filter(isQuoteCandidate)
+        .sort((a, b) => scoreQuoteCandidate(a) - scoreQuoteCandidate(b))
+        .filter((statement, index, list) => {
+          const firstIndex = list.findIndex(
+            (candidate) => candidate.comment_clean === statement.comment_clean,
+          );
+          return firstIndex === index;
+        })
+        .slice(0, quotesPerStatusGroup)
+        .map((statement) => ({
+          text: statement.comment_clean,
+          sourceField: statement.source_field,
+          sourceFieldLabel: statement.source_field_label,
+          statusGroup: statement.status_group || null,
+          statusGroupLabel: statement.status_group_label || null,
+        }));
+    });
 
     themeSummaries.push({
       key: themeDefinition.key,
@@ -814,6 +847,7 @@ function buildThemeSummary(preparedStatements, rawParticipantCount, excludedStat
       participantsWithPreparedStatements: participantsWithPreparedStatements.size,
       dashboardSelectableStatements: dashboardSelectableStatementCount,
       dashboardSelectableParticipants: dashboardSelectableParticipants.size,
+      dashboardSelectableStatusGroups: dashboardStatusGroupParticipantTotals,
       excludedStatusStatements: excludedStatusStatementCount,
       excludedStatusParticipants: excludedStatusParticipants.size,
       excludedEmploymentStatuses,
@@ -827,10 +861,14 @@ async function main() {
   const rawRows = csvParse(rawCsvText);
 
   const { preparedStatements, droppedStatements } = buildPreparedStatements(rawRows);
+  const dashboardStatusGroupParticipantTotals =
+    buildDashboardStatusGroupParticipantTotals(rawRows);
+
   const summary = buildThemeSummary(
     preparedStatements,
     rawRows.length,
     droppedStatements.length,
+    dashboardStatusGroupParticipantTotals,
   );
 
   await mkdir(privateDataDirectory, { recursive: true });

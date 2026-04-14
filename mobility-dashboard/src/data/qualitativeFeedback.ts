@@ -73,6 +73,11 @@ export type QualitativePreparedDataset = {
     participantsWithPreparedStatements: number;
     dashboardSelectableStatements: number;
     dashboardSelectableParticipants: number;
+    dashboardSelectableStatusGroups: Array<{
+      key: QualitativeStatusGroupKey;
+      label: string;
+      participants: number;
+    }>;
     excludedStatusStatements: number;
     excludedStatusParticipants: number;
     excludedEmploymentStatuses: QualitativeEmploymentStatusSummary[];

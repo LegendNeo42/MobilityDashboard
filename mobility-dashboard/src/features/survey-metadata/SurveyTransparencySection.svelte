@@ -112,6 +112,18 @@
     </article>
 
     <article class="panel contextPanel">
+      <h3>So ist die qualitative Themenübersicht zu lesen</h3>
+      <ul class="contextList">
+        <li>Die qualitative Übersicht basiert auf offenen Kommentaren aus der Mobilitätsumfrage.</li>
+        <li>Die Antworten wurden bereinigt und zu einer kleinen Zahl wiederkehrender Themen gebündelt.</li>
+        <li>Jede vorbereitete Aussage wurde in dieser ersten Version genau einem Hauptthema zugeordnet.</li>
+        <li>Im absoluten Modus zeigt die Grafik gezählte Aussagen je Thema.</li>
+        <li>Im Prozentmodus zeigt sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat.</li>
+        <li>Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein, da sie auf einem regelbasierten Schlüsselwortschema beruhen.</li>
+      </ul>
+    </article>
+
+    <article class="panel contextPanel">
       <h3>Wichtige Grenzen der Daten</h3>
       <ul class="contextList">
         <li>Die Angaben beruhen auf Selbstauskünften der Teilnehmenden.</li>

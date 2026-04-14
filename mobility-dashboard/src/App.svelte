@@ -9,6 +9,7 @@
   import PublicTransportBarriersSection from "./features/public-transport-barriers/PublicTransportBarriersSection.svelte";
   import PublicTransportImprovementsSection from "./features/public-transport-improvements/PublicTransportImprovementsSection.svelte";
   import BicycleImprovementsSection from "./features/bicycle-improvements/BicycleImprovementsSection.svelte";
+  import QualitativeThemeSummarySection from "./features/qualitative-feedback/QualitativeThemeSummarySection.svelte";
 </script>
 
 <AppShell>
@@ -36,6 +37,7 @@
     <PublicTransportBarriersSection />
     <PublicTransportImprovementsSection />
     <BicycleImprovementsSection />
+    <QualitativeThemeSummarySection />
   </section>
 
   <section id="region" class="dashboardSection dashboardSection--region">
