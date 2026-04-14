@@ -397,8 +397,21 @@ function getDropReason(comment) {
   return 'non_informative_comment';
 }
 
+function isBicycleSourceField(sourceField) {
+  return (
+    sourceField === 'feedback_bicycle' ||
+    sourceField === 'feedback_bicycle_campus'
+  );
+}
+
 function assignTheme(sourceField, comment) {
   const normalized = normalizeForMatch(comment);
+  const isBicycleSource = isBicycleSourceField(sourceField);
+
+  const hasBicycleContext =
+    isBicycleSource ||
+    sourceField === 'commute' ||
+    /\b(rad|fahrrad|bike|cycling|cycle)\w*\b/u.test(normalized);
 
   if (hasMatcher(themeMatchers.accessibility, normalized)) {
     return 'accessibility_campus_access';
@@ -413,19 +426,6 @@ function assignTheme(sourceField, comment) {
   }
 
   if (
-    hasMatcher(themeMatchers.parking, normalized) ||
-    (sourceField === 'feedback_car' && /\bauto\w*\b/u.test(normalized))
-  ) {
-    return 'parking_car_context';
-  }
-
-  const hasBicycleContext =
-    sourceField === 'feedback_bicycle' ||
-    sourceField === 'feedback_bicycle_campus' ||
-    sourceField === 'commute' ||
-    /\b(rad|fahrrad)\w*\b/u.test(normalized);
-
-  if (
     hasMatcher(themeMatchers.bicycleSafety, normalized) ||
     (hasBicycleContext &&
       /\b(dunkel|beleucht|kreuzung|sicherer weg)\w*\b/u.test(normalized))
@@ -435,6 +435,19 @@ function assignTheme(sourceField, comment) {
 
   if (hasMatcher(themeMatchers.bicycleInfrastructure, normalized)) {
     return 'bicycle_infrastructure_parking';
+  }
+
+  // In bicycle-specific source fields, parking-related words usually refer to
+  // bicycle parking or access rather than the generic car-parking context.
+  if (isBicycleSource && hasMatcher(themeMatchers.parking, normalized)) {
+    return 'bicycle_infrastructure_parking';
+  }
+
+  if (
+    hasMatcher(themeMatchers.parking, normalized) ||
+    (sourceField === 'feedback_car' && /\bauto\w*\b/u.test(normalized))
+  ) {
+    return 'parking_car_context';
   }
 
   if (
@@ -455,6 +468,12 @@ function assignTheme(sourceField, comment) {
     hasMatcher(themeMatchers.publicTransport, normalized)
   ) {
     return 'crowding';
+  }
+
+  // Bicycle-specific fields should stay within the bicycle-related theme family
+  // unless a clearer earlier rule has already matched.
+  if (isBicycleSource) {
+    return 'bicycle_infrastructure_parking';
   }
 
   if (hasMatcher(themeMatchers.publicTransport, normalized)) {
@@ -478,13 +497,6 @@ function assignTheme(sourceField, comment) {
     }
 
     return 'public_transport_reliability_frequency_directness';
-  }
-
-  if (
-    sourceField === 'feedback_bicycle' ||
-    sourceField === 'feedback_bicycle_campus'
-  ) {
-    return 'bicycle_infrastructure_parking';
   }
 
   if (sourceField === 'feedback_car') {
