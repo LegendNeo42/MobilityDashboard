@@ -227,6 +227,13 @@ input {
   padding: 0 20px 56px;
 }
 
+.analysisWorkspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
 .dashboardSection {
   position: relative;
   scroll-margin-top: 24px;
@@ -236,7 +243,9 @@ input {
   background: rgba(255, 255, 255, 0.78);
 }
 
-.dashboardSection + .dashboardSection {
+.dashboardSection + .dashboardSection,
+.dashboardSection + .analysisWorkspace,
+.analysisWorkspace + .dashboardSection {
   margin-top: 24px;
 }
 
@@ -486,8 +495,32 @@ input {
   align-items: end;
 }
 
+.dashboardFilterSection {
+  position: sticky;
+  top: 24px;
+  z-index: 2;
+  align-self: start;
+}
+
+.dashboardFilterPanel {
+  padding: 18px;
+}
+
+.dashboardFilterHeader {
+  margin-bottom: 14px;
+}
+
+.dashboardFilterText {
+  max-width: none;
+}
+
 .dashboardFilterToolbar {
-  justify-content: space-between;
+  display: grid;
+  gap: 16px;
+}
+
+.dashboardFilterMeasureField {
+  min-width: 0;
 }
 
 .field {
@@ -498,7 +531,7 @@ input {
 }
 
 .statusGroupField {
-  flex: 1 1 520px;
+  min-width: 0;
 }
 
 .field span {
@@ -615,6 +648,17 @@ input {
   text-align: center;
   font-weight: 600;
   color: #243446;
+}
+
+@media (max-width: 980px) {
+  .analysisWorkspace {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardFilterSection {
+    position: relative;
+    top: auto;
+  }
 }
 
 @media (max-width: 860px) {

@@ -19,18 +19,17 @@
   }
 </script>
 
-<section class="dashboardSection">
-  <div class="panel">
-    <div class="sectionHeader">
+<aside class="dashboardFilterSection" aria-label="Dashboard-Filter">
+  <div class="panel dashboardFilterPanel">
+    <div class="sectionHeader dashboardFilterHeader">
       <p class="sectionEyebrow">Filter</p>
       <h2>Dashboard-Filter</h2>
-      <p class="sectionText">
-        Die Auswahl gilt für alle Ansichten, die an den gemeinsamen
-        Dashboard-Filter angebunden sind.
+      <p class="sectionText dashboardFilterText">
+        Die Auswahl gilt für alle Diagramme im Analysebereich.
       </p>
     </div>
 
-    <div class="toolbar dashboardFilterToolbar">
+    <div class="dashboardFilterToolbar">
       <div class="field statusGroupField">
         <span>Personengruppen</span>
 
@@ -62,12 +61,9 @@
         </div>
       </div>
 
-      <label class="field">
+      <label class="field dashboardFilterMeasureField">
         <span>Maß</span>
-        <select
-          value={$dashboardFilters.measureMode}
-          on:change={handleMeasureModeChange}
-        >
+        <select value={$dashboardFilters.measureMode} on:change={handleMeasureModeChange}>
           {#each measureModes as option}
             <option value={option.key}>{option.label}</option>
           {/each}
@@ -75,4 +71,4 @@
       </label>
     </div>
   </div>
-</section>
+</aside>

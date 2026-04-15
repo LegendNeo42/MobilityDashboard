@@ -23,22 +23,24 @@
     <SurveyOverviewSummary />
   </section>
 
-  <DashboardFilterBar />
+  <div class="analysisWorkspace">
+    <DashboardFilterBar />
 
-  <section id="analysis" class="dashboardSection dashboardSection--analysis">
-    <div class="sectionHeader">
-      <p class="sectionEyebrow">{dashboardContent.analysisSection.eyebrow}</p>
-      <h2>{dashboardContent.analysisSection.title}</h2>
-      <p class="sectionText">{dashboardContent.analysisSection.text}</p>
-    </div>
+    <section id="analysis" class="dashboardSection dashboardSection--analysis">
+      <div class="sectionHeader">
+        <p class="sectionEyebrow">{dashboardContent.analysisSection.eyebrow}</p>
+        <h2>{dashboardContent.analysisSection.title}</h2>
+        <p class="sectionText">{dashboardContent.analysisSection.text}</p>
+      </div>
 
-    <VehicleUsageSection />
-    <ModalSplitByDistanceSection />
-    <PublicTransportBarriersSection />
-    <PublicTransportImprovementsSection />
-    <BicycleImprovementsSection />
-    <QualitativeThemeSummarySection />
-  </section>
+      <VehicleUsageSection />
+      <ModalSplitByDistanceSection />
+      <PublicTransportBarriersSection />
+      <PublicTransportImprovementsSection />
+      <BicycleImprovementsSection />
+      <QualitativeThemeSummarySection />
+    </section>
+  </div>
 
   <section id="region" class="dashboardSection dashboardSection--region">
     <div class="sectionHeader">
