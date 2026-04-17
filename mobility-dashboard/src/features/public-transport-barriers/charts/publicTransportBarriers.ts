@@ -1,4 +1,3 @@
-import { offsetEncodingScaleIgnored } from "vega-lite/types_unstable/log/message.js";
 import { publicTransportBarrierDefinitions } from "../../../data/domain";
 
 const barrierLabels = publicTransportBarrierDefinitions.map(

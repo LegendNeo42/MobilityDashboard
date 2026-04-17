@@ -53,7 +53,6 @@ export function createModalSplitByDistanceSpec() {
         axis: {
           labelAngle: 0,
           labelLimit: 120,
-          titlePadding: 40,
         },
       },
       y: {

@@ -202,7 +202,7 @@
           Mitarbeitende und Professor:innen.
         </li>
         <li>
-          Die Restgruppe <strong>Other</strong> wird aus Übersichtsgründen
+          Die Restgruppe <strong>Andere</strong> wird aus Übersichtsgründen
           nicht separat gezeigt. Sie umfasst
           <strong>{formatInteger(metadata.otherGroupResponses)}</strong> gültige
           Antworten.

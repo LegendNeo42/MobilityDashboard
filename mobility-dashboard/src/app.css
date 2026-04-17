@@ -659,7 +659,6 @@ input {
 
 .chartHost {
   width: 100%;
-  min-height: 420px;
 }
 
 .chartHost :global(.vega-embed),
