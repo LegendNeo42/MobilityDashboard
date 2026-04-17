@@ -33,7 +33,7 @@
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
       ? "Antworten je Hürde (Nein links, Ja rechts)"
-      : "Anteil im gewählten Segment (Nein links, Ja rechts)",
+      : "Anteil innerhalb des gewählten Segments (%)",
   );
 
   onMount(async () => {
@@ -120,7 +120,7 @@
   });
 
   let selectedSegmentLabel = $derived.by(() => {
-    if (segmentKey === ALL_SEGMENTS_KEY) return "Alle Hauptverkehrsmittel";
+    if (segmentKey === ALL_SEGMENTS_KEY) return "Alle Verkehrsmittel";
 
     return (
       dataset?.segmentOptions.find((option) => option.key === segmentKey)?.label ??
@@ -140,18 +140,18 @@
 {:else}
   <DashboardChartSection
     eyebrow="Hürden"
-    title="Warum ist der ÖPNV nicht praktikabel?"
-    description="Die Ansicht zeigt für das gewählte Hauptverkehrsmittel, welche Gründe gegen Bus und Bahn genannt werden. Standardmäßig startet die Ansicht mit aktuellen Autofahrer:innen."
-    note="Prozentwerte zeigen den Anteil innerhalb des gewählten Hauptverkehrsmittel-Segments und der aktuell sichtbaren Personengruppen. Ja-Antworten liegen rechts, Nein-Antworten links."
+    title="Warum wird der ÖPNV als unpraktisch wahrgenommen?"
+    description="Die Ansicht zeigt für das gewählte aktuelle Hauptverkehrsmittel, welche Gründe gegen Bus und Bahn genannt wurden. Standardmäßig startet die Auswertung mit Personen, die aktuell vor allem mit dem Auto fahren."
+    note="Der lokale Filter bezieht sich auf das aktuelle Hauptverkehrsmittel. Prozentwerte zeigen den Anteil innerhalb des gewählten Segments und der aktuell sichtbaren Personengruppen. Ja-Antworten liegen rechts, Nein-Antworten links."
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}
   >
     {#snippet toolbar()}
       <label class="field">
-        <span>Hauptverkehrsmittel</span>
+        <span>Aktuelles Hauptverkehrsmittel</span>
         <select bind:value={segmentKey}>
-          <option value={ALL_SEGMENTS_KEY}>Alle Hauptverkehrsmittel</option>
+          <option value={ALL_SEGMENTS_KEY}>Alle Verkehrsmittel</option>
           {#each dataset.segmentOptions as option}
             <option value={option.key}>{option.label}</option>
           {/each}
@@ -161,14 +161,14 @@
 
     {#snippet meta()}
       <p class="chartMeta">
-        Segment: <strong>{selectedSegmentLabel}</strong>
+        Gewähltes Segment: <strong>{selectedSegmentLabel}</strong>
       </p>
       <p class="chartMeta">
-        Personen im gewählten Segment:
+        Aktuelle Auswahl:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">
-        Barrieren mit Daten:
+        Hürden mit sichtbaren Werten:
         <strong>{visibleBarrierCount}</strong>
       </p>
     {/snippet}

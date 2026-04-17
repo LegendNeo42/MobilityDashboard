@@ -23,9 +23,9 @@
   <div class="panel dashboardFilterPanel">
     <div class="sectionHeader dashboardFilterHeader">
       <p class="sectionEyebrow">Filter</p>
-      <h2>Dashboard-Filter</h2>
+      <h2>Analyse filtern</h2>
       <p class="sectionText dashboardFilterText">
-        Die Auswahl gilt für alle Diagramme im Analysebereich.
+        Diese Auswahl gilt für alle Diagramme im Analysebereich.
       </p>
     </div>
 
@@ -62,7 +62,7 @@
       </div>
 
       <label class="field dashboardFilterMeasureField">
-        <span>Maß</span>
+        <span>Werte anzeigen als</span>
         <select value={$dashboardFilters.measureMode} on:change={handleMeasureModeChange}>
           {#each measureModes as option}
             <option value={option.key}>{option.label}</option>

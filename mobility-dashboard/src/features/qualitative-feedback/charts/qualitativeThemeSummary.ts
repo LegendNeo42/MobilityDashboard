@@ -81,17 +81,17 @@ export function createQualitativeThemeSummarySpec(options?: {
         {
           field: "participants",
           type: "quantitative",
-          title: "Personen mit Aussage zum Thema",
+          title: "Personen mit mindestens einer Aussage",
         },
         {
           field: "participant_total",
           type: "quantitative",
-          title: "Personen in der Personengruppe",
+          title: "Personen in der Personengruppe (n)",
         },
         {
           field: "participant_share_percent",
           type: "quantitative",
-          title: "Anteil in der Personengruppe (%)",
+          title: "Anteil innerhalb der Personengruppe (%)",
           format: ".1f",
         },
       ],

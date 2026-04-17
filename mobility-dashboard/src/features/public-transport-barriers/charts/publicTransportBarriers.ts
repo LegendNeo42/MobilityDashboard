@@ -92,13 +92,13 @@ export function createPublicTransportBarrierSpec() {
         {
           field: "segment_share_percent_1",
           type: "quantitative",
-          title: "Anteil im Segment (%)",
+          title: "Anteil innerhalb des Segments (%)",
           format: ".1f",
         },
         {
           field: "segment_participants",
           type: "quantitative",
-          title: "Personen im Segment",
+          title: "Fallzahl des Segments (n)",
         },
       ],
     },

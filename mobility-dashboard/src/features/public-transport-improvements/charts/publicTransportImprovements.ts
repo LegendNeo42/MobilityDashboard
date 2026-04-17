@@ -90,17 +90,17 @@ export function createPublicTransportImprovementSpec(options?: {
       tooltip: [
         { field: "topic_label", type: "nominal", title: "Thema" },
         { field: "response_label", type: "nominal", title: "Bewertung" },
-        { field: "people", type: "quantitative", title: "Antworten" },
+        { field: "people", type: "quantitative", title: "Anzahl Antworten" },
         {
           field: "valid_share_percent",
           type: "quantitative",
-          title: "Anteil im Thema (%)",
+          title: "Anteil innerhalb des Themas (%)",
           format: ".1f",
         },
         {
           field: "valid_responses",
           type: "quantitative",
-          title: "Gültige Antworten im Thema",
+          title: "Gültige Antworten zum Thema (n)",
         },
         {
           field: "no_opinion_responses",

@@ -134,11 +134,6 @@
     );
   });
 
-  let visibleBucketCount = $derived.by(() => {
-    return new Set(filteredBucketSummaries.map((summary) => summary.distance_bucket))
-      .size;
-  });
-
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
   }
@@ -151,16 +146,16 @@
 {:else}
   <DashboardChartSection
     eyebrow="Distanz"
-    title="Hauptverkehrsmittel nach angegebener Distanz"
-    description="Die Ansicht zeigt, wie sich das wichtigste Verkehrsmittel je Person über die selbst angegebenen Distanzklassen verteilt."
-    note="Die Auswertung verwendet nur das wichtigste Verkehrsmittel je Person. Fehlerhafte Daten wurden bereinigt. Weitere Hinweise finden Sie im Abschnitt Kontext und Datengrundlage."
-    axisTitle="Selbst angegebene Distanz beim Hauptverkehrsmittel"
+    title="Wie verändert sich der Modal Split mit der Distanz?"
+    description="Der Modal Split beschreibt die Verteilung der Hauptverkehrsmittel innerhalb der sichtbaren Distanzklassen. Als Hauptverkehrsmittel gilt das Verkehrsmittel, das eine Person für den Weg zur Universität als wichtigstes angegeben hat."
+    note="Die Auswertung verwendet nur das jeweilige Hauptverkehrsmittel pro Person. Prozentwerte zeigen den Anteil innerhalb jeder Distanzklasse. Werte mit 0,0 km sowie Fußwege über 50 km werden nur in dieser Distanzansicht ausgeblendet."
+    axisTitle="Distanzklasse beim Hauptverkehrsmittel"
     hasToolbar={true}
     hasMeta={true}
   >
     {#snippet toolbar()}
       <label class="field">
-        <span>Semester-Zeit</span>
+        <span>Zeitraum</span>
         <select bind:value={semesterTime}>
           {#each dataset.semesterOptions as option}
             <option value={option}>{formatSemesterTime(option)}</option>
@@ -174,12 +169,12 @@
         Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
       </p>
       <p class="chartMeta">
-        Personen mit positiver Distanz in der aktuellen Auswahl:
+        Fallzahl mit plausibler Distanz:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">
-        Distanzklassen mit Daten:
-        <strong>{visibleBucketCount}</strong>
+        Nur hier ausgeblendete Werte:
+        <strong>{formatInteger(excludedZeroDistanceCount + excludedLongWalkCount)}</strong>
       </p>
     {/snippet}
 

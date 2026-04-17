@@ -17,7 +17,7 @@
 
   let xAxisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
-      ? "Anzahl Personen"
+      ? "Personen mit Nennung"
       : "Anteil innerhalb der Personengruppe (%)",
   );
 
@@ -72,16 +72,16 @@
 {:else}
   <DashboardChartSection
     eyebrow="Verkehrsmittel"
-    title="Nutzung von Verkehrsmitteln nach Personengruppe"
-    description="Die Ansicht vergleicht, welche Verkehrsmittel von Studierenden, Mitarbeitenden und Professor:innen im gewählten Zeitraum genutzt werden."
-    note="Die absoluten Werte basieren auf eindeutigen Personen in der aktuellen Auswahl. Prozentwerte zeigen den Anteil innerhalb jeder sichtbaren Personengruppe. Mehrfachnennungen pro Person sind möglich."
+    title="Welche Verkehrsmittel werden je Personengruppe genutzt?"
+    description="Die Ansicht zeigt, welche Verkehrsmittel die sichtbaren Personengruppen im gewählten Zeitraum genannt haben."
+    note="Absolute Werte zeigen, wie viele Personen das jeweilige Verkehrsmittel in der aktuellen Auswahl genannt haben. Prozentwerte zeigen den Anteil innerhalb jeder sichtbaren Personengruppe. Mehrfachnennungen pro Person sind möglich, deshalb addieren sich die Anteile innerhalb einer Personengruppe nicht zu 100 %."
     axisTitle={xAxisTitle}
     hasToolbar={true}
     hasMeta={true}
   >
     {#snippet toolbar()}
       <label class="field">
-        <span>Semester-Zeit</span>
+        <span>Zeitraum</span>
         <select bind:value={semesterTime}>
           {#each dataset.semesterOptions as option}
             <option value={option}>{formatSemesterTime(option)}</option>
@@ -92,7 +92,7 @@
       <label class="field">
         <span>Sortierung</span>
         <select bind:value={sortMode}>
-          <option value="fixed">Fixe Reihenfolge</option>
+          <option value="fixed">Feste Reihenfolge</option>
           <option value="frequency">Nach Häufigkeit</option>
         </select>
       </label>
@@ -100,14 +100,15 @@
 
     {#snippet meta()}
       <p class="chartMeta">
-        Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
+        Zeitraum:
+        <strong>{formatSemesterTime(semesterTime)}</strong>
       </p>
       <p class="chartMeta">
-        Personen in der aktuellen Auswahl:
+        Aktuelle Auswahl:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">
-        Verkehrsmittel in der aktuellen Auswahl:
+        Sichtbare Verkehrsmittel:
         <strong>{visibleVehicleCount}</strong>
       </p>
     {/snippet}

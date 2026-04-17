@@ -44,7 +44,7 @@ input {
 }
 
 .hero {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 48px 20px 32px;
 }
@@ -222,22 +222,22 @@ input {
 }
 
 .dashboardMain {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px 56px;
+  padding: 0 20px 64px;
 }
 
 .analysisWorkspace {
   display: grid;
-  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(236px, 272px) minmax(0, 1fr);
+  gap: 28px;
   align-items: start;
 }
 
 .dashboardSection {
   position: relative;
   scroll-margin-top: 24px;
-  padding: 22px;
+  padding: 26px;
   border: 1px solid rgba(210, 219, 228, 0.9);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.78);
@@ -429,17 +429,35 @@ input {
 }
 
 .contextGrid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .contextPanel {
   min-height: 100%;
 }
 
+.contextPanel--wide {
+  grid-column: 1 / -1;
+}
+
+.contextPanelLead {
+  margin: 0;
+  max-width: 72ch;
+  color: #506070;
+}
+
 .contextFactList {
   display: grid;
   gap: 12px;
-  margin: 12px 0 0;
+  margin: 0;
+}
+
+.contextFactList > div,
+.contextGlossaryList > div {
+  padding: 12px;
+  border: 1px solid #e1e8ef;
+  border-radius: 12px;
+  background: #f8fbfd;
 }
 
 .contextFactList dt {
@@ -454,7 +472,7 @@ input {
 }
 
 .contextList {
-  margin: 12px 0 0;
+  margin: 0;
   padding-left: 18px;
   color: #506070;
 }
@@ -467,7 +485,7 @@ input {
   background: #ffffff;
   border: 1px solid #d8e0e8;
   border-radius: 16px;
-  padding: 20px;
+  padding: 22px;
   box-shadow: 0 10px 30px rgba(24, 33, 43, 0.05);
 }
 
@@ -503,7 +521,7 @@ input {
 }
 
 .dashboardFilterPanel {
-  padding: 18px;
+  padding: 20px;
 }
 
 .dashboardFilterHeader {
@@ -594,15 +612,24 @@ input {
 }
 
 .chartSectionBody {
-  padding-top: 8px;
+  display: grid;
+  gap: 14px;
+  padding-top: 12px;
   border-top: 1px solid rgba(200, 210, 220, 0.7);
 }
 
 .chartMetaRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.chartMeta {
+  padding: 10px 12px;
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+  background: #f8fbfd;
+  font-size: 0.94rem;
 }
 
 .chartMeta strong {
@@ -610,9 +637,13 @@ input {
 }
 
 .chartNote {
-  margin-top: 10px;
-  margin-bottom: 16px;
-  max-width: 780px;
+  margin: 0;
+  max-width: none;
+  padding: 12px 14px;
+  border: 1px solid rgba(205, 216, 228, 0.92);
+  border-left: 4px solid rgba(76, 120, 168, 0.5);
+  border-radius: 12px;
+  background: #f7f9fc;
   font-size: 0.95rem;
 }
 
@@ -644,7 +675,7 @@ input {
 }
 
 .chartAxisTitle {
-  margin: 8px 0 0;
+  margin: 0;
   text-align: center;
   font-weight: 600;
   color: #243446;

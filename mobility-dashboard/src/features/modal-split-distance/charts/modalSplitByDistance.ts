@@ -17,9 +17,9 @@ export function createModalSplitByDistanceSpec() {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     width: "container",
-    height: 420,
+    height: 440,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 70, right: 20, top: 10, bottom: 35 },
+    padding: { left: 70, right: 24, top: 10, bottom: 38 },
     params: [{ name: "measureMode", value: "absolute" }],
     transform: [
       {
@@ -99,13 +99,13 @@ export function createModalSplitByDistanceSpec() {
         {
           field: "bucket_share_percent_1",
           type: "quantitative",
-          title: "Anteil in der Distanzklasse (%)",
+          title: "Anteil innerhalb der Distanzklasse (%)",
           format: ".1f",
         },
         {
           field: "bucket_participants",
           type: "quantitative",
-          title: "Personen in der Distanzklasse",
+          title: "Fallzahl der Distanzklasse (n)",
         },
       ],
     },

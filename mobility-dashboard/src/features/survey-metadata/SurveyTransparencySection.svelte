@@ -55,7 +55,7 @@
           <dd>rund {formatInteger(metadata.approxFreeTextResponses)} Kommentare</dd>
         </div>
         <div>
-          <dt>Semesterkontexte</dt>
+          <dt>Berücksichtigte Semesterkontexte</dt>
           <dd class="surveyContextList">
             {#each semesterContextLabels as label}
               <div>{label}</div>
@@ -66,17 +66,54 @@
     </article>
 
     <article class="panel contextPanel">
+      <h3>Begriffe und Lesehilfe</h3>
+      <dl class="contextFactList">
+        <div>
+          <dt>Modal Split</dt>
+          <dd>
+            Der Modal Split beschreibt, wie sich die Wege innerhalb der sichtbaren
+            Auswahl auf verschiedene Hauptverkehrsmittel verteilen.
+          </dd>
+        </div>
+        <div>
+          <dt>Hauptverkehrsmittel</dt>
+          <dd>
+            Damit ist das Verkehrsmittel gemeint, das eine Person für ihren Weg zur
+            Universität als wichtigstes angegeben hat.
+          </dd>
+        </div>
+        <div>
+          <dt>Prozentwerte</dt>
+          <dd>
+            Prozentwerte beziehen sich immer auf die jeweils sichtbare Auswahl,
+            Distanzklasse, Personengruppe oder das jeweilige Thema.
+          </dd>
+        </div>
+        <div>
+          <dt>n / Fallzahl</dt>
+          <dd>
+            Das angezeigte <strong>n</strong> beschreibt, auf wie vielen Fällen die
+            aktuelle Ansicht oder Filterung basiert.
+          </dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="panel contextPanel">
       <h3>So sind die Werte zu lesen</h3>
       <ul class="contextList">
         <li>Die Ansichten zeigen aggregierte Umfragedaten, keine Einzelantworten.</li>
-        <li>Prozentwerte beziehen sich auf die jeweils sichtbare Auswahl.</li>
         <li>
-          Das angezeigte <strong>n</strong> beschreibt die Fallzahl der aktuellen Ansicht
-          oder Filterung.
+          Je nach Frage können Mehrfachnennungen, fehlende Antworten oder
+          Antworten ohne Meinung die Vergleichbarkeit beeinflussen.
         </li>
         <li>
-          Je nach Frage können fehlende Antworten, keine Meinung oder
-          Mehrfachnennungen die Vergleichbarkeit beeinflussen.
+          Deshalb können sich Fallzahlen und Prozentwerte zwischen verschiedenen
+          Diagrammen bewusst unterscheiden.
+        </li>
+        <li>
+          Hinweise direkt unter den Diagrammen erklären jeweils, was genau gezählt
+          oder prozentual verglichen wird.
         </li>
       </ul>
     </article>
@@ -89,37 +126,52 @@
           jeweiliges Hauptverkehrsmittel angegeben haben.
         </li>
         <li>
-          Diese Angabe entspricht deshalb nicht zwingend der gesamten Distanz zwischen
-          Wohnort und Universität, sondern der beim Hauptverkehrsmittel erfassten
-          Strecke.
+          Diese Angabe entspricht deshalb nicht zwingend der gesamten Distanz
+          zwischen Wohnort und Universität, sondern der beim Hauptverkehrsmittel
+          erfassten Strecke.
         </li>
         <li>
-          Exakte <strong>0,0-km-Angaben</strong> werden aus der Distanzanalyse
+          Exakte <strong>0,0-km-Angaben</strong> werden nur aus der Distanzanalyse
           ausgeschlossen, weil sie keine sinnvoll interpretierbare zurückgelegte
           Distanz darstellen.
         </li>
         <li>
           Zusätzlich werden Angaben mit <strong>Zu Fuß</strong> und einer Distanz von
-          <strong>mehr als 50 km</strong> nicht angezeigt. Solche Werte sind als
-          täglicher Fußweg nicht plausibel und deuten eher auf uneinheitliche oder
-          fehlerhafte Eingaben hin.
+          <strong>mehr als 50 km</strong> in dieser Distanzansicht nicht gezeigt.
+          Solche Werte sind als täglicher Fußweg nicht plausibel und deuten eher auf
+          uneinheitliche oder fehlerhafte Eingaben hin.
         </li>
-        <li>
-          Die übrigen Auswertungen bleiben unverändert. Diese Filter gelten nur für
-          die Distanzansicht.
-        </li>
+        <li>Die übrigen Auswertungen bleiben davon unberührt.</li>
       </ul>
     </article>
 
     <article class="panel contextPanel">
       <h3>So ist die qualitative Themenübersicht zu lesen</h3>
       <ul class="contextList">
-        <li>Die qualitative Übersicht basiert auf offenen Kommentaren aus der Mobilitätsumfrage.</li>
-        <li>Die Antworten wurden bereinigt und zu einer kleinen Zahl wiederkehrender Themen gebündelt.</li>
-        <li>Jede vorbereitete Aussage wurde in dieser ersten Version genau einem Hauptthema zugeordnet.</li>
-        <li>Im absoluten Modus zeigt die Grafik gezählte Aussagen je Thema.</li>
-        <li>Im Prozentmodus zeigt sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat.</li>
-        <li>Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein, da sie auf einem regelbasierten Schlüsselwortschema beruhen.</li>
+        <li>
+          Die qualitative Übersicht basiert auf offenen Kommentaren aus der
+          Mobilitätsumfrage.
+        </li>
+        <li>
+          Die Antworten wurden bereinigt und zu einer kleinen Zahl wiederkehrender
+          Themen gebündelt.
+        </li>
+        <li>
+          Jede vorbereitete Aussage wurde in dieser ersten Version genau einem
+          Hauptthema zugeordnet.
+        </li>
+        <li>
+          Im absoluten Modus zeigt die Grafik gezählte Aussagen je Thema und
+          Personengruppe.
+        </li>
+        <li>
+          Im Prozentmodus zeigt sie den Anteil innerhalb der jeweiligen
+          Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat.
+        </li>
+        <li>
+          Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein, da sie
+          auf einem einfachen regelbasierten Schema beruhen.
+        </li>
       </ul>
     </article>
 

@@ -54,7 +54,7 @@
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
-      ? "Antworten je Thema (links unwichtig, rechts wichtig)"
+      ? "Bewertungen je Thema (links unwichtig, rechts wichtig)"
       : "Anteil innerhalb des Themas (%)",
   );
 
@@ -248,9 +248,9 @@
 {:else}
   <DashboardChartSection
     eyebrow="Fahrrad"
-    title="Was sollte sich bei der Fahrradinfrastruktur verbessern?"
-    description="Die Ansicht zeigt, welche Maßnahmen rund um Radwege, Stellplätze und ergänzende Angebote in der aktuellen Auswahl eher als unwichtig oder wichtig bewertet werden."
-    note="Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig. Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken; die gültige Fallzahl je Thema ist im Tooltip sichtbar."
+    title="Welche Verbesserungen bei der Fahrradinfrastruktur werden als wichtig gesehen?"
+    description="Die Ansicht zeigt, wie die sichtbaren Personengruppen einzelne Maßnahmen rund um Radwege, Stellplätze und ergänzende Angebote bewerten."
+    note="Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig. Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken. Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas."
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}
@@ -259,7 +259,7 @@
       <label class="field">
         <span>Sortierung</span>
         <select bind:value={sortMode}>
-          <option value="fixed">Fixe Themenreihenfolge</option>
+          <option value="fixed">Feste Themenreihenfolge</option>
           <option value="positive">Nach Anteil wichtig / sehr wichtig</option>
         </select>
       </label>
@@ -271,11 +271,11 @@
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">
-        Themen mit gültigen Bewertungen:
+        Themen mit sichtbaren Bewertungen:
         <strong>{visibleTopicCount}</strong>
       </p>
       <p class="chartMeta">
-        Antworten ohne Wertung oder Angabe:
+        Nicht in den Balken enthalten:
         <strong>{formatInteger(excludedResponseCount)}</strong>
       </p>
     {/snippet}

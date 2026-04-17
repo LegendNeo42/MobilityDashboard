@@ -49,7 +49,7 @@
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
-      ? "Zugeordnete Aussagen"
+      ? "Zugeordnete Aussagen je Thema"
       : "Anteil innerhalb der Personengruppe (%)",
   );
 
@@ -293,8 +293,9 @@
   <DashboardChartSection
     eyebrow="Qualitative Hinweise"
     title="Welche Themen tauchen in den Freitextantworten besonders häufig auf?"
-    description="Die qualitative Übersicht ergänzt die Diagramme zu Barrieren und Verbesserungswünschen um wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
-    note="Im absoluten Modus zeigen die Balken, wie viele vorbereitete Freitextaussagen dem jeweiligen Thema zugeordnet wurden. Im Prozentmodus zeigen sie, wie groß der Anteil innerhalb der jeweiligen Personengruppe ist, der zu diesem Thema mindestens eine Aussage gemacht hat."
+    description="Die qualitative Übersicht ergänzt die Diagramme zu Hürden und Verbesserungswünschen um wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
+    note="Im absoluten Modus zeigen die Balken, wie viele vorbereitete Aussagen dem jeweiligen Thema zugeordnet wurden. Im Prozentmodus zeigen sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat. Die Übersicht basiert auf einer kleinen, regelbasierten Themenzuordnung und kann in seltenen Grenzfällen ungenau sein."
+    axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}
   >
@@ -302,7 +303,7 @@
       <label class="field">
         <span>Sortierung</span>
         <select bind:value={sortMode}>
-          <option value="fixed">Fixe Reihenfolge</option>
+          <option value="fixed">Feste Themenreihenfolge</option>
           <option value="frequency">Nach Häufigkeit</option>
         </select>
       </label>
@@ -331,7 +332,6 @@
           dataValues={visibleThemeRows}
           signals={{ measureMode: $dashboardFilters.measureMode }}
         />
-        <p class="qualitativeAxisTitle">{axisTitle}</p>
 
         <div class="quoteSelectorPanel">
           <p class="quoteSelectorLabel">Beispielzitate nach Thema</p>
@@ -515,12 +515,5 @@
   .quoteSource {
     margin-top: 10px;
     font-size: 0.92rem;
-  }
-  .qualitativeAxisTitle {
-    margin: -4px 0 0;
-    text-align: center;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: #243446;
   }
 </style>
