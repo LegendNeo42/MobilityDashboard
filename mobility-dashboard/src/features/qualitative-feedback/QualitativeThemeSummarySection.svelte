@@ -202,7 +202,7 @@
   });
 
   let chartSpec = $derived.by(() => {
-    const height = Math.max(320, visibleThemes.length * 52);
+    const height = Math.max(500, visibleThemes.length * 52);
     return createQualitativeThemeSummarySpec({
       height,
       themeSortOrder,
@@ -294,8 +294,7 @@
     eyebrow="Qualitative Hinweise"
     title="Welche Themen tauchen in den Freitextantworten besonders häufig auf?"
     description="Die qualitative Übersicht ergänzt die Diagramme zu Hürden und Verbesserungswünschen um wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
-    note="Im absoluten Modus zeigen die Balken, wie viele vorbereitete Aussagen dem jeweiligen Thema zugeordnet wurden. Im Prozentmodus zeigen sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat. Die Übersicht basiert auf einer kleinen, regelbasierten Themenzuordnung und kann in seltenen Grenzfällen ungenau sein."
-    axisTitle={axisTitle}
+    note="Im absoluten Modus zeigen die Balken, wie viele vorbereitete Aussagen dem jeweiligen Thema zugeordnet wurden. Im Prozentmodus zeigen sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat. Die Übersicht basiert auf einer einfachen, regelbasierten Themenzuordnung und kann in seltenen Grenzfällen ungenau sein."
     hasToolbar={true}
     hasMeta={true}
   >
@@ -332,7 +331,7 @@
           dataValues={visibleThemeRows}
           signals={{ measureMode: $dashboardFilters.measureMode }}
         />
-
+        <p class="chartAxisTitle">{axisTitle}</p>
         <div class="quoteSelectorPanel">
           <p class="quoteSelectorLabel">Beispielzitate nach Thema</p>
           <div
@@ -438,7 +437,7 @@
   .quoteThemeList {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     margin-top: 12px;
   }
 
@@ -446,9 +445,9 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 12px 14px;
+    padding: 6px 14px;
     border: 1px solid #c8d2dc;
-    border-radius: 12px;
+    border-radius: 20px;
     background: #ffffff;
     color: #314252;
     text-align: left;

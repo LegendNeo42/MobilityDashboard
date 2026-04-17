@@ -44,8 +44,8 @@
 
   const chartSpec = createPublicTransportImprovementSpec({
     height: 440,
-    paddingLeft: 250,
-    labelLimit: 290,
+    paddingLeft: 34,
+    labelLimit: 160,
   });
 
   let error = $state<string | null>(null);

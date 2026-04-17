@@ -6,9 +6,9 @@ export function createQualitativeThemeSummarySpec(options?: {
   labelLimit?: number;
   themeSortOrder?: string[];
 }) {
-  const height = options?.height ?? 420;
-  const paddingLeft = options?.paddingLeft ?? 280;
-  const labelLimit = options?.labelLimit ?? 280;
+  const height = options?.height ?? 480;
+  const paddingLeft = options?.paddingLeft ?? 24;
+  const labelLimit = options?.labelLimit ?? 140;
   const themeSortOrder = options?.themeSortOrder ?? [];
 
   return {
@@ -16,7 +16,7 @@ export function createQualitativeThemeSummarySpec(options?: {
     width: "container",
     height,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: paddingLeft, right: 28, top: 10, bottom: 35 },
+    padding: { left: paddingLeft, right: 14, top: 10, bottom: 10 },
     params: [{ name: "measureMode", value: "absolute" }],
     data: { name: "table" },
     transform: [

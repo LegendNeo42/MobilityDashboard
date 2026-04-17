@@ -19,7 +19,7 @@ export function createModalSplitByDistanceSpec() {
     width: "container",
     height: 440,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 70, right: 24, top: 10, bottom: 38 },
+    padding: { left: 40, right: 24, top: 10, bottom: 0 },
     params: [{ name: "measureMode", value: "absolute" }],
     transform: [
       {
@@ -53,6 +53,7 @@ export function createModalSplitByDistanceSpec() {
         axis: {
           labelAngle: 0,
           labelLimit: 120,
+          titlePadding: 40,
         },
       },
       y: {
@@ -83,8 +84,11 @@ export function createModalSplitByDistanceSpec() {
         legend: {
           orient: "bottom",
           direction: "horizontal",
-          columns: 2,
+          columns: 9,
           symbolType: "square",
+          offset: 14,
+          labelFontSize: 12,
+          titleFontSize: 13,
         },
       },
       order: {
@@ -93,8 +97,16 @@ export function createModalSplitByDistanceSpec() {
         sort: "ascending",
       },
       tooltip: [
-        { field: "distance_bucket_label", type: "nominal", title: "Distanzklasse" },
-        { field: "vehicle_label", type: "nominal", title: "Hauptverkehrsmittel" },
+        {
+          field: "distance_bucket_label",
+          type: "nominal",
+          title: "Distanzklasse",
+        },
+        {
+          field: "vehicle_label",
+          type: "nominal",
+          title: "Hauptverkehrsmittel",
+        },
         { field: "people", type: "quantitative", title: "Anzahl Personen" },
         {
           field: "bucket_share_percent_1",

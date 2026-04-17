@@ -1,3 +1,4 @@
+import { offsetEncodingScaleIgnored } from "vega-lite/types_unstable/log/message.js";
 import { publicTransportBarrierDefinitions } from "../../../data/domain";
 
 const barrierLabels = publicTransportBarrierDefinitions.map(
@@ -10,7 +11,7 @@ export function createPublicTransportBarrierSpec() {
     width: "container",
     height: 420,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 210, right: 24, top: 10, bottom: 35 },
+    padding: { left: 29, right: 14, top: 10, bottom: 0 },
     params: [{ name: "measureMode", value: "absolute" }],
     data: { name: "table" },
     transform: [
@@ -46,7 +47,7 @@ export function createPublicTransportBarrierSpec() {
         title: null,
         sort: barrierLabels,
         axis: {
-          labelLimit: 240,
+          labelLimit: 160,
         },
       },
       x: {
@@ -78,6 +79,9 @@ export function createPublicTransportBarrierSpec() {
           orient: "bottom",
           direction: "horizontal",
           symbolType: "square",
+          offset: 20,
+          labelFontSize: 12,
+          titleFontSize: 13,
         },
       },
       order: {

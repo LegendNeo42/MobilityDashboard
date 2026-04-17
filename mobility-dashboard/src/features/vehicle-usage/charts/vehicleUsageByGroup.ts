@@ -7,9 +7,9 @@ export function createVehicleUsageByGroupSpec() {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     width: "container",
-    height: 460,
+    height: 480,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: 90, right: 20, top: 10, bottom: 35 },
+    padding: { left: 20, right: 20, top: 10, bottom: 10},
     params: [
       { name: "sortMode", value: "fixed" },
       { name: "measureMode", value: "absolute" },
@@ -47,7 +47,7 @@ export function createVehicleUsageByGroupSpec() {
         type: "nominal",
         title: null,
         sort: { field: "vehicle_sort_val", order: "ascending" },
-        axis: { labelLimit: 260 },
+        axis: { labelLimit: 160 },
       },
       yOffset: { field: "group_label" },
       x: {

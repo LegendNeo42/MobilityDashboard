@@ -10,15 +10,15 @@ export function createPublicTransportImprovementSpec(options?: {
   labelLimit?: number;
 }) {
   const height = options?.height ?? 340;
-  const paddingLeft = options?.paddingLeft ?? 210;
-  const labelLimit = options?.labelLimit ?? 250;
+  const paddingLeft = options?.paddingLeft ?? 44;
+  const labelLimit = options?.labelLimit ?? 140;
 
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     width: "container",
     height,
     autosize: { type: "fit-x", contains: "padding" },
-    padding: { left: paddingLeft, right: 24, top: 10, bottom: 35 },
+    padding: { left: paddingLeft, right: 14, top: 10, bottom: 10 },
     params: [{ name: "measureMode", value: "absolute" }],
     data: { name: "table" },
     transform: [
@@ -80,6 +80,8 @@ export function createPublicTransportImprovementSpec(options?: {
           orient: "bottom",
           direction: "horizontal",
           symbolType: "square",
+          labelFontSize: 12,
+          titleFontSize: 13,
         },
       },
       order: {
