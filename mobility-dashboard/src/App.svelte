@@ -10,6 +10,7 @@
   import PublicTransportImprovementsSection from "./features/public-transport-improvements/PublicTransportImprovementsSection.svelte";
   import BicycleImprovementsSection from "./features/bicycle-improvements/BicycleImprovementsSection.svelte";
   import QualitativeThemeSummarySection from "./features/qualitative-feedback/QualitativeThemeSummarySection.svelte";
+  import PlzRegionSection from "./features/plz-map/PlzRegionSection.svelte";
 </script>
 
 <AppShell>
@@ -26,37 +27,33 @@
   <div class="analysisWorkspace">
     <DashboardFilterBar />
 
-    <section id="analysis" class="dashboardSection dashboardSection--analysis">
-      <div class="sectionHeader">
-        <p class="sectionEyebrow">{dashboardContent.analysisSection.eyebrow}</p>
-        <h2>{dashboardContent.analysisSection.title}</h2>
-        <p class="sectionText">{dashboardContent.analysisSection.text}</p>
-      </div>
+    <div class="analysisContentStack">
+      <section id="analysis" class="dashboardSection dashboardSection--analysis">
+        <div class="sectionHeader">
+          <p class="sectionEyebrow">{dashboardContent.analysisSection.eyebrow}</p>
+          <h2>{dashboardContent.analysisSection.title}</h2>
+          <p class="sectionText">{dashboardContent.analysisSection.text}</p>
+        </div>
 
-      <VehicleUsageSection />
-      <ModalSplitByDistanceSection />
-      <PublicTransportBarriersSection />
-      <PublicTransportImprovementsSection />
-      <BicycleImprovementsSection />
-      <QualitativeThemeSummarySection />
-    </section>
+        <VehicleUsageSection />
+        <ModalSplitByDistanceSection />
+        <PublicTransportBarriersSection />
+        <PublicTransportImprovementsSection />
+        <BicycleImprovementsSection />
+        <QualitativeThemeSummarySection />
+      </section>
+
+      <section id="region" class="dashboardSection dashboardSection--region">
+        <div class="sectionHeader">
+          <p class="sectionEyebrow">{dashboardContent.regionSection.eyebrow}</p>
+          <h2>{dashboardContent.regionSection.title}</h2>
+          <p class="sectionText">{dashboardContent.regionSection.text}</p>
+        </div>
+
+        <PlzRegionSection />
+      </section>
+    </div>
   </div>
-
-  <section id="region" class="dashboardSection dashboardSection--region">
-    <div class="sectionHeader">
-      <p class="sectionEyebrow">{dashboardContent.regionSection.eyebrow}</p>
-      <h2>{dashboardContent.regionSection.title}</h2>
-      <p class="sectionText">{dashboardContent.regionSection.text}</p>
-    </div>
-
-    <div class="panel placeholderPanel">
-      <ul class="placeholderList">
-        {#each dashboardContent.regionSection.bullets as item}
-          <li>{item}</li>
-        {/each}
-      </ul>
-    </div>
-  </section>
 
   <section id="context" class="dashboardSection dashboardSection--context">
     <div class="sectionHeader">

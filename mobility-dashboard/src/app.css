@@ -1,5 +1,11 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -38,9 +44,12 @@ input {
 .appShell {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(112, 146, 184, 0.07), transparent 28%),
-    linear-gradient(180deg, #f8fafc 0%, #f3f5f7 240px),
-    #f3f5f7;
+    radial-gradient(
+      circle at top left,
+      rgba(112, 146, 184, 0.07),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #f3f5f7 240px), #f3f5f7;
 }
 
 .hero {
@@ -95,7 +104,15 @@ input {
 .heroNavCard p,
 .overviewCard p,
 .placeholderList,
-.heroNavAction {
+.heroNavAction,
+.regionSubtext,
+.regionPlaceholderText,
+.regionLegendItem,
+.regionTransportValues,
+.regionTransportLabel,
+.regionSplitHeading,
+.regionDetailList dt,
+.regionDetailList dd {
   margin: 0;
   color: #506070;
 }
@@ -178,47 +195,79 @@ input {
 }
 
 .theme-overview {
-  background: linear-gradient(180deg, rgba(208, 228, 249, 0.98), rgba(247, 251, 255, 0.94));
+  background: linear-gradient(
+    180deg,
+    rgba(208, 228, 249, 0.98),
+    rgba(247, 251, 255, 0.94)
+  );
   border-color: rgba(108, 147, 191, 0.42);
 }
 
 .theme-overview:hover,
 .theme-overview:focus-visible {
   border-color: rgba(83, 128, 179, 0.62);
-  background: linear-gradient(180deg, rgba(198, 222, 247, 1), rgba(244, 249, 255, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(198, 222, 247, 1),
+    rgba(244, 249, 255, 0.96)
+  );
 }
 
 .theme-analysis {
-  background: linear-gradient(180deg, rgba(219, 226, 245, 0.98), rgba(248, 249, 255, 0.94));
+  background: linear-gradient(
+    180deg,
+    rgba(219, 226, 245, 0.98),
+    rgba(248, 249, 255, 0.94)
+  );
   border-color: rgba(119, 132, 183, 0.4);
 }
 
 .theme-analysis:hover,
 .theme-analysis:focus-visible {
   border-color: rgba(92, 108, 165, 0.6);
-  background: linear-gradient(180deg, rgba(211, 220, 244, 1), rgba(244, 246, 255, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(211, 220, 244, 1),
+    rgba(244, 246, 255, 0.96)
+  );
 }
 
 .theme-region {
-  background: linear-gradient(180deg, rgba(222, 239, 231, 0.98), rgba(248, 253, 250, 0.94));
+  background: linear-gradient(
+    180deg,
+    rgba(222, 239, 231, 0.98),
+    rgba(248, 253, 250, 0.94)
+  );
   border-color: rgba(106, 152, 132, 0.36);
 }
 
 .theme-region:hover,
 .theme-region:focus-visible {
   border-color: rgba(78, 128, 106, 0.54);
-  background: linear-gradient(180deg, rgba(213, 235, 224, 1), rgba(245, 252, 248, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(213, 235, 224, 1),
+    rgba(245, 252, 248, 0.96)
+  );
 }
 
 .theme-context {
-  background: linear-gradient(180deg, rgba(246, 236, 214, 0.98), rgba(255, 251, 242, 0.94));
+  background: linear-gradient(
+    180deg,
+    rgba(246, 236, 214, 0.98),
+    rgba(255, 251, 242, 0.94)
+  );
   border-color: rgba(175, 149, 95, 0.36);
 }
 
 .theme-context:hover,
 .theme-context:focus-visible {
   border-color: rgba(151, 126, 78, 0.54);
-  background: linear-gradient(180deg, rgba(244, 231, 204, 1), rgba(255, 249, 238, 0.96));
+  background: linear-gradient(
+    180deg,
+    rgba(244, 231, 204, 1),
+    rgba(255, 249, 238, 0.96)
+  );
 }
 
 .dashboardMain {
@@ -232,6 +281,10 @@ input {
   grid-template-columns: minmax(236px, 272px) minmax(0, 1fr);
   gap: 28px;
   align-items: start;
+}
+
+.analysisContentStack {
+  min-width: 0;
 }
 
 .dashboardSection {
@@ -250,22 +303,38 @@ input {
 }
 
 .dashboardSection--overview {
-  background: linear-gradient(180deg, rgba(235, 244, 253, 0.98), rgba(255, 255, 255, 0.86));
+  background: linear-gradient(
+    180deg,
+    rgba(235, 244, 253, 0.98),
+    rgba(255, 255, 255, 0.86)
+  );
   border-color: rgba(184, 205, 229, 0.9);
 }
 
 .dashboardSection--analysis {
-  background: linear-gradient(180deg, rgba(239, 242, 251, 0.98), rgba(255, 255, 255, 0.86));
+  background: linear-gradient(
+    180deg,
+    rgba(239, 242, 251, 0.98),
+    rgba(255, 255, 255, 0.86)
+  );
   border-color: rgba(195, 203, 230, 0.92);
 }
 
 .dashboardSection--region {
-  background: linear-gradient(180deg, rgba(239, 247, 242, 0.98), rgba(255, 255, 255, 0.86));
+  background: linear-gradient(
+    180deg,
+    rgba(239, 247, 242, 0.98),
+    rgba(255, 255, 255, 0.86)
+  );
   border-color: rgba(193, 218, 205, 0.9);
 }
 
 .dashboardSection--context {
-  background: linear-gradient(180deg, rgba(252, 247, 238, 0.98), rgba(255, 255, 255, 0.88));
+  background: linear-gradient(
+    180deg,
+    rgba(252, 247, 238, 0.98),
+    rgba(255, 255, 255, 0.88)
+  );
   border-color: rgba(225, 212, 184, 0.92);
 }
 
@@ -286,11 +355,16 @@ input {
 .surveyInfoValue,
 .surveyInfoLabel,
 .contextFactList dt,
-.contextFactList dd {
+.contextFactList dd,
+.regionSubheading,
+.regionSelectionHeader,
+.regionDetailList,
+.regionTransportList {
   margin: 0;
 }
 
-.contextPanel h3 {
+.contextPanel h3,
+.regionSubheading {
   font-size: 1.08rem;
   line-height: 1.2;
   color: #18212b;
@@ -680,6 +754,301 @@ input {
   color: #243446;
 }
 
+.regionModuleLayout {
+  display: grid;
+  gap: 18px;
+}
+
+.regionInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.regionMapCard {
+  display: grid;
+  gap: 16px;
+}
+
+.regionMapHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+}
+
+.regionSubtext {
+  margin-top: 6px;
+  font-size: 0.94rem;
+}
+.regionLegendPanel,
+.regionHoverPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.regionLegendMarkerRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.94rem;
+  color: #314252;
+}
+
+.regionLegendMarker {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+.regionLegendMarker--university,
+.regionUniversityMarker {
+  fill: #d92d20;
+  background: #d92d20;
+  stroke: #ffffff;
+  stroke-width: 0.2;
+}
+
+.regionLegendScale {
+  display: grid;
+  gap: 10px;
+}
+
+.regionLegendGradient {
+  position: relative;
+  height: 14px;
+  border: 1px solid rgba(24, 33, 43, 0.12);
+  border-radius: 999px;
+  background: #dbeade;
+  overflow: hidden;
+}
+
+.regionLegendGradient::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #dbeade 0%, #1f7a50 100%);
+}
+
+.regionLegendLabels {
+  position: relative;
+  height: 20px;
+  font-size: 0.82rem;
+  color: #314252;
+}
+
+.regionLegendLabels span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.regionLegendLabels span:first-child {
+  transform: translateX(0);
+}
+
+.regionLegendLabels span:last-child {
+  transform: translateX(-100%);
+}
+
+.regionMapFrame {
+  position: relative;
+  min-height: 520px;
+  padding: 12px;
+  border: 1px solid #d8e0e8;
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(161, 201, 174, 0.12),
+      transparent 28%
+    ),
+    #f9fbfa;
+}
+
+.regionMapSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.regionUniversityMarker {
+  pointer-events: none;
+}
+
+.regionPath {
+  stroke: rgba(59, 86, 68, 0.34);
+  stroke-width: 1;
+  cursor: pointer;
+  transition:
+    fill 0.16s ease,
+    stroke 0.16s ease,
+    stroke-width 0.16s ease,
+    opacity 0.16s ease;
+}
+
+.regionPath:hover,
+.regionPath.is-hovered {
+  stroke: #2c5440;
+  stroke-width: 1.6;
+}
+
+.regionPath:focus-visible {
+  outline: none;
+}
+
+.regionPath.is-selected {
+  stroke: #133726;
+  stroke-width: 2.2;
+}
+
+.regionPath.is-empty {
+  opacity: 0.76;
+}
+
+.regionInfoPanel {
+  align-content: start;
+  display: grid;
+  gap: 14px;
+}
+
+.regionSelectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.regionResetButton {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #c8d2dc;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #314252;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.regionResetButton:hover,
+.regionResetButton:focus-visible {
+  border-color: #8fa3b6;
+  background: #f3f7fb;
+  color: #18212b;
+  outline: none;
+}
+
+.regionDetailList {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.regionDetailList > div {
+  padding: 12px;
+  border: 1px solid #e1e8ef;
+  border-radius: 12px;
+  background: #f8fbfd;
+}
+
+.regionDetailList dt {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #46617c;
+}
+
+.regionDetailList dd {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #18212b;
+}
+
+.regionDetailList--selection {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.regionSplitSection {
+  display: grid;
+  gap: 12px;
+}
+
+.regionSplitHeading {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #243446;
+}
+
+.regionPlaceholderText {
+  min-height: 44px;
+  color: #506070;
+}
+
+.regionTransportList {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.regionTransportRow {
+  display: grid;
+  gap: 8px;
+}
+
+.regionTransportRowHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.regionTransportLabel {
+  font-weight: 600;
+  color: #18212b;
+}
+
+.regionTransportValues {
+  font-size: 0.92rem;
+  color: #314252;
+}
+
+.regionTransportBarTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: #e6edf2;
+  overflow: hidden;
+}
+
+.regionTransportBarFill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #62896f, #3f7d59);
+}
+
+@media (max-width: 1100px) {
+  .regionInfoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .regionMapFrame {
+    min-height: auto;
+  }
+}
+
 @media (max-width: 980px) {
   .analysisWorkspace {
     grid-template-columns: 1fr;
@@ -715,5 +1084,32 @@ input {
 
   .statusGroupField {
     flex-basis: 100%;
+  }
+
+  .regionMapHeader,
+  .regionTransportRowHeader,
+  .regionSelectionHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .regionLegend {
+    justify-content: flex-start;
+  }
+  
+  .regionLegendLabels {
+    height: 44px;
+  }
+
+  .regionLegendLabels span {
+    font-size: 0.78rem;
+  }
+
+  .regionDetailList--compact {
+    grid-template-columns: 1fr;
+  }
+
+  .regionDetailList--selection {
+    grid-template-columns: 1fr;
   }
 }
