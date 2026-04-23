@@ -53,6 +53,22 @@
   let semesterTime = $state("ws_vl");
   let selectedPlz = $state<string | null>(null);
   let hoveredPlz = $state<string | null>(null);
+  let mapSvgElement = $state<SVGSVGElement | null>(null);
+  let zoomScale = $state(1);
+  let zoomTranslateX = $state(0);
+  let zoomTranslateY = $state(0);
+  let isPanning = $state(false);
+  let isPointerDown = $state(false);
+  let suppressNextRegionClick = $state(false);
+  let dragStartClientX = 0;
+  let dragStartClientY = 0;
+  let dragStartTranslateX = 0;
+  let dragStartTranslateY = 0;
+
+  const DRAG_THRESHOLD = 4;
+  const MIN_ZOOM_SCALE = 1;
+  const MAX_ZOOM_SCALE = 6;
+  const WHEEL_ZOOM_FACTOR = 1.2;
 
   onMount(async () => {
     try {
@@ -145,6 +161,12 @@
       });
   });
 
+  const maxSelectedTransportCount = $derived.by(() => {
+    return selectedTransportRows.reduce((maxCount, row) => {
+      return Math.max(maxCount, row.count);
+    }, 0);
+  });
+
   const legendStops = $derived.by(() => {
     if (!dataset) return [];
 
@@ -164,6 +186,10 @@
     };
   });
 
+  const hasMapTransform = $derived.by(() => {
+    return zoomScale !== 1 || zoomTranslateX !== 0 || zoomTranslateY !== 0;
+  });
+
   function handleRegionClick(plz: string) {
     selectedPlz = selectedPlz === plz ? null : plz;
   }
@@ -173,16 +199,108 @@
   }
 
   function handleRegionMouseClick(event: MouseEvent, plz: string) {
-    handleRegionClick(plz);
-
     const currentTarget = event.currentTarget as
       | (SVGElement & { blur?: () => void })
       | null;
+
+    if (suppressNextRegionClick) {
+      currentTarget?.blur?.();
+      return;
+    }
+
+    handleRegionClick(plz);
     currentTarget?.blur?.();
   }
 
   function clearSelection() {
     selectedPlz = null;
+  }
+
+  function resetMapView() {
+    zoomScale = 1;
+    zoomTranslateX = 0;
+    zoomTranslateY = 0;
+    isPanning = false;
+    isPointerDown = false;
+    suppressNextRegionClick = false;
+  }
+
+  function handleMapMouseDown(event: MouseEvent) {
+    if (event.button !== 0) return;
+
+    isPointerDown = true;
+    isPanning = false;
+    dragStartClientX = event.clientX;
+    dragStartClientY = event.clientY;
+    dragStartTranslateX = zoomTranslateX;
+    dragStartTranslateY = zoomTranslateY;
+  }
+
+  function handleWindowMouseMove(event: MouseEvent) {
+    if (!isPointerDown) return;
+
+    const deltaX = event.clientX - dragStartClientX;
+    const deltaY = event.clientY - dragStartClientY;
+
+    if (!isPanning && Math.hypot(deltaX, deltaY) >= DRAG_THRESHOLD) {
+      isPanning = true;
+      hoveredPlz = null;
+    }
+
+    if (!isPanning) return;
+
+    const nextTransform = clampTransform(
+      zoomScale,
+      dragStartTranslateX + deltaX,
+      dragStartTranslateY + deltaY,
+    );
+
+    zoomTranslateX = nextTransform.translateX;
+    zoomTranslateY = nextTransform.translateY;
+  }
+
+  function handleWindowMouseUp() {
+    if (!isPointerDown) return;
+
+    isPointerDown = false;
+
+    if (isPanning) {
+      suppressNextRegionClick = true;
+      window.setTimeout(() => {
+        suppressNextRegionClick = false;
+      }, 0);
+    }
+
+    isPanning = false;
+  }
+
+  function handleMapWheel(event: WheelEvent) {
+    event.preventDefault();
+
+    const point = getSvgPoint(event.clientX, event.clientY);
+    const zoomFactor =
+      event.deltaY < 0 ? WHEEL_ZOOM_FACTOR : 1 / WHEEL_ZOOM_FACTOR;
+    const nextScale = clampNumber(
+      zoomScale * zoomFactor,
+      MIN_ZOOM_SCALE,
+      MAX_ZOOM_SCALE,
+    );
+
+    if (nextScale === zoomScale) return;
+
+    const contentX = (point.x - zoomTranslateX) / zoomScale;
+    const contentY = (point.y - zoomTranslateY) / zoomScale;
+    const nextTranslateX = point.x - contentX * nextScale;
+    const nextTranslateY = point.y - contentY * nextScale;
+    const nextTransform = clampTransform(
+      nextScale,
+      nextTranslateX,
+      nextTranslateY,
+    );
+
+    zoomScale = nextScale;
+    zoomTranslateX = nextTransform.translateX;
+    zoomTranslateY = nextTransform.translateY;
   }
 
   function handleRegionKeydown(event: KeyboardEvent, plz: string) {
@@ -206,6 +324,18 @@
     return $dashboardFilters.measureMode === "percent"
       ? formatPercent(share)
       : formatInteger(count);
+  }
+
+  function getSelectedTransportBarWidth(count: number, share: number, maxCount: number): string {
+    if ($dashboardFilters.measureMode === "percent") {
+      return `${Math.max(share * 100, 2)}%`;
+    }
+
+    if (maxCount <= 0) {
+      return "2%";
+    }
+
+    return `${Math.max((count / maxCount) * 100, 2)}%`;
   }
 
   function collectBounds(features: PlzMapFeature[]): Bounds {
@@ -314,6 +444,33 @@
       .join(" ");
   }
 
+  function getSvgPoint(clientX: number, clientY: number): ProjectedPoint {
+    if (!mapSvgElement) {
+      return { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 };
+    }
+
+    const bounds = mapSvgElement.getBoundingClientRect();
+
+    return {
+      x: ((clientX - bounds.left) / bounds.width) * MAP_WIDTH,
+      y: ((clientY - bounds.top) / bounds.height) * MAP_HEIGHT,
+    };
+  }
+
+  function clampTransform(scale: number, translateX: number, translateY: number) {
+    const minTranslateX = MAP_WIDTH - MAP_WIDTH * scale;
+    const minTranslateY = MAP_HEIGHT - MAP_HEIGHT * scale;
+
+    return {
+      translateX: clampNumber(translateX, minTranslateX, 0),
+      translateY: clampNumber(translateY, minTranslateY, 0),
+    };
+  }
+
+  function clampNumber(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
+  }
+
   function buildLegendStops(maxValue: number): LegendStop[] {
     if (maxValue <= 0) {
       return [
@@ -404,6 +561,11 @@
   }
 </script>
 
+<svelte:window
+  onmousemove={handleWindowMouseMove}
+  onmouseup={handleWindowMouseUp}
+/>
+
 {#if error}
   <p class="statusMessage">Fehler: {error}</p>
 {:else if !dataset}
@@ -449,60 +611,79 @@
           <div>
             <h3 class="regionSubheading">Teilnehmende je PLZ</h3>
           </div>
+
+          {#if hasMapTransform}
+            <button type="button" class="regionResetButton" onclick={resetMapView}>
+              Ansicht zurücksetzen
+            </button>
+          {/if}
         </div>
 
-        <div class="regionMapFrame">
+        <div
+          class:regionMapFrame={true}
+          class:is-panning={isPanning}
+          role="presentation"
+          style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "default"};`}
+          onmousedown={handleMapMouseDown}
+          onwheel={handleMapWheel}
+        >
           <svg
+            bind:this={mapSvgElement}
             class="regionMapSvg"
             viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
             role="img"
             aria-label="PLZ-Karte der fokussierten Region um Regensburg"
           >
-            {#each mapFeatures as feature}
-              <path
-                class="regionPath"
-                class:is-hovered={hoveredPlz === feature.plz}
-                class:is-selected={selectedPlz === feature.plz}
-                class:is-empty={!feature.metric || feature.metric.n === 0}
-                d={feature.path}
-                fill={getRegionFillColor(
-                  feature.metric?.n ?? 0,
-                  dataset.maxParticipantCount,
-                )}
-                vector-effect="non-scaling-stroke"
-                role="button"
-                tabindex="0"
-                aria-label={`PLZ ${feature.plz}`}
-                onmouseenter={() => {
-                  hoveredPlz = feature.plz;
-                }}
-                onmouseleave={() => {
-                  hoveredPlz = null;
-                }}
-                onfocus={() => {
-                  hoveredPlz = feature.plz;
-                }}
-                onblur={() => {
-                  hoveredPlz = null;
-                }}
-                onmousedown={handleRegionPointerDown}
-                onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
-                onclick={(event) => handleRegionMouseClick(event, feature.plz)}
-              >
-                <title>
-                  {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
-                </title>
-              </path>
-            {/each}
+            <g transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}>
+              {#each mapFeatures as feature}
+                <path
+                  class="regionPath"
+                  class:is-hovered={!isPanning && hoveredPlz === feature.plz}
+                  class:is-selected={selectedPlz === feature.plz}
+                  class:is-empty={!feature.metric || feature.metric.n === 0}
+                  d={feature.path}
+                  fill={getRegionFillColor(
+                    feature.metric?.n ?? 0,
+                    dataset.maxParticipantCount,
+                  )}
+                  vector-effect="non-scaling-stroke"
+                  role="button"
+                  tabindex="0"
+                  aria-label={`PLZ ${feature.plz}`}
+                  style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
+                  onmouseenter={() => {
+                    if (isPanning) return;
+                    hoveredPlz = feature.plz;
+                  }}
+                  onmouseleave={() => {
+                    hoveredPlz = null;
+                  }}
+                  onfocus={() => {
+                    if (isPanning) return;
+                    hoveredPlz = feature.plz;
+                  }}
+                  onblur={() => {
+                    hoveredPlz = null;
+                  }}
+                  onmousedown={handleRegionPointerDown}
+                  onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
+                  onclick={(event) => handleRegionMouseClick(event, feature.plz)}
+                >
+                  <title>
+                    {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
+                  </title>
+                </path>
+              {/each}
 
-            {#if universityMarkerPosition}
-              <circle
-                class="regionUniversityMarker"
-                cx={universityMarkerPosition.x}
-                cy={universityMarkerPosition.y}
-                r="4"
-              ></circle>
-            {/if}
+              {#if universityMarkerPosition}
+                <circle
+                  class="regionUniversityMarker"
+                  cx={universityMarkerPosition.x}
+                  cy={universityMarkerPosition.y}
+                  r="4"
+                ></circle>
+              {/if}
+            </g>
           </svg>
         </div>
       </div>
@@ -521,15 +702,13 @@
             </div>
 
             <p class="regionSubtext">Farbskala: Anzahl Teilnehmender (n)</p>
-            
+
             <div class="regionLegendScale">
               <div class="regionLegendGradient" aria-hidden="true"></div>
 
               <div class="regionLegendLabels" aria-hidden="true">
                 {#each legendStops as stop}
-                  <span style={`left: ${stop.position * 100}%;`}
-                    >{stop.label}</span
-                  >
+                  <span style={`left: ${stop.position * 100}%;`}>{stop.label}</span>
                 {/each}
               </div>
             </div>
@@ -545,11 +724,7 @@
               </div>
               <div>
                 <dt>Fallzahl</dt>
-                <dd>
-                  {hoverPreview.n === null
-                    ? "–"
-                    : `n = ${formatInteger(hoverPreview.n)}`}
-                </dd>
+                <dd>{hoverPreview.n === null ? "–" : `n = ${formatInteger(hoverPreview.n)}`}</dd>
               </div>
             </dl>
           </div>
@@ -560,17 +735,12 @@
             <div>
               <h3 class="regionSubheading">Ausgewählte PLZ</h3>
               <p class="regionSubtext">
-                Die Detailansicht berücksichtigt die aktuelle Auswahl des
-                Dashboards.
+                Die Detailansicht berücksichtigt die aktuelle Auswahl des Dashboards.
               </p>
             </div>
 
             {#if selectedRegion}
-              <button
-                type="button"
-                class="regionResetButton"
-                onclick={clearSelection}
-              >
+              <button type="button" class="regionResetButton" onclick={clearSelection}>
                 Auswahl zurücksetzen
               </button>
             {/if}
@@ -589,9 +759,7 @@
             </dl>
 
             <div class="regionSplitSection">
-              <p class="regionSplitHeading">
-                Modal Split im ausgewählten Bereich
-              </p>
+              <p class="regionSplitHeading">Modal Split im ausgewählten Bereich</p>
 
               {#if selectedRegion.n === 0}
                 <p class="regionPlaceholderText">
@@ -611,7 +779,11 @@
                       <div class="regionTransportBarTrack" aria-hidden="true">
                         <div
                           class="regionTransportBarFill"
-                          style={`width: ${Math.max(row.share * 100, 2)}%;`}
+                          style={`width: ${getSelectedTransportBarWidth(
+                            row.count,
+                            row.share,
+                            maxSelectedTransportCount,
+                          )}`}
                         ></div>
                       </div>
                     </li>
@@ -621,8 +793,7 @@
             </div>
           {:else}
             <p class="regionPlaceholderText">
-              Wählen Sie eine PLZ auf der Karte aus, um die regionale
-              Detailansicht zu öffnen.
+              Wählen Sie eine PLZ auf der Karte aus, um die regionale Detailansicht zu öffnen.
             </p>
           {/if}
         </section>
