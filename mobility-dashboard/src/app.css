@@ -58,6 +58,43 @@ input {
   padding: 48px 20px 32px;
 }
 
+.heroLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(320px, 420px);
+  column-gap: 24px;
+  row-gap: 18px;
+  align-items: start;
+}
+
+.heroContent {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+  align-content: start;
+}
+
+.heroNarrative {
+  display: grid;
+  gap: 14px;
+  max-width: 840px;
+  padding: 22px 24px 20px;
+  border: 1px solid rgba(183, 198, 214, 0.46);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(110, 145, 180, 0.2),
+      transparent 40%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(242, 247, 252, 0.88)
+    );
+  box-shadow: 0 16px 40px rgba(24, 33, 43, 0.05);
+  backdrop-filter: blur(6px);
+}
+
 .heroEyebrow,
 .sectionEyebrow,
 .heroNavEyebrow,
@@ -84,15 +121,27 @@ input {
   text-wrap: balance;
 }
 
+.heroHook {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+  line-height: 1.24;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #243446;
+  text-wrap: balance;
+}
+
 .heroIntro {
-  max-width: 780px;
-  margin-top: 18px;
-  padding: 18px 20px;
-  border: 1px solid rgba(133, 154, 177, 0.2);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.62);
-  box-shadow: 0 12px 34px rgba(24, 33, 43, 0.04);
-  backdrop-filter: blur(6px);
+  max-width: none;
+  margin-top: 10px;
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px solid rgba(190, 201, 214, 0.75);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .heroSubtitle,
@@ -125,9 +174,166 @@ input {
 }
 
 .heroText {
-  max-width: 62ch;
+  max-width: 620ch;
   margin-top: 10px;
   font-size: 1rem;
+}
+
+.heroQuestionBlock {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  margin-top: 2px;
+  max-width: none;
+}
+
+.heroQuestionLabel {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #46617c;
+}
+
+.heroQuestionList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.heroQuestionChip {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(158, 177, 197, 0.48);
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(120, 149, 179, 0.16),
+      transparent 46%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 241, 241, 0.9));
+  box-shadow: 0 8px 20px rgba(24, 33, 43, 0.04);
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #314252;
+}
+
+.heroSpotlight {
+  min-width: 0;
+}
+
+.heroSpotlightInner {
+  display: grid;
+  gap: 10px;
+  min-height: auto;
+  padding: 20px 22px;
+  border: 1px solid rgba(191, 205, 219, 0.92);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(228, 122, 64, 0.18),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(246, 249, 252, 0.93)
+    );
+  box-shadow: 0 16px 40px rgba(24, 33, 43, 0.06);
+}
+
+.heroSpotlightEyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #46617c;
+}
+
+.heroSpotlightInner h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+  color: #18212b;
+}
+
+.heroSpotlightText {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: #506070;
+}
+
+.heroSpotlightBars {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.heroSpotlightBarRow {
+  display: grid;
+  gap: 4px;
+}
+
+.heroSpotlightBarLabelRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.heroSpotlightBarLabel {
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: #243446;
+}
+
+.heroSpotlightBarValue {
+  font-size: 0.93rem;
+  font-weight: 700;
+  color: #18212b;
+}
+
+.heroSpotlightBarTrack {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(219, 226, 234, 0.92);
+  overflow: hidden;
+}
+
+.heroSpotlightBar {
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+}
+
+.heroSpotlightBar--primary {
+  background: linear-gradient(90deg, #f28b50 0%, #df5f2d 100%);
+}
+
+.heroSpotlightBar--secondary {
+  background: linear-gradient(90deg, #d9c86a 0%, #c0a52f 100%);
+}
+
+.heroSpotlightBar--muted {
+  background: linear-gradient(90deg, #9fc3a7 0%, #6da077 100%);
+}
+
+.heroSpotlightEmphasis {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(205, 214, 224, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #243446;
 }
 
 .heroNavHeader {
@@ -136,7 +342,7 @@ input {
   justify-content: space-between;
   gap: 8px 16px;
   align-items: end;
-  margin-top: 28px;
+  margin-top: 24px;
 }
 
 .heroNavLabel {
@@ -1058,6 +1264,19 @@ input {
     position: relative;
     top: auto;
   }
+  .heroLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .heroSpotlight {
+    max-width: 760px;
+  }
+  .heroQuestionList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .heroNarrative {
+    max-width: none;
+  }
 }
 
 @media (max-width: 860px) {
@@ -1072,12 +1291,37 @@ input {
   }
 
   .heroIntro,
+  .heroSpotlightInner,
   .dashboardSection,
   .panel,
   .heroNavCard {
     padding: 16px;
   }
+  .heroLayout {
+    gap: 18px;
+  }
 
+  .heroHook {
+    max-width: none;
+  }
+
+  .heroQuestionList {
+    grid-template-columns: 1fr;
+  }
+
+  .heroQuestionChip {
+    min-height: auto;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .heroSpotlightBarLabelRow {
+    align-items: flex-start;
+  }
+  .heroNarrative {
+    padding: 18px 18px 16px;
+    border-radius: 20px;
+  }
   .field {
     width: 100%;
   }
@@ -1096,7 +1340,7 @@ input {
   .regionLegend {
     justify-content: flex-start;
   }
-  
+
   .regionLegendLabels {
     height: 44px;
   }

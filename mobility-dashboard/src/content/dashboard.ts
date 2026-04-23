@@ -1,9 +1,41 @@
 export const dashboardContent = {
   title: "Mobilitätsdashboard",
+  hook:
+    "Wenn Pendelmobilität einen großen Teil der universitätsbezogenen Emissionen verursacht, lohnt sich ein genauer Blick auf Wege, Distanzen und Barrieren.",
   subtitle:
-    "Interaktives Dashboard zur Exploration der Mobilitätsumfrage der Universität Regensburg.",
+    "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
   intro:
-    "Erkunden Sie zentrale Ergebnisse der Mobilitätsumfrage und vergleichen Sie Muster nach Personengruppen, Verkehrsmitteln und weiteren Merkmalen.",
+    "Es verbindet einen schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden im Mobilitätsalltag.",
+  heroQuestions: [
+    "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
+    "Ab welcher Distanz verschieben sich die genutzten Verkehrsmittel?",
+    "Welche Probleme und Verbesserungsbedarfe werden sichtbar?",
+    "Aus welchen PLZ-Bereichen pendeln Teilnehmende zur Universität?",
+  ],
+  climateContext: {
+    eyebrow: "Treibhausgasbilanz 2022",
+    title: "Pendelmobilität ist ein zentraler Hebel",
+    text: "In der Treibhausgasbilanz der Universität Regensburg entfällt der größte ausgewiesene Anteil auf die Pendelmobilität von UR-Angehörigen.",
+    emphasis:
+      "Das Dashboard hilft dabei, diese Wege differenzierter zu verstehen statt sie nur als Gesamtwert zu betrachten.",
+    items: [
+      {
+        label: "Pendeln von UR-Angehörigen",
+        value: 52,
+        tone: "primary",
+      },
+      {
+        label: "Wärme",
+        value: 34,
+        tone: "secondary",
+      },
+      {
+        label: "Strom",
+        value: 9,
+        tone: "muted",
+      },
+    ],
+  },
   sectionLinks: [
     {
       id: "overview",
