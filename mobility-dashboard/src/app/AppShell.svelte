@@ -6,7 +6,6 @@
   <header class="hero">
     <div class="heroLayout">
       <div class="heroContent">
-        <p class="heroEyebrow">Universität Regensburg</p>
         <h1>{dashboardContent.title}</h1>
 
         <div class="heroNarrative">

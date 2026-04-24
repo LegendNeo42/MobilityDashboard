@@ -1,11 +1,11 @@
 export const dashboardContent = {
-  title: "Mobilitätsdashboard",
+  title: "Unterwegs zur Universität Regensburg",
   hook:
     "Wenn Pendelmobilität einen großen Teil der universitätsbezogenen Emissionen verursacht, lohnt sich ein genauer Blick auf Wege, Distanzen und Barrieren.",
   subtitle:
     "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
   intro:
-    "Es verbindet einen schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden im Mobilitätsalltag.",
+  "Es zeigt Ergebnisse der Mobilitätsumfrage im Wintersemester 2024/25 und verbindet den schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden.",
   heroQuestions: [
     "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
     "Ab welcher Distanz verschieben sich die genutzten Verkehrsmittel?",

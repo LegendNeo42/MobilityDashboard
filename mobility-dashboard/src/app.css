@@ -55,7 +55,7 @@ input {
 .hero {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 48px 20px 32px;
+  padding: 64px 20px 32px;
 }
 
 .heroLayout {
@@ -68,7 +68,7 @@ input {
 
 .heroContent {
   display: grid;
-  gap: 28px;
+  gap: 60px;
   min-width: 0;
   align-content: start;
 }
@@ -115,10 +115,15 @@ input {
 }
 
 .hero h1 {
-  max-width: 11ch;
-  font-size: clamp(2.3rem, 5.4vw, 3.5rem);
-  letter-spacing: -0.03em;
+  max-width: 160ch;
+  font-size: clamp(2.3rem, 2.6vw, 3.5rem);
+  letter-spacing: -0.028em;
   text-wrap: balance;
+  color: #18212b;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75),
+    0 10px 22px rgba(24, 33, 43, 0.12),
+    0 2px 6px rgba(24, 33, 43, 0.06);
 }
 
 .heroHook {
@@ -511,8 +516,8 @@ input {
 .dashboardSection--overview {
   background: linear-gradient(
     180deg,
-    rgba(235, 244, 253, 0.98),
-    rgba(255, 255, 255, 0.86)
+    rgb(232, 244, 255),
+    rgba(245, 254, 253, 0.20)
   );
   border-color: rgba(184, 205, 229, 0.9);
 }
@@ -583,21 +588,54 @@ input {
   gap: 14px;
 }
 
+.overviewDetailGrid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr);
+}
+
+.participationHeader {
+  margin-bottom: 16px;
+}
+
+.participationList {
+  display: grid;
+  gap: 10px;
+}
+
+
 .participationRow {
+  display: grid;
+  gap: 10px;
   padding: 16px;
-  border: 1px solid #d8e0e8;
+  border: 1px solid rgba(199, 211, 224, 0.95);
   border-radius: 14px;
-  background: #f9fbfd;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(244, 248, 252, 0.9)
+    );
+}
+
+.participationMain {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
 }
 
 .participationLabel,
 .participationMeta,
 .participationValue,
-.highlightText,
+.participationRate,
+.participationRateList p,
 .surveyInfoValue,
 .surveyInfoLabel,
 .contextFactList dt,
-.contextFactList dd {
+.contextFactList dd,
+.overviewHighlightEyebrow,
+.overviewHighlightValue,
+.overviewHighlightCard h4,
+.overviewHighlightCard p {
   margin: 0;
 }
 
@@ -616,40 +654,40 @@ input {
   color: #18212b;
 }
 
+.participationLabel {
+  font-weight: 600;
+  color: #18212b;
+}
+
 .participationMeta {
   margin-top: 6px;
   font-size: 0.92rem;
   color: #506070;
 }
 
-.overviewDetailGrid {
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-}
-
-.participationHeader {
-  margin-bottom: 16px;
-}
-
-.participationList {
-  display: grid;
-  gap: 10px;
-}
-
-.participationRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-}
-
-.participationLabel {
-  font-weight: 600;
+.participationValue {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: #18212b;
 }
 
-.participationValue {
-  font-size: 1.2rem;
-  font-weight: 700;
+.participationRate,
+.participationRateList {
+  padding-top: 10px;
+  border-top: 1px solid rgba(216, 224, 232, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #506070;
+}
+
+.participationRateList {
+  display: grid;
+  gap: 4px;
+}
+
+.participationRate strong,
+.participationRateList strong {
   color: #18212b;
 }
 
@@ -658,40 +696,53 @@ input {
   color: #506070;
 }
 
-.highlightPanel {
+.overviewHighlightGrid {
   display: grid;
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.highlightText {
-  margin-top: 10px;
-  color: #314252;
+.overviewHighlightCard {
+  min-height: 100%;
+  padding: 14px;
+  border: 1px solid rgba(214, 202, 190, 0.95);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.84),
+      rgba(250, 245, 240, 0.92)
+    );
 }
 
-.overviewBridgePanel {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-}
-
-.overviewBridgeLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: #314252;
-  color: #ffffff;
+.overviewHighlightEyebrow {
+  font-size: 0.78rem;
   font-weight: 700;
-  text-decoration: none;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #46617c;
 }
 
-.overviewBridgeLink:hover,
-.overviewBridgeLink:focus-visible {
-  background: #243446;
+.overviewHighlightValue {
+  margin-top: 10px;
+  font-size: 1.55rem;
+  line-height: 1;
+  font-weight: 800;
+  color: #18212b;
+}
+
+.overviewHighlightCard h4 {
+  margin-top: 10px;
+  font-size: 0.98rem;
+  line-height: 1.25;
+  color: #18212b;
+}
+
+.overviewHighlightCard p:last-child {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #506070;
 }
 
 .surveyContextList {
@@ -767,6 +818,38 @@ input {
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 10px 30px rgba(24, 33, 43, 0.05);
+}
+
+.panel.participationPanel {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(116, 195, 198, 0.16) 0%,
+      rgba(116, 175, 198, 0.08) 20%,
+      rgba(255, 255, 255, 0) 48%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(252, 254, 255, 0.50) 0%,
+      rgba(239, 246, 252, 0.50) 100%
+    );
+  border: 1px solid rgba(184, 220, 217, 0.95);
+}
+
+.panel.highlightPanel {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(236, 201, 104, 0.16) 0%,
+      rgba(236, 201, 104, 0.08) 20%,
+      rgba(255, 255, 255, 0) 48%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 254, 250, 0.5) 0%,
+      rgba(251, 244, 237, 0.5) 100%
+    );
+  border: 1px solid rgba(209, 216, 117, 0.678);
 }
 
 .chartModule + .chartModule {
@@ -1281,6 +1364,9 @@ input {
 
 @media (max-width: 860px) {
   .overviewDetailGrid {
+    grid-template-columns: 1fr;
+  }
+  .overviewHighlightGrid {
     grid-template-columns: 1fr;
   }
 }
