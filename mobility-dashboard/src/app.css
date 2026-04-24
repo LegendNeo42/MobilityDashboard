@@ -517,7 +517,7 @@ input {
   background: linear-gradient(
     180deg,
     rgb(232, 244, 255),
-    rgba(245, 254, 253, 0.20)
+    rgba(245, 254, 253, 0.2)
   );
   border-color: rgba(184, 205, 229, 0.9);
 }
@@ -563,6 +563,7 @@ input {
 }
 
 .contextPanel h3,
+.contextCardIntro,
 .surveyInfoValue,
 .surveyInfoLabel,
 .contextFactList dt,
@@ -601,19 +602,17 @@ input {
   gap: 10px;
 }
 
-
 .participationRow {
   display: grid;
   gap: 10px;
   padding: 16px;
   border: 1px solid rgba(199, 211, 224, 0.95);
   border-radius: 14px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.82),
-      rgba(244, 248, 252, 0.9)
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(244, 248, 252, 0.9)
+  );
 }
 
 .participationMain {
@@ -707,12 +706,11 @@ input {
   padding: 14px;
   border: 1px solid rgba(214, 202, 190, 0.95);
   border-radius: 14px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.84),
-      rgba(250, 245, 240, 0.92)
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.84),
+    rgba(250, 245, 240, 0.92)
+  );
 }
 
 .overviewHighlightEyebrow {
@@ -760,35 +758,44 @@ input {
 }
 
 .contextGrid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .contextPanel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
   min-height: 100%;
 }
 
 .contextPanel--wide {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
-.contextPanelLead {
-  margin: 0;
-  max-width: 72ch;
+.contextPanelLead,
+.contextCardIntro {
+  max-width: 76ch;
   color: #506070;
+}
+
+.contextCardIntro {
+  font-size: 0.94rem;
+  line-height: 1.5;
 }
 
 .contextFactList {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   margin: 0;
 }
 
 .contextFactList > div,
 .contextGlossaryList > div {
-  padding: 12px;
-  border: 1px solid #e1e8ef;
+  padding: 13px;
+  border: 1px solid rgba(214, 224, 234, 0.95);
   border-radius: 12px;
-  background: #f8fbfd;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .contextFactList dt {
@@ -798,7 +805,7 @@ input {
 }
 
 .contextFactList dd {
-  margin-top: 4px;
+  margin-top: 5px;
   color: #243446;
 }
 
@@ -806,10 +813,15 @@ input {
   margin: 0;
   padding-left: 18px;
   color: #506070;
+  line-height: 1.55;
 }
 
 .contextList li + li {
   margin-top: 8px;
+}
+
+.contextPanel--general {
+  border-color: rgba(202, 213, 224, 0.95);
 }
 
 .panel {
@@ -830,8 +842,8 @@ input {
     ),
     linear-gradient(
       180deg,
-      rgba(252, 254, 255, 0.50) 0%,
-      rgba(239, 246, 252, 0.50) 100%
+      rgba(252, 254, 255, 0.5) 0%,
+      rgba(239, 246, 252, 0.5) 100%
     );
   border: 1px solid rgba(184, 220, 217, 0.95);
 }
@@ -851,6 +863,51 @@ input {
     );
   border: 1px solid rgba(209, 216, 117, 0.678);
 }
+
+.panel.contextPanel--basis {
+  background:
+    radial-gradient(circle at top left, rgba(76, 129, 180, 0.26), transparent 46%),
+    linear-gradient(180deg, #fafcff 0%, #edf5fb 100%);
+}
+
+.panel.contextPanel--values {
+  background:
+    radial-gradient(circle at top right, rgba(87, 137, 180, 0.24), transparent 46%),
+    linear-gradient(180deg, #fbfdff 0%, #eef6fb 100%);
+}
+
+.panel.contextPanel--qualitative {
+  background:
+    radial-gradient(circle at top left, rgba(91, 132, 178, 0.23), transparent 46%),
+    linear-gradient(180deg, #fbfdff 0%, #eff6fc 100%);
+}
+
+.panel.contextPanel--limits {
+  background:
+    radial-gradient(circle at top right, rgba(77, 111, 150, 0.23), transparent 46%),
+    linear-gradient(180deg, #fbfdff 0%, #edf2f7 100%);
+}
+
+.panel.contextPanel--display {
+  background:
+    radial-gradient(circle at top left, rgba(101, 136, 166, 0.24), transparent 46%),
+    linear-gradient(180deg, #fbfdff 0%, #eef3f8 100%);
+}
+
+.panel.contextPanel--analysis {
+  background:
+    radial-gradient(circle at top right, rgba(74, 88, 178, 0.25), transparent 46%),
+    linear-gradient(180deg, #f1f3ff 0%, #fbfcff 100%);
+  border-color: rgba(178, 188, 226, 0.95);
+}
+
+.panel.contextPanel--region {
+  background:
+    radial-gradient(circle at top right, rgba(44, 138, 98, 0.27), transparent 46%),
+    linear-gradient(180deg, #eef9f3 0%, #fbfffd 100%);
+  border-color: rgba(172, 212, 192, 0.95);
+}
+
 
 .chartModule + .chartModule {
   margin-top: 20px;
@@ -1361,6 +1418,11 @@ input {
     max-width: none;
   }
 }
+@media (max-width: 1180px) {
+  .contextGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 @media (max-width: 860px) {
   .overviewDetailGrid {
@@ -1399,6 +1461,9 @@ input {
     min-height: auto;
     padding: 12px 14px;
     border-radius: 14px;
+  }
+  .contextGrid {
+    grid-template-columns: 1fr;
   }
 
   .heroSpotlightBarLabelRow {
