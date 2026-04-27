@@ -1264,36 +1264,46 @@ input {
 
 .regionModuleLayout {
   display: grid;
+  grid-template-columns: minmax(560px, 1fr) minmax(280px, 320px);
   gap: 18px;
+  align-items: start;
 }
 
-.regionInfoGrid {
+.regionMapColumn {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  min-width: 0;
+}
+
+.regionDetailColumn {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+.regionMapSupportRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 280px);
+  gap: 16px;
+  align-items: stretch;
 }
 
 .regionMapCard {
   display: grid;
-  gap: 16px;
-}
-
-.regionMapHeader {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: start;
 }
 
 .regionSubtext {
   margin-top: 6px;
   font-size: 0.94rem;
 }
+
 .regionLegendPanel,
-.regionHoverPanel {
+.regionHoverPanel,
+.regionSelectionPanel {
   display: grid;
   gap: 12px;
+  padding: 18px;
 }
 
 .regionLegendMarkerRow {
@@ -1367,8 +1377,9 @@ input {
 
 .regionMapFrame {
   position: relative;
-  min-height: 520px;
+  height: 520px;
   padding: 12px;
+  overflow: hidden;
   border: 1px solid rgba(204, 218, 211, 0.95);
   border-radius: 16px;
   background:
@@ -1390,10 +1401,48 @@ input {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
+.regionMapOverlay {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.regionMapInteractionHint {
+  max-width: 400px;
+  padding: 8px 11px;
+  border: 1px solid rgba(200, 210, 220, 0.8);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 8px 22px rgba(24, 33, 43, 0.08);
+  color: #314252;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  backdrop-filter: blur(8px);
+}
+
+.regionMapResetButton {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 22px rgba(24, 33, 43, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.regionMapResetButton:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .regionMapSvg {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .regionUniversityMarker {
@@ -1455,7 +1504,8 @@ input {
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .regionResetButton:hover,
@@ -1494,8 +1544,12 @@ input {
   color: #18212b;
 }
 
+.regionDetailList--compact {
+  grid-template-columns: 1fr;
+}
+
 .regionDetailList--selection {
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .regionSplitSection {
@@ -1529,7 +1583,7 @@ input {
 .regionTransportRowHeader {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   align-items: baseline;
 }
 
@@ -1539,6 +1593,7 @@ input {
 }
 
 .regionTransportValues {
+  flex: 0 0 auto;
   font-size: 0.92rem;
   color: #314252;
 }
@@ -1557,13 +1612,23 @@ input {
   background: linear-gradient(90deg, #62896f, #3f7d59);
 }
 
-@media (max-width: 1100px) {
-  .regionInfoGrid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 1180px) {
+  @media (max-width: 1180px) {
+    .regionModuleLayout {
+      grid-template-columns: 1fr;
+    }
 
-  .regionMapFrame {
-    min-height: auto;
+    .regionMapFrame {
+      height: auto;
+      min-height: 420px;
+    }
+
+    .regionMapSvg {
+      height: auto;
+    }
+  }
+  .contextGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1589,10 +1654,36 @@ input {
   .heroNarrative {
     max-width: none;
   }
-}
-@media (max-width: 1180px) {
-  .contextGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .regionMapSupportRow {
+    grid-template-columns: 1fr;
+  }
+
+  .regionMapOverlay {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .regionMapInteractionHint {
+    max-width: none;
+    border-radius: 14px;
+  }
+
+  .regionSelectionHeader,
+  .regionTransportRowHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .regionLegendLabels {
+    height: 44px;
+  }
+
+  .regionLegendLabels span {
+    font-size: 0.78rem;
+  }
+
+  .regionDetailList--selection {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1651,32 +1742,5 @@ input {
 
   .statusGroupField {
     flex-basis: 100%;
-  }
-
-  .regionMapHeader,
-  .regionTransportRowHeader,
-  .regionSelectionHeader {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .regionLegend {
-    justify-content: flex-start;
-  }
-
-  .regionLegendLabels {
-    height: 44px;
-  }
-
-  .regionLegendLabels span {
-    font-size: 0.78rem;
-  }
-
-  .regionDetailList--compact {
-    grid-template-columns: 1fr;
-  }
-
-  .regionDetailList--selection {
-    grid-template-columns: 1fr;
   }
 }

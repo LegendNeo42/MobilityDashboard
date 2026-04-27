@@ -326,7 +326,11 @@
       : formatInteger(count);
   }
 
-  function getSelectedTransportBarWidth(count: number, share: number, maxCount: number): string {
+  function getSelectedTransportBarWidth(
+    count: number,
+    share: number,
+    maxCount: number,
+  ): string {
     if ($dashboardFilters.measureMode === "percent") {
       return `${Math.max(share * 100, 2)}%`;
     }
@@ -457,7 +461,11 @@
     };
   }
 
-  function clampTransform(scale: number, translateX: number, translateY: number) {
+  function clampTransform(
+    scale: number,
+    translateX: number,
+    translateY: number,
+  ) {
     const minTranslateX = MAP_WIDTH - MAP_WIDTH * scale;
     const minTranslateY = MAP_HEIGHT - MAP_HEIGHT * scale;
 
@@ -574,7 +582,7 @@
   <DashboardChartSection
     eyebrow="PLZ-Karte"
     title="Wie verteilen sich die Teilnehmenden auf die sichtbaren PLZ-Bereiche?"
-    description="Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet darunter die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels."
+    description="Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels."
     note="Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Farbskala bleibt fest an der absoluten Fallzahl je PLZ ausgerichtet, damit gleiche Werte immer gleich eingefärbt werden. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt."
     hasToolbar={true}
     hasMeta={true}
@@ -606,91 +614,96 @@
     {/snippet}
 
     <div class="regionModuleLayout">
-      <div class="regionMapCard">
-        <div class="regionMapHeader">
-          <div>
-            <h3 class="regionSubheading">Teilnehmende je PLZ</h3>
-          </div>
-
-          {#if hasMapTransform}
-            <button type="button" class="regionResetButton" onclick={resetMapView}>
-              Ansicht zurücksetzen
-            </button>
-          {/if}
-        </div>
-
-        <div
-          class:regionMapFrame={true}
-          class:is-panning={isPanning}
-          role="presentation"
-          style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "default"};`}
-          onmousedown={handleMapMouseDown}
-          onwheel={handleMapWheel}
-        >
-          <svg
-            bind:this={mapSvgElement}
-            class="regionMapSvg"
-            viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-            role="img"
-            aria-label="PLZ-Karte der fokussierten Region um Regensburg"
+      <div class="regionMapColumn">
+        <div class="regionMapCard">
+          <div
+            class:regionMapFrame={true}
+            class:is-panning={isPanning}
+            role="presentation"
+            style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "default"};`}
+            onmousedown={handleMapMouseDown}
+            onwheel={handleMapWheel}
           >
-            <g transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}>
-              {#each mapFeatures as feature}
-                <path
-                  class="regionPath"
-                  class:is-hovered={!isPanning && hoveredPlz === feature.plz}
-                  class:is-selected={selectedPlz === feature.plz}
-                  class:is-empty={!feature.metric || feature.metric.n === 0}
-                  d={feature.path}
-                  fill={getRegionFillColor(
-                    feature.metric?.n ?? 0,
-                    dataset.maxParticipantCount,
-                  )}
-                  vector-effect="non-scaling-stroke"
-                  role="button"
-                  tabindex="0"
-                  aria-label={`PLZ ${feature.plz}`}
-                  style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
-                  onmouseenter={() => {
-                    if (isPanning) return;
-                    hoveredPlz = feature.plz;
-                  }}
-                  onmouseleave={() => {
-                    hoveredPlz = null;
-                  }}
-                  onfocus={() => {
-                    if (isPanning) return;
-                    hoveredPlz = feature.plz;
-                  }}
-                  onblur={() => {
-                    hoveredPlz = null;
-                  }}
-                  onmousedown={handleRegionPointerDown}
-                  onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
-                  onclick={(event) => handleRegionMouseClick(event, feature.plz)}
-                >
-                  <title>
-                    {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
-                  </title>
-                </path>
-              {/each}
+            <div class="regionMapOverlay" aria-hidden="true">
+              <div class="regionMapInteractionHint">
+                Mausrad zum Zoomen · Ziehen zum Verschieben
+              </div>
 
-              {#if universityMarkerPosition}
-                <circle
-                  class="regionUniversityMarker"
-                  cx={universityMarkerPosition.x}
-                  cy={universityMarkerPosition.y}
-                  r="4"
-                ></circle>
-              {/if}
-            </g>
-          </svg>
+              <button
+                type="button"
+                class="regionResetButton regionMapResetButton"
+                disabled={!hasMapTransform}
+                aria-disabled={!hasMapTransform}
+                onmousedown={(event) => event.stopPropagation()}
+                onclick={resetMapView}
+              >
+                Ansicht zurücksetzen
+              </button>
+            </div>
+
+            <svg
+              bind:this={mapSvgElement}
+              class="regionMapSvg"
+              viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+              role="img"
+              aria-label="PLZ-Karte der fokussierten Region um Regensburg"
+            >
+              <g transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}>
+                {#each mapFeatures as feature}
+                  <path
+                    class="regionPath"
+                    class:is-hovered={!isPanning && hoveredPlz === feature.plz}
+                    class:is-selected={selectedPlz === feature.plz}
+                    class:is-empty={!feature.metric || feature.metric.n === 0}
+                    d={feature.path}
+                    fill={getRegionFillColor(
+                      feature.metric?.n ?? 0,
+                      dataset.maxParticipantCount,
+                    )}
+                    vector-effect="non-scaling-stroke"
+                    role="button"
+                    tabindex="0"
+                    aria-label={`PLZ ${feature.plz}`}
+                    style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
+                    onmouseenter={() => {
+                      if (isPanning) return;
+                      hoveredPlz = feature.plz;
+                    }}
+                    onmouseleave={() => {
+                      hoveredPlz = null;
+                    }}
+                    onfocus={() => {
+                      if (isPanning) return;
+                      hoveredPlz = feature.plz;
+                    }}
+                    onblur={() => {
+                      hoveredPlz = null;
+                    }}
+                    onmousedown={handleRegionPointerDown}
+                    onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
+                    onclick={(event) => handleRegionMouseClick(event, feature.plz)}
+                  >
+                    <title>
+                      {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
+                    </title>
+                  </path>
+                {/each}
+
+                {#if universityMarkerPosition}
+                  <circle
+                    class="regionUniversityMarker"
+                    cx={universityMarkerPosition.x}
+                    cy={universityMarkerPosition.y}
+                    r="4"
+                  ></circle>
+                {/if}
+              </g>
+            </svg>
+          </div>
         </div>
-      </div>
 
-      <div class="regionInfoGrid">
-        <section class="panel regionInfoPanel">
-          <div class="regionLegendPanel">
+        <div class="regionMapSupportRow">
+          <section class="panel regionInfoPanel regionLegendPanel">
             <h3 class="regionSubheading">Legende</h3>
 
             <div class="regionLegendMarkerRow">
@@ -712,9 +725,9 @@
                 {/each}
               </div>
             </div>
-          </div>
+          </section>
 
-          <div class="regionHoverPanel">
+          <section class="panel regionInfoPanel regionHoverPanel">
             <h3 class="regionSubheading">Hover-Vorschau</h3>
 
             <dl class="regionDetailList regionDetailList--compact">
@@ -727,10 +740,12 @@
                 <dd>{hoverPreview.n === null ? "–" : `n = ${formatInteger(hoverPreview.n)}`}</dd>
               </div>
             </dl>
-          </div>
-        </section>
+          </section>
+        </div>
+      </div>
 
-        <section class="panel regionInfoPanel">
+      <aside class="regionDetailColumn" aria-label="Regionale Detailinformationen">
+        <section class="panel regionInfoPanel regionSelectionPanel">
           <div class="regionSelectionHeader">
             <div>
               <h3 class="regionSubheading">Ausgewählte PLZ</h3>
@@ -738,12 +753,6 @@
                 Die Detailansicht berücksichtigt die aktuelle Auswahl des Dashboards.
               </p>
             </div>
-
-            {#if selectedRegion}
-              <button type="button" class="regionResetButton" onclick={clearSelection}>
-                Auswahl zurücksetzen
-              </button>
-            {/if}
           </div>
 
           {#if selectedRegion}
@@ -791,13 +800,17 @@
                 </ul>
               {/if}
             </div>
+
+            <button type="button" class="regionResetButton" onclick={clearSelection}>
+              Auswahl zurücksetzen
+            </button>
           {:else}
             <p class="regionPlaceholderText">
               Wählen Sie eine PLZ auf der Karte aus, um die regionale Detailansicht zu öffnen.
             </p>
           {/if}
         </section>
-      </div>
+      </aside>
     </div>
   </DashboardChartSection>
 {/if}

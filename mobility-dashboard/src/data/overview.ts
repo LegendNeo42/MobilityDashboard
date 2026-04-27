@@ -3,6 +3,7 @@ import { loadBicycleImprovementData } from "./bicycleImprovements";
 import { loadPublicTransportBarrierData } from "./publicTransportBarriers";
 import { loadPublicTransportImprovementData } from "./publicTransportImprovements";
 import { loadQualitativePreparedDataset } from "./qualitativeFeedback";
+import { loadPlzMapDataset } from "./plzMap";
 import { loadSurveyMetadata } from "./surveyMetadata";
 import type { SurveyStatusGroupSummary } from "./surveyMetadata";
 import type { ImportancePriorityDataset } from "./importancePriorities";
@@ -24,7 +25,8 @@ export type DashboardOverviewSummary = {
   highlights: DashboardOverviewHighlight[];
 };
 
-let dashboardOverviewSummaryCache: Promise<DashboardOverviewSummary> | null = null;
+let dashboardOverviewSummaryCache: Promise<DashboardOverviewSummary> | null =
+  null;
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat("de-DE").format(value);
@@ -105,7 +107,8 @@ function buildTopPublicTransportBarrierHighlight(
   >();
 
   for (const row of barrierDataset.rows) {
-    if (row.main_vehicle !== "car-driver" || row.response_key !== "yes") continue;
+    if (row.main_vehicle !== "car-driver" || row.response_key !== "yes")
+      continue;
 
     const current = yesCountsByBarrier.get(row.barrier);
     if (current) {
@@ -197,7 +200,9 @@ function buildTopImportanceHighlight(
 }
 
 function buildTopQualitativeThemeHighlight(
-  qualitativeDataset: Awaited<ReturnType<typeof loadQualitativePreparedDataset>>,
+  qualitativeDataset: Awaited<
+    ReturnType<typeof loadQualitativePreparedDataset>
+  >,
 ): DashboardOverviewHighlight | null {
   const topTheme = qualitativeDataset.themes
     .filter((theme) => theme.statements > 0)
@@ -216,6 +221,35 @@ function buildTopQualitativeThemeHighlight(
   };
 }
 
+function buildRegionalConcentrationHighlight(
+  plzMapDataset: Awaited<ReturnType<typeof loadPlzMapDataset>>,
+): DashboardOverviewHighlight | null {
+  const referenceSemesterTime = plzMapDataset.semesterOptions.includes("ws_vl")
+    ? "ws_vl"
+    : plzMapDataset.semesterOptions[0];
+
+  if (!referenceSemesterTime) return null;
+
+  const visibleRows = Array.from(plzMapDataset.rowsByKey.values()).filter(
+    (row) => row.semester_time === referenceSemesterTime && row.n > 0,
+  );
+
+  const visibleCases = visibleRows.reduce((total, row) => total + row.n, 0);
+  if (visibleCases <= 0) return null;
+
+  const topRegionCases = visibleRows
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 5)
+    .reduce((total, row) => total + row.n, 0);
+
+  return {
+    eyebrow: "PLZ-Karte",
+    title: "Regionale Konzentration",
+    value: ` ${formatPercent((topRegionCases / visibleCases) * 100)} %`,
+    text: "der sichtbaren Kartenfälle liegen in den fünf stärksten PLZ-Bereichen.",
+  };
+}
+
 export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewSummary> {
   if (dashboardOverviewSummaryCache) return dashboardOverviewSummaryCache;
 
@@ -226,6 +260,7 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
     loadBicycleImprovementData(),
     loadPublicTransportImprovementData(),
     loadQualitativePreparedDataset(),
+    loadPlzMapDataset(),
   ]).then(
     ([
       metadata,
@@ -234,34 +269,16 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
       bicycleDataset,
       publicTransportImprovementDataset,
       qualitativeDataset,
+      plzMapDataset,
     ]) => {
-      const participationHighlights = metadata.statusGroupSummaries
-        .filter((group) => group.participationRatePercent !== null)
-        .sort((a, b) => {
-          const rateDifference =
-            (b.participationRatePercent ?? 0) - (a.participationRatePercent ?? 0);
-          if (rateDifference !== 0) return rateDifference;
-          return a.label.localeCompare(b.label, "de");
-        });
-
-      const topParticipationGroup = participationHighlights[0];
       const highlights: DashboardOverviewHighlight[] = [];
-
-      if (
-        topParticipationGroup &&
-        topParticipationGroup.participationRatePercent !== null
-      ) {
-        highlights.push({
-          eyebrow: "Beteiligung",
-          title: `${topParticipationGroup.label} besonders stark vertreten`,
-          value: `${formatPercent(topParticipationGroup.participationRatePercent)} %`,
-          text: "Beteiligungsquote innerhalb dieser universitären Gruppe.",
-        });
-      }
-
       highlights.push(buildTopVehicleHighlight(vehicleUsageDataset));
+      const regionalHighlight =
+        buildRegionalConcentrationHighlight(plzMapDataset);
+      if (regionalHighlight) highlights.push(regionalHighlight);
 
-      const barrierHighlight = buildTopPublicTransportBarrierHighlight(barrierDataset);
+      const barrierHighlight =
+        buildTopPublicTransportBarrierHighlight(barrierDataset);
       if (barrierHighlight) highlights.push(barrierHighlight);
 
       const bicycleHighlight = buildTopImportanceHighlight(
@@ -280,9 +297,8 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
         highlights.push(publicTransportImprovementHighlight);
       }
 
-      const qualitativeHighlight = buildTopQualitativeThemeHighlight(
-        qualitativeDataset,
-      );
+      const qualitativeHighlight =
+        buildTopQualitativeThemeHighlight(qualitativeDataset);
       if (qualitativeHighlight) highlights.push(qualitativeHighlight);
 
       return {
