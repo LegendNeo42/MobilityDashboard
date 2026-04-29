@@ -87,7 +87,7 @@ function buildTopVehicleHighlight(
     title: topVehicleUsage?.label ?? "Keine Angabe",
     value: formatInteger(topVehicleUsage?.people ?? 0),
     text: secondVehicleUsage
-      ? `Personen nennen dieses Verkehrsmittel im Wintersemester (vorlesungszeit); ${secondVehicleUsage.label} folgt mit ${formatInteger(secondVehicleUsage.people)} Personen.`
+      ? `Personen nennen dieses Verkehrsmittel im Wintersemester während der Vorlesungszeit. ${secondVehicleUsage.label} folgt mit ${formatInteger(secondVehicleUsage.people)} Personen.`
       : "Personen nennen dieses Verkehrsmittel in der Übersicht.",
   };
 }
@@ -107,8 +107,9 @@ function buildTopPublicTransportBarrierHighlight(
   >();
 
   for (const row of barrierDataset.rows) {
-    if (row.main_vehicle !== "car-driver" || row.response_key !== "yes")
+    if (row.main_vehicle !== "car-driver" || row.response_key !== "yes") {
       continue;
+    }
 
     const current = yesCountsByBarrier.get(row.barrier);
     if (current) {
@@ -134,7 +135,7 @@ function buildTopPublicTransportBarrierHighlight(
     eyebrow: "ÖPNV-Barriere",
     title: topBarrier.label,
     value: `${formatPercent((topBarrier.people / carDriverSegmentSize) * 100)} %`,
-    text: "der befragten Autofahrenden nennen diesen Punkt als Grund gegen die ÖPNV-Nutzung.",
+    text: "der Autofahrenden nennen diese Barriere als Grund gegen Bus und Bahn.",
   };
 }
 
@@ -217,7 +218,7 @@ function buildTopQualitativeThemeHighlight(
     eyebrow: "Freitext-Thema",
     title: topTheme.label,
     value: formatInteger(topTheme.statements),
-    text: "vorbereitete Aussagen entfallen im qualitativen Überblick auf dieses Thema.",
+    text: "Aussagen sind diesem Thema im qualitativen Überblick zugeordnet.",
   };
 }
 
@@ -244,9 +245,9 @@ function buildRegionalConcentrationHighlight(
 
   return {
     eyebrow: "PLZ-Karte",
-    title: "Regionale Konzentration",
-    value: ` ${formatPercent((topRegionCases / visibleCases) * 100)} %`,
-    text: "der sichtbaren Kartenfälle liegen in den fünf stärksten PLZ-Bereichen.",
+    title: "fünf stärkste PLZ-Bereiche",
+    value: `${formatPercent((topRegionCases / visibleCases) * 100)} %`,
+    text: "der sichtbaren Kartenfälle liegen in der regionalen Ansicht in diesen fünf PLZ-Bereichen.",
   };
 }
 
@@ -272,7 +273,9 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
       plzMapDataset,
     ]) => {
       const highlights: DashboardOverviewHighlight[] = [];
+
       highlights.push(buildTopVehicleHighlight(vehicleUsageDataset));
+
       const regionalHighlight =
         buildRegionalConcentrationHighlight(plzMapDataset);
       if (regionalHighlight) highlights.push(regionalHighlight);
@@ -284,14 +287,14 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
       const bicycleHighlight = buildTopImportanceHighlight(
         bicycleDataset,
         "Fahrrad",
-        "der gültigen Bewertungen zu diesem Thema sind eher oder sehr wichtig.",
+        "der Bewertungen stufen dieses Thema als eher oder sehr wichtig ein.",
       );
       if (bicycleHighlight) highlights.push(bicycleHighlight);
 
       const publicTransportImprovementHighlight = buildTopImportanceHighlight(
         publicTransportImprovementDataset,
         "ÖPNV-Verbesserung",
-        "der gültigen Bewertungen zu diesem Thema sind eher oder sehr wichtig.",
+        "der Bewertungen stufen dieses Thema als eher oder sehr wichtig ein.",
       );
       if (publicTransportImprovementHighlight) {
         highlights.push(publicTransportImprovementHighlight);

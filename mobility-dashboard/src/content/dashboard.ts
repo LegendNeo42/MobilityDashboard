@@ -5,19 +5,40 @@ export const dashboardContent = {
   subtitle:
     "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
   intro:
-  "Es zeigt Ergebnisse der Mobilitätsumfrage im Wintersemester 2024/25 und verbindet den schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden.",
+    "Es zeigt Ergebnisse der Mobilitätsumfrage im Wintersemester 2024/25 und verbindet den schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden.",
   heroQuestions: [
-    "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
-    "Ab welcher Distanz verschieben sich die genutzten Verkehrsmittel?",
-    "Welche Probleme und Verbesserungsbedarfe werden sichtbar?",
-    "Aus welchen PLZ-Bereichen pendeln Teilnehmende zur Universität?",
+    {
+      question: "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
+      targetId: "analysis",
+      area: "Analysecharts",
+    },
+    {
+      question: "Ab welcher Distanz verschieben sich die genutzten Verkehrsmittel?",
+      targetId: "distance",
+      area: "Verkehrsmittel & Distanz",
+    },
+    {
+      question: "Welche Probleme und Verbesserungsbedarfe werden sichtbar?",
+      targetId: "reasons",
+      area: "Hürden & Verbesserungen",
+    },
+    {
+      question: "Welche Themen tauchen in offenen Antworten auf?",
+      targetId: "qualitative",
+      area: "Qualitative Hinweise",
+    },
+    {
+      question: "Aus welchen PLZ-Bereichen pendeln Teilnehmende zur Universität?",
+      targetId: "region",
+      area: "Regionale PLZ-Karte",
+    },
   ],
   climateContext: {
     eyebrow: "Treibhausgasbilanz 2022",
-    title: "Pendelmobilität ist ein zentraler Hebel",
-    text: "In der Treibhausgasbilanz der Universität Regensburg entfällt der größte ausgewiesene Anteil auf die Pendelmobilität von UR-Angehörigen.",
+    title: "Pendelmobilität als Einstiegspunkt",
+    text: "Die Grafik greift Pendelmobilität auf, weil sie in der Treibhausgasbilanz der Universität Regensburg die größte ausgewiesene Kategorie ist.",
     emphasis:
-      "Das Dashboard hilft dabei, diese Wege differenzierter zu verstehen statt sie nur als Gesamtwert zu betrachten.",
+      "Wärme und Strom dienen hier nur als Vergleichskontext. Die folgenden Auswertungen konzentrieren sich auf Wege zur Universität.",
     items: [
       {
         label: "Pendeln von UR-Angehörigen",
@@ -36,40 +57,6 @@ export const dashboardContent = {
       },
     ],
   },
-  sectionLinks: [
-    {
-      id: "overview",
-      theme: "overview",
-      eyebrow: "Einstieg",
-      title: "Überblick",
-      text: "Zentrale Bereiche des Dashboards auf einen Blick.",
-      action: "Zum Abschnitt",
-    },
-    {
-      id: "analysis",
-      theme: "analysis",
-      eyebrow: "Analysen",
-      title: "Kerncharts",
-      text: "Vergleichen Sie Verkehrsmittel und weitere Muster in den Umfragedaten.",
-      action: "Zu den Charts",
-    },
-    {
-      id: "region",
-      theme: "region",
-      eyebrow: "Region",
-      title: "PLZ-Perspektive",
-      text: "Räumliche Unterschiede und Herkunftsbereiche im Überblick.",
-      action: "Zur Regionalsicht",
-    },
-    {
-      id: "context",
-      theme: "context",
-      eyebrow: "Kontext",
-      title: "Einordnung",
-      text: "Hinweise zur Datengrundlage und zur Interpretation der Ergebnisse.",
-      action: "Zum Kontext",
-    },
-  ],
   overviewSection: {
     eyebrow: "Überblick",
     title: "Schneller Einstieg in die wichtigsten Bereiche",

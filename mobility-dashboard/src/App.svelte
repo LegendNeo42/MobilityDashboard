@@ -18,6 +18,7 @@
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.overviewSection.eyebrow}</p>
       <h2>{dashboardContent.overviewSection.title}</h2>
+      <p class="sectionText">{dashboardContent.overviewSection.text}</p>
     </div>
 
     <SurveyOverviewSummary />
@@ -35,10 +36,16 @@
         </div>
 
         <VehicleUsageSection />
+
+        <div id="distance" class="sectionAnchor"></div>
         <ModalSplitByDistanceSection />
+
+        <div id="reasons" class="sectionAnchor"></div>
         <PublicTransportBarriersSection />
         <PublicTransportImprovementsSection />
         <BicycleImprovementsSection />
+
+        <div id="qualitative" class="sectionAnchor"></div>
         <QualitativeThemeSummarySection />
       </section>
 

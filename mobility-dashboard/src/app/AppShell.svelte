@@ -56,38 +56,16 @@
       <div class="heroQuestionBlock">
         <p class="heroQuestionLabel">Fragen im Fokus</p>
 
-        <div class="heroQuestionList" role="list">
+        <div class="heroQuestionList">
           {#each dashboardContent.heroQuestions as question}
-            <p class="heroQuestionChip" role="listitem">{question}</p>
+            <a class="heroQuestionChip" href={`#${question.targetId}`}>
+              <span class="heroQuestionArea">{question.area}</span>
+              <span>{question.question}</span>
+            </a>
           {/each}
         </div>
       </div>
     </div>
-
-    <div class="heroNavHeader">
-      <p class="heroNavLabel">Direkt zu den Bereichen</p>
-    </div>
-
-    <nav class="heroNav" aria-label="Dashboard-Bereiche">
-      {#each dashboardContent.sectionLinks as link}
-        <a
-          class="heroNavCard"
-          class:theme-overview={link.theme === "overview"}
-          class:theme-analysis={link.theme === "analysis"}
-          class:theme-region={link.theme === "region"}
-          class:theme-context={link.theme === "context"}
-          href={`#${link.id}`}
-        >
-          <p class="heroNavEyebrow">{link.eyebrow}</p>
-          <h2>{link.title}</h2>
-          <p>{link.text}</p>
-          <span class="heroNavAction">
-            {link.action}
-            <span aria-hidden="true">↓</span>
-          </span>
-        </a>
-      {/each}
-    </nav>
   </header>
 
   <main class="dashboardMain">
