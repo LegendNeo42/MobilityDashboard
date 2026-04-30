@@ -21,6 +21,7 @@
     response_order: number;
     people: number;
     segment_participants: number;
+    segment_context_label: string;
   };
 
   const ALL_SEGMENTS_KEY = "all";
@@ -32,8 +33,8 @@
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
-      ? "Antworten je Hürde (Nein links, Ja rechts)"
-      : "Anteil innerhalb des gewählten Segments (%)",
+      ? "Antworten zu Gründen gegen Bus und Bahn (Nein links, Ja rechts)"
+      : "Anteil der gezeigten Personen je Grund gegen Bus und Bahn (%)",
   );
 
   onMount(async () => {
@@ -73,6 +74,23 @@
     );
   });
 
+  let selectedSegmentLabel = $derived.by(() => {
+    if (segmentKey === ALL_SEGMENTS_KEY) return "Alle Hauptverkehrsmittel";
+
+    return (
+      dataset?.segmentOptions.find((option) => option.key === segmentKey)?.label ??
+      segmentKey
+    );
+  });
+
+  let selectedSegmentContextLabel = $derived.by(() => {
+    if (segmentKey === ALL_SEGMENTS_KEY) {
+      return "Personen mit beliebigem Hauptverkehrsmittel";
+    }
+
+    return `Personen mit Hauptverkehrsmittel ${selectedSegmentLabel}`;
+  });
+
   let visibleValues = $derived.by(() => {
     if (!dataset || participantsInSelection === 0) return [];
 
@@ -106,6 +124,7 @@
         response_order: row.response_order,
         people: row.people,
         segment_participants: participantsInSelection,
+        segment_context_label: selectedSegmentContextLabel,
       });
     }
 
@@ -117,15 +136,6 @@
 
   let visibleBarrierCount = $derived.by(() => {
     return new Set(visibleValues.map((row) => row.barrier)).size;
-  });
-
-  let selectedSegmentLabel = $derived.by(() => {
-    if (segmentKey === ALL_SEGMENTS_KEY) return "Alle Verkehrsmittel";
-
-    return (
-      dataset?.segmentOptions.find((option) => option.key === segmentKey)?.label ??
-      segmentKey
-    );
   });
 
   function formatInteger(value: number): string {
@@ -140,18 +150,18 @@
 {:else}
   <DashboardChartSection
     eyebrow="Hürden"
-    title="Warum wird der ÖPNV als unpraktisch wahrgenommen?"
-    description="Die Ansicht zeigt für das gewählte aktuelle Hauptverkehrsmittel, welche Gründe gegen Bus und Bahn genannt wurden. Standardmäßig startet die Auswertung mit Personen, die aktuell vor allem mit dem Auto fahren."
-    note="Der lokale Filter bezieht sich auf das aktuelle Hauptverkehrsmittel. Prozentwerte zeigen den Anteil innerhalb des gewählten Segments und der aktuell sichtbaren Personengruppen. Ja-Antworten liegen rechts, Nein-Antworten links."
+    title="Warum werden Bus und Bahn nicht genutzt?"
+    description="Die Balken zeigen immer Gründe gegen Bus und Bahn. Der lokale Filter legt fest, von Personen mit welchem aktuellen Hauptverkehrsmittel diese Antworten stammen."
+    note="Der lokale Filter ändert nicht das Thema des Diagramms: Es geht immer um Gründe gegen Bus und Bahn. Prozentwerte beziehen sich auf die gezeigten Personen mit dem gewählten Hauptverkehrsmittel und den aktuell sichtbaren Personengruppen. Ja-Antworten liegen rechts, Nein-Antworten links."
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}
   >
     {#snippet toolbar()}
       <label class="field">
-        <span>Aktuelles Hauptverkehrsmittel</span>
+        <span>Antworten von Personen mit Hauptverkehrsmittel</span>
         <select bind:value={segmentKey}>
-          <option value={ALL_SEGMENTS_KEY}>Alle Verkehrsmittel</option>
+          <option value={ALL_SEGMENTS_KEY}>Alle Hauptverkehrsmittel</option>
           {#each dataset.segmentOptions as option}
             <option value={option.key}>{option.label}</option>
           {/each}
@@ -161,10 +171,10 @@
 
     {#snippet meta()}
       <p class="chartMeta">
-        Gewähltes Segment: <strong>{selectedSegmentLabel}</strong>
+        Gezeigte Antworten von: <strong>{selectedSegmentContextLabel}</strong>
       </p>
       <p class="chartMeta">
-        Aktuelle Auswahl:
+        Gezeigte Personen:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">
@@ -183,7 +193,7 @@
     {:else}
       <p class="statusMessage">
         Für die aktuelle Kombination aus Personengruppen und Hauptverkehrsmittel
-        liegen keine Antworten vor.
+        liegen keine Angaben zu Gründen gegen Bus und Bahn vor.
       </p>
     {/if}
   </DashboardChartSection>

@@ -89,19 +89,36 @@ export function createPublicTransportBarrierSpec() {
         sort: "ascending",
       },
       tooltip: [
-        { field: "barrier_label", type: "nominal", title: "Hürde" },
-        { field: "response_side_label", type: "nominal", title: "Antwort" },
-        { field: "people", type: "quantitative", title: "Anzahl Personen" },
+        {
+          field: "barrier_label",
+          type: "nominal",
+          title: "Grund gegen Bus und Bahn",
+        },
+        {
+          field: "segment_context_label",
+          type: "nominal",
+          title: "Gezeigte Antworten von",
+        },
+        {
+          field: "response_side_label",
+          type: "nominal",
+          title: "Antwort auf diesen Grund",
+        },
+        {
+          field: "people",
+          type: "quantitative",
+          title: "Personen mit dieser Antwort",
+        },
         {
           field: "segment_share_percent_1",
           type: "quantitative",
-          title: "Anteil innerhalb des Segments (%)",
+          title: "Anteil dieser Personen (%)",
           format: ".1f",
         },
         {
           field: "segment_participants",
           type: "quantitative",
-          title: "Fallzahl des Segments (n)",
+          title: "Gezeigte Personen (n)",
         },
       ],
     },
