@@ -333,7 +333,14 @@
         />
         <p class="chartAxisTitle">{axisTitle}</p>
         <div class="quoteSelectorPanel">
-          <p class="quoteSelectorLabel">Beispielzitate nach Thema</p>
+          <div class="quoteSelectorHeader">
+            <p class="quoteSelectorLabel">Ausgewählte Beispielaussagen</p>
+            <p class="quoteSelectorIntro">
+              Die Balken zählen alle vorbereiteten Aussagen der sichtbaren
+              Auswahl. Die Beispiele darunter sind eine begrenzte Auswahl zum
+              Lesen und stehen nicht für alle gezählten Aussagen.
+            </p>
+          </div>
           <div
             class="quoteThemeList"
             role="tablist"
@@ -361,35 +368,40 @@
           <div class="quotePanel">
             <div class="quotePanelHeader">
               <div>
-                <p class="quotePanelEyebrow">Ausgewähltes Thema</p>
+                <p class="quotePanelEyebrow">
+                  Beispiele aus den offenen Antworten
+                </p>
                 <h3>{selectedTheme.label}</h3>
               </div>
               <p class="quotePanelMeta">
-                {formatInteger(selectedThemeVisibleStatementCount)} Aussagen in der
-                aktuellen Auswahl
+                {formatInteger(selectedThemeVisibleStatementCount)} Aussagen im Diagramm
+                · {formatInteger(selectedThemeQuotes.length)} von bis zu
+                {maxVisibleQuotes} Beispielen sichtbar
               </p>
             </div>
 
-            {#if selectedThemeQuotes.length > 0}
-              <div class="quoteList">
-                {#each selectedThemeQuotes as quote}
-                  <article class="quoteCard">
-                    <p class="quoteText">“{quote.text}”</p>
-                    <p class="quoteSource">
-                      {quote.sourceFieldLabel}
-                      {#if quote.statusGroupLabel}
-                        · {quote.statusGroupLabel}
-                      {/if}
-                    </p>
-                  </article>
-                {/each}
-              </div>
-            {:else}
-              <p class="statusMessage">
-                Für die aktuelle Auswahl ist zu diesem Thema derzeit kein
-                Beispielzitat hinterlegt.
-              </p>
-            {/if}
+            <div class="quotePanelBody">
+              {#if selectedThemeQuotes.length > 0}
+                <div class="quoteList">
+                  {#each selectedThemeQuotes as quote}
+                    <article class="quoteCard">
+                      <p class="quoteText">“{quote.text}”</p>
+                      <p class="quoteSource">
+                        {quote.sourceFieldLabel}
+                        {#if quote.statusGroupLabel}
+                          · {quote.statusGroupLabel}
+                        {/if}
+                      </p>
+                    </article>
+                  {/each}
+                </div>
+              {:else}
+                <p class="statusMessage quoteEmptyState">
+                  Für die aktuelle Auswahl ist zu diesem Thema derzeit kein
+                  Beispiel hinterlegt.
+                </p>
+              {/if}
+            </div>
           </div>
         {/if}
       </div>
@@ -405,18 +417,30 @@
 <style>
   .qualitativeModuleStack {
     display: grid;
-    gap: 18px;
+    gap: 16px;
   }
 
   .quoteSelectorPanel,
   .quotePanel {
-    padding: 16px;
     border: 1px solid #d8e0e8;
     border-radius: 14px;
     background: #f9fbfd;
   }
 
+  .quoteSelectorPanel {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .quotePanel {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+
   .quoteSelectorLabel,
+  .quoteSelectorIntro,
   .quotePanelEyebrow,
   .quotePanelMeta,
   .quoteSource,
@@ -424,6 +448,11 @@
   .quoteThemeButtonLabel,
   .quoteText {
     margin: 0;
+  }
+
+  .quoteSelectorHeader {
+    display: grid;
+    gap: 5px;
   }
 
   .quoteSelectorLabel,
@@ -434,25 +463,33 @@
     color: #46617c;
   }
 
+  .quoteSelectorIntro {
+    max-width: 92ch;
+    font-size: 0.93rem;
+    line-height: 1.45;
+    color: #506070;
+  }
+
   .quoteThemeList {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 12px;
   }
 
   .quoteThemeButton {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 6px 14px;
-    border: 1px solid #c8d2dc;
-    border-radius: 20px;
+    gap: 3px;
+    padding: 8px 13px;
+    border: 1px solid rgba(196, 210, 224, 0.95);
+    border-radius: 18px;
     background: #ffffff;
     color: #314252;
     text-align: left;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(24, 33, 43, 0.025);
     transition:
+      transform 0.15s ease,
       border-color 0.15s ease,
       background-color 0.15s ease,
       box-shadow 0.15s ease;
@@ -460,59 +497,161 @@
 
   .quoteThemeButton:hover,
   .quoteThemeButton:focus-visible {
-    border-color: #9fb0c1;
+    transform: translateY(-2px);
+    border-color: rgba(123, 152, 183, 0.9);
+    background: #f6f9fc;
+    box-shadow: 0 8px 18px rgba(24, 33, 43, 0.055);
     outline: none;
   }
 
   .quoteThemeButton.is-active {
+    border-color: rgba(83, 128, 179, 0.88);
     background: #eef4fb;
-    border-color: #7b98b7;
-    box-shadow: inset 0 0 0 1px rgba(70, 97, 124, 0.12);
+    box-shadow:
+      0 6px 14px rgba(83, 128, 179, 0.08),
+      inset 0 0 0 1px rgba(70, 97, 124, 0.1);
+  }
+
+  .quoteThemeButton.is-active:hover,
+  .quoteThemeButton.is-active:focus-visible {
+    border-color: rgba(70, 111, 157, 0.95);
+    background: #e8f1fa;
+    box-shadow:
+      0 9px 20px rgba(83, 128, 179, 0.12),
+      inset 0 0 0 1px rgba(70, 97, 124, 0.12);
   }
 
   .quoteThemeButtonLabel {
-    font-weight: 600;
+    font-weight: 700;
     color: #18212b;
   }
 
-  .quoteThemeButtonMeta,
-  .quotePanelMeta,
-  .quoteSource {
+  .quoteThemeButtonMeta {
     color: #506070;
+    font-size: 0.86rem;
   }
-
   .quotePanelHeader {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 10px 16px;
+    gap: 8px 16px;
     align-items: end;
   }
 
   .quotePanelHeader h3 {
-    margin: 4px 0 0;
+    margin: 3px 0 0;
     color: #18212b;
+  }
+
+  .quotePanelMeta {
+    max-width: 36ch;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-align: right;
+  }
+
+  .quotePanelBody {
+    min-height: 472px;
   }
 
   .quoteList {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 14px;
+    align-content: start;
+  }
+
+  .quoteCard:first-child {
+    grid-column: 1 / -1;
   }
 
   .quoteCard {
-    padding: 14px;
-    border: 1px solid #d8e0e8;
-    border-radius: 12px;
-    background: #ffffff;
+    position: relative;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    min-height: 100%;
+    padding: 16px 16px 14px;
+    border: 1px solid rgba(206, 218, 230, 0.95);
+    border-radius: 14px;
+    background: radial-gradient(
+        circle at top right,
+        rgba(120, 149, 179, 0.1),
+        transparent 48%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.96),
+        rgba(243, 247, 251, 0.94)
+      );
+    box-shadow:
+      0 10px 24px rgba(24, 33, 43, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .quoteCard:first-child {
+    grid-column: 1 / -1;
+    padding: 18px 18px 16px;
+  }
+
+  .quoteCard::before {
+    content: "“";
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 2.8rem;
+    line-height: 1;
+    color: rgba(70, 97, 124, 0.16);
+    pointer-events: none;
   }
 
   .quoteText {
+    position: relative;
+    z-index: 1;
+    padding-left: 14px;
     color: #243446;
+    font-size: 0.97rem;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  .quoteCard:first-child .quoteText {
+    font-size: 1rem;
   }
 
   .quoteSource {
-    margin-top: 10px;
-    font-size: 0.92rem;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(232, 240, 248, 0.85);
+    color: #46617c;
+    font-size: 0.84rem;
+    line-height: 1.3;
+  }
+
+  .quoteEmptyState {
+    min-height: 100%;
+    padding: 12px 0;
+  }
+
+  @media (max-width: 700px) {
+    .quotePanelHeader {
+      align-items: stretch;
+    }
+
+    .quotePanelMeta {
+      max-width: none;
+      text-align: left;
+    }
+
+    .quotePanelBody {
+      min-height: 220px;
+    }
+
+    .quoteList {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
