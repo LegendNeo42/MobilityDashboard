@@ -158,7 +158,7 @@ input {
 }
 
 .hero h1,
-.sectionHeader h2{
+.sectionHeader h2 {
   margin: 0;
   line-height: 1.12;
 }
@@ -1214,13 +1214,6 @@ input {
   min-width: 0;
 }
 
-.regionMapSupportRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(230px, 280px);
-  gap: 16px;
-  align-items: stretch;
-}
-
 .regionMapCard {
   display: grid;
 }
@@ -1238,6 +1231,12 @@ input {
   padding: 18px;
 }
 
+.regionLegendMarkerList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
 .regionLegendMarkerRow {
   display: inline-flex;
   align-items: center;
@@ -1247,18 +1246,32 @@ input {
 }
 
 .regionLegendMarker {
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  display: inline-block;
   border-radius: 999px;
-  flex: 0 0 auto;
 }
 
 .regionLegendMarker--university,
-.regionUniversityMarker {
+.regionReferenceMarker--university {
   fill: #d92d20;
   background: #d92d20;
   stroke: #ffffff;
   stroke-width: 0.2;
+}
+
+.regionLegendMarker--cathedral,
+.regionReferenceMarker--cathedral {
+  fill: #315f91;
+  background: #315f91;
+  stroke: #ffffff;
+  stroke-width: 0.25;
+}
+
+.regionLegendMarker--cathedral {
+  border-radius: 3px;
+  transform: rotate(45deg);
 }
 
 .regionLegendScale {
@@ -1346,6 +1359,12 @@ input {
   pointer-events: none;
 }
 
+.regionMapOverlayLeft {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
 .regionMapInteractionHint {
   max-width: 400px;
   padding: 8px 11px;
@@ -1357,6 +1376,34 @@ input {
   font-size: 0.82rem;
   line-height: 1.25;
   backdrop-filter: blur(8px);
+}
+
+.regionNorthIndicator {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(200, 210, 220, 0.82);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 8px 22px rgba(24, 33, 43, 0.08);
+  color: #243446;
+  font-size: 0.78rem;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.regionNorthIndicator::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #243446;
+  border-left: 5px solid transparent;
+}
+
+.regionNorthIndicator span {
+  margin-top: 1px;
 }
 
 .regionMapResetButton {
@@ -1376,9 +1423,16 @@ input {
   width: 100%;
   height: 100%;
 }
+.regionMapSupportRow {
+  display: grid;
+  grid-template-columns: minmax(210px, 300px) minmax(220px, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
 
-.regionUniversityMarker {
-  pointer-events: none;
+.regionReferenceMarker {
+  cursor: help;
+  pointer-events: auto;
 }
 
 .regionPath {
@@ -1477,7 +1531,7 @@ input {
 }
 
 .regionDetailList--compact {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .regionDetailList--selection {
@@ -1498,6 +1552,13 @@ input {
 .regionPlaceholderText {
   min-height: 44px;
   color: #506070;
+}
+
+.regionSampleNote {
+  padding: 10px 12px;
+  border: 1px solid rgba(201, 213, 225, 0.78);
+  border-radius: 12px;
+  background: rgba(248, 251, 253, 0.82);
 }
 
 .regionTransportList {
@@ -1545,19 +1606,17 @@ input {
 }
 
 @media (max-width: 1180px) {
-  @media (max-width: 1180px) {
-    .regionModuleLayout {
-      grid-template-columns: 1fr;
-    }
+  .regionModuleLayout {
+    grid-template-columns: 1fr;
+  }
 
-    .regionMapFrame {
-      height: auto;
-      min-height: 420px;
-    }
+  .regionMapFrame {
+    height: auto;
+    min-height: 420px;
+  }
 
-    .regionMapSvg {
-      height: auto;
-    }
+  .regionMapSvg {
+    height: auto;
   }
   .contextGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1586,18 +1645,23 @@ input {
   .heroNarrative {
     max-width: none;
   }
-  .regionMapSupportRow {
-    grid-template-columns: 1fr;
-  }
 
   .regionMapOverlay {
     align-items: stretch;
     flex-direction: column;
   }
 
+  .regionMapOverlayLeft {
+    flex-wrap: wrap;
+  }
+
   .regionMapInteractionHint {
     max-width: none;
     border-radius: 14px;
+  }
+
+  .regionMapSupportRow {
+    grid-template-columns: 1fr;
   }
 
   .regionSelectionHeader,

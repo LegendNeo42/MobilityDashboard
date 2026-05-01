@@ -169,7 +169,7 @@
         Zeitraum: <strong>{formatSemesterTime(semesterTime)}</strong>
       </p>
       <p class="chartMeta">
-        Fallzahl mit plausibler Distanz:
+        Distanzangaben:
         <strong>n = {formatInteger(participantsInSelection)}</strong>
       </p>
       <p class="chartMeta">

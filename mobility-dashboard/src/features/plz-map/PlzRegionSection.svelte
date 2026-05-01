@@ -24,6 +24,10 @@
     latitude: 48.997042971029316,
     longitude: 12.095752877124259,
   };
+  const CATHEDRAL_COORDINATES = {
+    latitude: 49.01968765020921,
+    longitude: 12.098372886274182,
+  };
 
   type ProjectedFeature = {
     plz: string;
@@ -104,6 +108,14 @@
     return projection([
       UNIVERSITY_COORDINATES.longitude,
       UNIVERSITY_COORDINATES.latitude,
+    ]);
+  });
+
+  const cathedralMarkerPosition = $derived.by(() => {
+    if (!projection) return null;
+    return projection([
+      CATHEDRAL_COORDINATES.longitude,
+      CATHEDRAL_COORDINATES.latitude,
     ]);
   });
 
@@ -582,8 +594,8 @@
   <DashboardChartSection
     eyebrow="PLZ-Karte"
     title="Wie verteilen sich die Teilnehmenden auf die sichtbaren PLZ-Bereiche?"
-    description="Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels."
-    note="Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Farbskala bleibt fest an der absoluten Fallzahl je PLZ ausgerichtet, damit gleiche Werte immer gleich eingefärbt werden. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt."
+    description="Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels. Dom und Universität dienen als Orientierungspunkte."
+    note="Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt."
     hasToolbar={true}
     hasMeta={true}
   >
@@ -624,9 +636,15 @@
             onmousedown={handleMapMouseDown}
             onwheel={handleMapWheel}
           >
-            <div class="regionMapOverlay" aria-hidden="true">
-              <div class="regionMapInteractionHint">
-                Mausrad zum Zoomen · Ziehen zum Verschieben
+            <div class="regionMapOverlay">
+              <div class="regionMapOverlayLeft">
+                <div class="regionMapInteractionHint">
+                  Mausrad: Zoomen · Ziehen: Verschieben
+                </div>
+
+                <div class="regionNorthIndicator" aria-label="Nordrichtung">
+                  <span>N</span>
+                </div>
               </div>
 
               <button
@@ -646,9 +664,11 @@
               class="regionMapSvg"
               viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
               role="img"
-              aria-label="PLZ-Karte der fokussierten Region um Regensburg"
+              aria-label="PLZ-Karte der fokussierten Region um Regensburg mit Dom und Universität als Orientierungspunkten"
             >
-              <g transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}>
+              <g
+                transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}
+              >
                 {#each mapFeatures as feature}
                   <path
                     class="regionPath"
@@ -680,8 +700,10 @@
                       hoveredPlz = null;
                     }}
                     onmousedown={handleRegionPointerDown}
-                    onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
-                    onclick={(event) => handleRegionMouseClick(event, feature.plz)}
+                    onkeydown={(event) =>
+                      handleRegionKeydown(event, feature.plz)}
+                    onclick={(event) =>
+                      handleRegionMouseClick(event, feature.plz)}
                   >
                     <title>
                       {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
@@ -689,13 +711,32 @@
                   </path>
                 {/each}
 
+                {#if cathedralMarkerPosition}
+                  <rect
+                    class="regionReferenceMarker regionReferenceMarker--cathedral"
+                    x={cathedralMarkerPosition.x - 2}
+                    y={cathedralMarkerPosition.y - 2}
+                    width="4"
+                    height="4"
+                    transform={`rotate(45 ${cathedralMarkerPosition.x} ${cathedralMarkerPosition.y})`}
+                    vector-effect="non-scaling-stroke"
+                    aria-label="Regensburger Dom"
+                  >
+                    <title>Regensburger Dom</title>
+                  </rect>
+                {/if}
+
                 {#if universityMarkerPosition}
                   <circle
-                    class="regionUniversityMarker"
+                    class="regionReferenceMarker regionReferenceMarker--university"
                     cx={universityMarkerPosition.x}
                     cy={universityMarkerPosition.y}
-                    r="4"
-                  ></circle>
+                    r="2"
+                    vector-effect="non-scaling-stroke"
+                    aria-label="Universität Regensburg"
+                  >
+                    <title>Universität Regensburg</title>
+                  </circle>
                 {/if}
               </g>
             </svg>
@@ -706,22 +747,32 @@
           <section class="panel regionInfoPanel regionLegendPanel">
             <h3 class="regionSubheading">Legende</h3>
 
-            <div class="regionLegendMarkerRow">
-              <span
-                class="regionLegendMarker regionLegendMarker--university"
-                aria-hidden="true"
-              ></span>
-              <span>Universität Regensburg</span>
-            </div>
+            <div class="regionLegendMarkerList">
+              <div class="regionLegendMarkerRow">
+                <span
+                  class="regionLegendMarker regionLegendMarker--university"
+                  aria-hidden="true"
+                ></span>
+                <span>Universität Regensburg</span>
+              </div>
 
-            <p class="regionSubtext">Farbskala: Anzahl Teilnehmender (n)</p>
+              <div class="regionLegendMarkerRow">
+                <span
+                  class="regionLegendMarker regionLegendMarker--cathedral"
+                  aria-hidden="true"
+                ></span>
+                <span>Regensburger Dom</span>
+              </div>
+            </div>
 
             <div class="regionLegendScale">
               <div class="regionLegendGradient" aria-hidden="true"></div>
 
               <div class="regionLegendLabels" aria-hidden="true">
                 {#each legendStops as stop}
-                  <span style={`left: ${stop.position * 100}%;`}>{stop.label}</span>
+                  <span style={`left: ${stop.position * 100}%;`}
+                    >{stop.label}</span
+                  >
                 {/each}
               </div>
             </div>
@@ -729,6 +780,7 @@
 
           <section class="panel regionInfoPanel regionHoverPanel">
             <h3 class="regionSubheading">Hover-Vorschau</h3>
+            <p class="regionSubtext">Information zur PLZ unter dem Cursor.</p>
 
             <dl class="regionDetailList regionDetailList--compact">
               <div>
@@ -737,20 +789,28 @@
               </div>
               <div>
                 <dt>Fallzahl</dt>
-                <dd>{hoverPreview.n === null ? "–" : `n = ${formatInteger(hoverPreview.n)}`}</dd>
+                <dd>
+                  {hoverPreview.n === null
+                    ? "–"
+                    : `n = ${formatInteger(hoverPreview.n)}`}
+                </dd>
               </div>
             </dl>
           </section>
         </div>
       </div>
 
-      <aside class="regionDetailColumn" aria-label="Regionale Detailinformationen">
+      <aside
+        class="regionDetailColumn"
+        aria-label="Regionale Detailinformationen"
+      >
         <section class="panel regionInfoPanel regionSelectionPanel">
           <div class="regionSelectionHeader">
             <div>
               <h3 class="regionSubheading">Ausgewählte PLZ</h3>
               <p class="regionSubtext">
-                Die Detailansicht berücksichtigt die aktuelle Auswahl des Dashboards.
+                Die Detailansicht zeigt Fallzahl und Modal Split für die
+                ausgewählte PLZ.
               </p>
             </div>
           </div>
@@ -768,7 +828,9 @@
             </dl>
 
             <div class="regionSplitSection">
-              <p class="regionSplitHeading">Modal Split im ausgewählten Bereich</p>
+              <p class="regionSplitHeading">
+                Modal Split im ausgewählten Bereich
+              </p>
 
               {#if selectedRegion.n === 0}
                 <p class="regionPlaceholderText">
@@ -801,12 +863,17 @@
               {/if}
             </div>
 
-            <button type="button" class="regionResetButton" onclick={clearSelection}>
+            <button
+              type="button"
+              class="regionResetButton"
+              onclick={clearSelection}
+            >
               Auswahl zurücksetzen
             </button>
           {:else}
             <p class="regionPlaceholderText">
-              Wählen Sie eine PLZ auf der Karte aus, um die regionale Detailansicht zu öffnen.
+              Wählen Sie eine PLZ auf der Karte aus, um eine stabile
+              Detailansicht zu öffnen.
             </p>
           {/if}
         </section>
