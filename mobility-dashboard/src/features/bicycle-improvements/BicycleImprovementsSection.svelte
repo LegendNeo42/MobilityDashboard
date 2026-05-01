@@ -10,6 +10,7 @@
     dashboardFilters,
     selectedStatusGroupKeys,
   } from "../../stores/dashboardFilters";
+  import { getSymmetricDivergingExtent } from "../../utils/divergingDomain";
   import { createPublicTransportImprovementSpec } from "../public-transport-improvements/charts/publicTransportImprovements";
 
   type AggregatedTopicRow = {
@@ -236,6 +237,10 @@
     return new Set(visibleValues.map((row) => row.topic)).size;
   });
 
+  let absoluteDomainExtent = $derived.by(() =>
+    getSymmetricDivergingExtent(visibleValues, ["absolute_start", "absolute_end"]),
+  );
+
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
   }
@@ -247,9 +252,9 @@
   <p class="statusMessage">Lade Daten…</p>
 {:else}
   <DashboardChartSection
-    eyebrow="Fahrrad"
-    title="Welche Verbesserungen bei der Fahrradinfrastruktur werden als wichtig gesehen?"
-    description="Die Ansicht zeigt, wie die sichtbaren Personengruppen einzelne Maßnahmen rund um Radwege, Stellplätze und ergänzende Angebote bewerten."
+    eyebrow="Fahrradinfrastruktur"
+    title="Welche Verbesserungen für das Fahrrad werden als wichtig gesehen?"
+    description="Diese Ansicht zeigt, wie die sichtbaren Personengruppen mögliche Verbesserungen rund um Radverkehr und Fahrradnutzung bewerten."
     note="Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig. Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken. Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas."
     axisTitle={axisTitle}
     hasToolbar={true}
@@ -285,7 +290,10 @@
         spec={chartSpec}
         dataName="table"
         dataValues={visibleValues}
-        signals={{ measureMode: $dashboardFilters.measureMode }}
+        signals={{
+          measureMode: $dashboardFilters.measureMode,
+          absoluteDomainExtent,
+        }}
       />
     {:else}
       <p class="statusMessage">

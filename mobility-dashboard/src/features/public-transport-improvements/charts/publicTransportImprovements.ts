@@ -19,7 +19,10 @@ export function createPublicTransportImprovementSpec(options?: {
     height,
     autosize: { type: "fit-x", contains: "padding" },
     padding: { left: paddingLeft, right: 14, top: 10, bottom: 10 },
-    params: [{ name: "measureMode", value: "absolute" }],
+    params: [
+      { name: "measureMode", value: "absolute" },
+      { name: "absoluteDomainExtent", value: 1 },
+    ],
     data: { name: "table" },
     transform: [
       {
@@ -54,7 +57,8 @@ export function createPublicTransportImprovementSpec(options?: {
         scale: {
           zero: true,
           domainRaw: {
-            signal: "measureMode === 'percent' ? [-100, 100] : null",
+            signal:
+              "measureMode === 'percent' ? [-100, 100] : [-absoluteDomainExtent, absoluteDomainExtent]",
           },
         },
         axis: {

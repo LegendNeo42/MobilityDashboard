@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { tick, untrack } from "svelte";
   import embed from "vega-embed";
   import { changeset } from "vega";
-  import { untrack } from "svelte";
 
   type SignalChangeHandler = (name: string, value: unknown) => void;
 
@@ -23,6 +23,10 @@
 
   let element: HTMLDivElement | null = null;
   let view: any = null;
+  let resizeObserver: ResizeObserver | null = null;
+  let resizeFrame: number | null = null;
+  let lastObservedWidth = 0;
+  let lastObservedHeight = 0;
   let registeredSignalListeners: Array<{
     name: string;
     handler: (name: string, value: unknown) => void;
@@ -33,6 +37,60 @@
   let lastSignalsFingerprint = "";
 
   const fingerprint = (value: unknown) => JSON.stringify(value ?? {});
+
+  async function runResized(currentView: any) {
+    currentView.resize();
+    await currentView.runAsync();
+  }
+
+  function scheduleResize() {
+    if (!view || resizeFrame !== null) return;
+
+    resizeFrame = requestAnimationFrame(() => {
+      resizeFrame = null;
+
+      const currentView = view;
+      if (!currentView) return;
+
+      runResized(currentView).catch(console.error);
+    });
+  }
+
+  function disconnectResizeObserver() {
+    resizeObserver?.disconnect();
+    resizeObserver = null;
+    lastObservedWidth = 0;
+    lastObservedHeight = 0;
+
+    if (resizeFrame !== null) {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = null;
+    }
+  }
+
+  function observeChartSize() {
+    disconnectResizeObserver();
+
+    if (!element || !view || typeof ResizeObserver === "undefined") return;
+
+    const observedElement = element.parentElement ?? element;
+
+    resizeObserver = new ResizeObserver((entries) => {
+      const nextWidth = Math.round(entries[0]?.contentRect.width ?? 0);
+      const nextHeight = Math.round(entries[0]?.contentRect.height ?? 0);
+
+      const widthChanged = Math.abs(nextWidth - lastObservedWidth) > 1;
+      const heightChanged = Math.abs(nextHeight - lastObservedHeight) > 1;
+
+      if (nextWidth <= 0 || (!widthChanged && !heightChanged)) return;
+
+      lastObservedWidth = nextWidth;
+      lastObservedHeight = nextHeight;
+      scheduleResize();
+    });
+
+    resizeObserver.observe(observedElement);
+  }
 
   function applySignals(currentView: any, signalValues: Record<string, any> | null) {
     if (!signalValues) return;
@@ -59,12 +117,18 @@
       .remove(() => true)
       .insert(values ?? []);
 
-    await currentView.change(name, datasetChanges).runAsync();
+    currentView.change(name, datasetChanges);
+    await runResized(currentView);
+    scheduleResize();
   }
 
   function clearSignalListeners(currentView: any) {
     for (const listener of registeredSignalListeners) {
-      currentView.removeSignalListener(listener.name, listener.handler);
+      try {
+        currentView.removeSignalListener(listener.name, listener.handler);
+      } catch {
+        // Ignore cleanup errors from disposed views.
+      }
     }
 
     registeredSignalListeners = [];
@@ -94,7 +158,7 @@
     }
   }
 
-  // Recreate the view only when the spec shell changes.
+  // Recreate the Vega view only when the spec shell changes.
   $effect(() => {
     if (!element || !spec) return;
 
@@ -103,6 +167,7 @@
     (async () => {
       lastDataFingerprint = "";
       lastSignalsFingerprint = "";
+      disconnectResizeObserver();
 
       if (view) {
         try {
@@ -127,6 +192,8 @@
         },
       };
 
+      await tick();
+
       const result = await embed(element, initialSpec, { actions: false });
       if (cancelled) return;
 
@@ -134,7 +201,9 @@
 
       applySignals(view, initialSignals);
       applyWatchedSignalValues(view, initialWatchedSignals);
-      await view.runAsync();
+      await runResized(view);
+      observeChartSize();
+      scheduleResize();
       registerSignalListeners(view, initialWatchedSignals, initialOnSignalChange);
 
       lastDataFingerprint = fingerprint(initialValues);
@@ -143,6 +212,7 @@
 
     return () => {
       cancelled = true;
+      disconnectResizeObserver();
 
       if (view) {
         try {
@@ -186,7 +256,8 @@
     (async () => {
       try {
         applySignals(currentView, signalValues);
-        await currentView.runAsync();
+        await runResized(currentView);
+        scheduleResize();
       } catch (error) {
         console.error(error);
       }

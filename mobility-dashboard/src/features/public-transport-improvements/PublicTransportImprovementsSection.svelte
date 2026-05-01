@@ -10,6 +10,7 @@
     dashboardFilters,
     selectedStatusGroupKeys,
   } from "../../stores/dashboardFilters";
+  import { getSymmetricDivergingExtent } from "../../utils/divergingDomain";
   import { createPublicTransportImprovementSpec } from "./charts/publicTransportImprovements";
 
   type AggregatedTopicRow = {
@@ -232,6 +233,10 @@
     return new Set(visibleValues.map((row) => row.topic)).size;
   });
 
+  let absoluteDomainExtent = $derived.by(() =>
+    getSymmetricDivergingExtent(visibleValues, ["absolute_start", "absolute_end"]),
+  );
+
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
   }
@@ -281,7 +286,10 @@
         spec={chartSpec}
         dataName="table"
         dataValues={visibleValues}
-        signals={{ measureMode: $dashboardFilters.measureMode }}
+        signals={{
+          measureMode: $dashboardFilters.measureMode,
+          absoluteDomainExtent,
+        }}
       />
     {:else}
       <p class="statusMessage">

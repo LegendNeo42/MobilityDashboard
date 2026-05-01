@@ -11,7 +11,10 @@ export function createPublicTransportBarrierSpec() {
     height: 420,
     autosize: { type: "fit-x", contains: "padding" },
     padding: { left: 29, right: 14, top: 10, bottom: 0 },
-    params: [{ name: "measureMode", value: "absolute" }],
+    params: [
+      { name: "measureMode", value: "absolute" },
+      { name: "absoluteDomainExtent", value: 1 },
+    ],
     data: { name: "table" },
     transform: [
       {
@@ -62,7 +65,8 @@ export function createPublicTransportBarrierSpec() {
         scale: {
           zero: true,
           domainRaw: {
-            signal: "measureMode === 'percent' ? [-100, 100] : null",
+            signal:
+              "measureMode === 'percent' ? [-100, 100] : [-absoluteDomainExtent, absoluteDomainExtent]",
           },
         },
       },

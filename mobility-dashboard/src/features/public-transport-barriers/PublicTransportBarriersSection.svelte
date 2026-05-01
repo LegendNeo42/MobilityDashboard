@@ -10,6 +10,7 @@
     dashboardFilters,
     selectedStatusGroupKeys,
   } from "../../stores/dashboardFilters";
+  import { getSymmetricDivergingExtent } from "../../utils/divergingDomain";
   import { createPublicTransportBarrierSpec } from "./charts/publicTransportBarriers";
 
   type PublicTransportBarrierChartRow = {
@@ -78,8 +79,8 @@
     if (segmentKey === ALL_SEGMENTS_KEY) return "Alle Hauptverkehrsmittel";
 
     return (
-      dataset?.segmentOptions.find((option) => option.key === segmentKey)?.label ??
-      segmentKey
+      dataset?.segmentOptions.find((option) => option.key === segmentKey)
+        ?.label ?? segmentKey
     );
   });
 
@@ -129,7 +130,10 @@
     }
 
     return Array.from(rowsByKey.values()).sort((a, b) => {
-      if (a.barrier_order !== b.barrier_order) return a.barrier_order - b.barrier_order;
+      if (a.barrier_order !== b.barrier_order) {
+        return a.barrier_order - b.barrier_order;
+      }
+
       return a.response_order - b.response_order;
     });
   });
@@ -137,6 +141,10 @@
   let visibleBarrierCount = $derived.by(() => {
     return new Set(visibleValues.map((row) => row.barrier)).size;
   });
+
+  let absoluteDomainExtent = $derived.by(() =>
+    getSymmetricDivergingExtent(visibleValues, ["people"]),
+  );
 
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
@@ -188,7 +196,10 @@
         spec={chartSpec}
         dataName="table"
         dataValues={visibleValues}
-        signals={{ measureMode: $dashboardFilters.measureMode }}
+        signals={{
+          measureMode: $dashboardFilters.measureMode,
+          absoluteDomainExtent,
+        }}
       />
     {:else}
       <p class="statusMessage">
