@@ -31,6 +31,7 @@
 
   type ProjectedFeature = {
     plz: string;
+    label: string;
     path: string;
   };
 
@@ -99,6 +100,7 @@
 
     return dataset.features.map((feature) => ({
       plz: feature.properties.plz,
+      label: feature.properties.label || feature.properties.plz,
       path: buildGeometryPath(feature.geometry, projection),
     }));
   });
@@ -193,7 +195,7 @@
 
   const hoverPreview = $derived.by(() => {
     return {
-      plz: hoveredRegion?.plz ?? "–",
+      label: hoveredRegion?.label ?? "–",
       n: hoveredRegion?.n ?? null,
     };
   });
@@ -683,7 +685,7 @@
                     vector-effect="non-scaling-stroke"
                     role="button"
                     tabindex="0"
-                    aria-label={`PLZ ${feature.plz}`}
+                    aria-label={`PLZ-Bereich ${feature.metric?.label ?? feature.label}`}
                     style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
                     onmouseenter={() => {
                       if (isPanning) return;
@@ -706,7 +708,7 @@
                       handleRegionMouseClick(event, feature.plz)}
                   >
                     <title>
-                      {`PLZ ${feature.plz} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
+                      {`${feature.metric?.label ?? feature.label} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
                     </title>
                   </path>
                 {/each}
@@ -780,12 +782,14 @@
 
           <section class="panel regionInfoPanel regionHoverPanel">
             <h3 class="regionSubheading">Hover-Vorschau</h3>
-            <p class="regionSubtext">Information zur PLZ unter dem Cursor.</p>
+            <p class="regionSubtext">
+              Information zum PLZ-Bereich unter dem Cursor.
+            </p>
 
             <dl class="regionDetailList regionDetailList--compact">
               <div>
-                <dt>PLZ</dt>
-                <dd>{hoverPreview.plz}</dd>
+                <dt>PLZ-Bereich</dt>
+                <dd>{hoverPreview.label}</dd>
               </div>
               <div>
                 <dt>Fallzahl</dt>
@@ -807,10 +811,10 @@
         <section class="panel regionInfoPanel regionSelectionPanel">
           <div class="regionSelectionHeader">
             <div>
-              <h3 class="regionSubheading">Ausgewählte PLZ</h3>
+              <h3 class="regionSubheading">Ausgewählter PLZ-Bereich</h3>
               <p class="regionSubtext">
-                Die Detailansicht zeigt Fallzahl und Modal Split für die
-                ausgewählte PLZ.
+                Die Detailansicht zeigt Fallzahl und Modal Split für den
+                ausgewählten PLZ-Bereich.
               </p>
             </div>
           </div>
@@ -818,8 +822,8 @@
           {#if selectedRegion}
             <dl class="regionDetailList regionDetailList--selection">
               <div>
-                <dt>PLZ</dt>
-                <dd>{selectedRegion.plz}</dd>
+                <dt>PLZ-Bereich</dt>
+                <dd>{selectedRegion.label}</dd>
               </div>
               <div>
                 <dt>Fallzahl</dt>
@@ -834,7 +838,8 @@
 
               {#if selectedRegion.n === 0}
                 <p class="regionPlaceholderText">
-                  Für diese PLZ liegen in der aktuellen Auswahl keine Fälle vor.
+                  Für diesen PLZ-Bereich liegen in der aktuellen Auswahl keine
+                  Fälle vor.
                 </p>
               {:else}
                 <ul class="regionTransportList">
@@ -872,7 +877,7 @@
             </button>
           {:else}
             <p class="regionPlaceholderText">
-              Wählen Sie eine PLZ auf der Karte aus, um eine stabile
+              Wählen Sie einen PLZ-Bereich auf der Karte aus, um eine stabile
               Detailansicht zu öffnen.
             </p>
           {/if}

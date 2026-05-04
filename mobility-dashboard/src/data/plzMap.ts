@@ -57,6 +57,8 @@ export type PlzMapFeature = {
   type: "Feature";
   properties: {
     plz: string;
+    name: string;
+    label: string;
     centroid: {
       longitude: number;
       latitude: number;
@@ -91,6 +93,8 @@ export type PlzMapDataset = {
 
 export type PlzRegionMetric = {
   plz: string;
+  name: string;
+  label: string;
   centroid: {
     longitude: number;
     latitude: number;
@@ -230,6 +234,8 @@ export function buildVisiblePlzRegionMetrics(
 
     return {
       plz: feature.properties.plz,
+      name: feature.properties.name || "",
+      label: feature.properties.label || feature.properties.plz,
       centroid: feature.properties.centroid,
       distanceToFocusCenterKm: feature.properties.distance_to_focus_center_km,
       n: aggregatedMetric.n,

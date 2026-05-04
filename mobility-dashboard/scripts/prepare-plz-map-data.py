@@ -6,7 +6,7 @@ import math
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,14 +27,15 @@ PUBLIC_OUTPUT_DIR = PROJECT_ROOT / "public" / "data" / "plz-map"
 
 VEHICLE_INPUT_PATH = PROJECT_ROOT / "public" / "data" / "data_vehicle.csv"
 PLZ_SHAPES_INPUT_PATH = PRIVATE_DATA_DIR / "plz_shape_coords.csv"
+PLZ_MAPPING_INPUT_PATH = PRIVATE_DATA_DIR / "plz_mapping.csv"
 
 GEOMETRY_OUTPUT_PATH = PUBLIC_OUTPUT_DIR / "plz_focus_regions.geojson"
 METRICS_OUTPUT_PATH = PUBLIC_OUTPUT_DIR / "plz_focus_metrics.json"
 INSPECTION_OUTPUT_PATH = PRIVATE_DATA_DIR / "plz_map_join_inspection.csv"
 
 FOCUS_RADIUS_KM = 70.0
-SIMPLIFY_TOLERANCE = 0.0015
-COORDINATE_ROUND_DIGITS = 5
+SIMPLIFY_TOLERANCE = 0.00075
+COORDINATE_ROUND_DIGITS = 6
 SHARE_ROUND_DIGITS = 6
 
 SEMESTER_TIME_ORDER = ["ws_vl", "ws_free", "ss_vl", "ss_free"]
@@ -94,7 +95,7 @@ class GeometryRecord:
     centroid_latitude: float
     geometry_source_rows: int
     geometry_parts: int
-    geojson_geometry: dict[str, Any]
+    geometry: Any
 
 
 class PlzNormalizationError(ValueError):
@@ -103,6 +104,11 @@ class PlzNormalizationError(ValueError):
 
 class GeometryError(ValueError):
     pass
+
+
+def format_plz_region_label(plz: str, name: str | None) -> str:
+    cleaned_name = (name or "").strip()
+    return f"{plz} {cleaned_name}" if cleaned_name else plz
 
 
 def normalize_plz(value: str) -> str:
@@ -121,6 +127,19 @@ def normalize_plz(value: str) -> str:
         raise PlzNormalizationError("zero")
 
     return normalized
+
+
+def parse_mapping_row(row: dict[str, str]) -> tuple[str, str] | None:
+    plz_value = row.get("PLZ") or row.get("plz") or row.get("Postleitzahl") or ""
+    name_value = row.get("Ort") or row.get("ort") or row.get("Name") or row.get("name") or ""
+
+    try:
+        plz = normalize_plz(plz_value)
+    except PlzNormalizationError:
+        return None
+
+    name = " ".join(name_value.strip().split())
+    return plz, name
 
 
 def parse_point_wkt(value: str) -> tuple[float, float]:
@@ -297,6 +316,58 @@ def load_survey_responses() -> tuple[list[AggregatedResponse], Counter[str]]:
     return responses, normalization_issue_counts
 
 
+def load_plz_name_mapping() -> tuple[dict[str, str], Counter[str]]:
+    if not PLZ_MAPPING_INPUT_PATH.exists():
+        raise FileNotFoundError(
+            "Missing PLZ mapping source. Expected file at "
+            f"{PLZ_MAPPING_INPUT_PATH}"
+        )
+
+    plz_names: dict[str, str] = {}
+    mapping_issue_counts: Counter[str] = Counter()
+
+    with PLZ_MAPPING_INPUT_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
+        sample = handle.read(4096)
+        handle.seek(0)
+        dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+        reader = csv.DictReader(handle, dialect=dialect)
+
+        for row in reader:
+            parsed_row = parse_mapping_row(row)
+            if not parsed_row:
+                mapping_issue_counts["invalid_plz"] += 1
+                continue
+
+            plz, name = parsed_row
+            if not name:
+                mapping_issue_counts["missing_name"] += 1
+                continue
+
+            if plz in plz_names and plz_names[plz] != name:
+                mapping_issue_counts["duplicate_name_conflict"] += 1
+                continue
+
+            plz_names[plz] = name
+
+    return plz_names, mapping_issue_counts
+
+
+def prepare_geojson_geometry(geometry: Any) -> dict[str, Any]:
+    output_geometry = (
+        geometry.simplify(
+            SIMPLIFY_TOLERANCE,
+            preserve_topology=True,
+        )
+        if SIMPLIFY_TOLERANCE > 0
+        else geometry
+    )
+
+    return round_coordinates(
+        mapping(output_geometry),
+        COORDINATE_ROUND_DIGITS,
+    )
+
+
 def load_geometry_records() -> tuple[dict[str, GeometryRecord], Counter[str]]:
     if not PLZ_SHAPES_INPUT_PATH.exists():
         raise FileNotFoundError(
@@ -343,17 +414,9 @@ def load_geometry_records() -> tuple[dict[str, GeometryRecord], Counter[str]]:
 
     for plz, geometries in geometry_groups.items():
         dissolved_geometry = unary_union(geometries)
-        simplified_geometry = dissolved_geometry.simplify(
-            SIMPLIFY_TOLERANCE,
-            preserve_topology=True,
-        )
-        geojson_geometry = round_coordinates(
-            mapping(simplified_geometry),
-            COORDINATE_ROUND_DIGITS,
-        )
         geometry_parts = (
-            len(simplified_geometry.geoms)
-            if hasattr(simplified_geometry, "geoms")
+            len(dissolved_geometry.geoms)
+            if hasattr(dissolved_geometry, "geoms")
             else 1
         )
         centroid_longitude, centroid_latitude = centroid_by_plz[plz]
@@ -364,7 +427,7 @@ def load_geometry_records() -> tuple[dict[str, GeometryRecord], Counter[str]]:
             centroid_latitude=centroid_latitude,
             geometry_source_rows=geometry_row_counter[plz],
             geometry_parts=geometry_parts,
-            geojson_geometry=geojson_geometry,
+            geometry=dissolved_geometry,
         )
 
     return geometry_records, geometry_issue_counts
@@ -372,10 +435,13 @@ def load_geometry_records() -> tuple[dict[str, GeometryRecord], Counter[str]]:
 
 def write_outputs() -> None:
     survey_responses, normalization_issue_counts = load_survey_responses()
+    plz_names, mapping_issue_counts = load_plz_name_mapping()
     geometry_records, geometry_issue_counts = load_geometry_records()
 
     responses_by_plz: dict[str, list[AggregatedResponse]] = defaultdict(list)
-    responses_by_plz_and_semester_time: dict[tuple[str, str], list[AggregatedResponse]] = defaultdict(list)
+    responses_by_plz_and_semester_time: dict[
+        tuple[str, str], list[AggregatedResponse]
+    ] = defaultdict(list)
     semester_times = set()
 
     for response in survey_responses:
@@ -466,12 +532,17 @@ def write_outputs() -> None:
                 )
             )
 
+        region_name = plz_names.get(plz, "")
+        region_label = format_plz_region_label(plz, region_name)
+
         if geometry_record and plz in focus_plz_set:
             geometry_features.append(
                 {
                     "type": "Feature",
                     "properties": {
                         "plz": plz,
+                        "name": region_name,
+                        "label": region_label,
                         "centroid": {
                             "longitude": round(
                                 geometry_record.centroid_longitude,
@@ -489,7 +560,7 @@ def write_outputs() -> None:
                             3,
                         ),
                     },
-                    "geometry": geometry_record.geojson_geometry,
+                    "geometry": prepare_geojson_geometry(geometry_record.geometry),
                 }
             )
 
@@ -504,9 +575,16 @@ def write_outputs() -> None:
             {
                 "plz": plz,
                 "survey_cases_total": total_plz_count,
-                **{f"survey_cases_{semester_time}": semester_counts[semester_time] for semester_time in sorted_semester_times},
+                **{
+                    f"survey_cases_{semester_time}": semester_counts[semester_time]
+                    for semester_time in sorted_semester_times
+                },
                 "matched_geometry": "true" if geometry_record else "false",
-                "geometry_source_rows": geometry_record.geometry_source_rows if geometry_record else 0,
+                "name_joined": "true" if region_name else "false",
+                "region_name": region_name,
+                "geometry_source_rows": geometry_record.geometry_source_rows
+                if geometry_record
+                else 0,
                 "geometry_parts": geometry_record.geometry_parts if geometry_record else 0,
                 "distance_to_focus_center_km": (
                     round(distance_to_focus_center_km, 3)
@@ -536,6 +614,7 @@ def write_outputs() -> None:
         "source": {
             "survey": str(VEHICLE_INPUT_PATH.relative_to(PROJECT_ROOT)),
             "geometry": str(PLZ_SHAPES_INPUT_PATH.relative_to(PROJECT_ROOT)),
+            "plz_mapping": str(PLZ_MAPPING_INPUT_PATH.relative_to(PROJECT_ROOT)),
         },
         "focus": {
             "method": "weighted_centroid_radius",
@@ -556,6 +635,15 @@ def write_outputs() -> None:
         "geometry": {
             "simplify_tolerance": SIMPLIFY_TOLERANCE,
             "coordinate_round_digits": COORDINATE_ROUND_DIGITS,
+        },
+        "plz_names": {
+            "mapped_plz_count": len(plz_names),
+            "included_named_plz_count": sum(
+                1 for plz in sorted_focus_plz if plz_names.get(plz)
+            ),
+            "included_missing_name_count": sum(
+                1 for plz in sorted_focus_plz if not plz_names.get(plz)
+            ),
         },
         "survey_unit": {
             "row_type": "main_transport_response",
@@ -593,6 +681,7 @@ def write_outputs() -> None:
                 "focus_case_count": matched_participants_in_focus,
                 "normalization_issue_counts": normalization_issue_counts,
                 "geometry_issue_counts": geometry_issue_counts,
+                "mapping_issue_counts": mapping_issue_counts,
                 "inspection_output": str(INSPECTION_OUTPUT_PATH.relative_to(PROJECT_ROOT)),
                 "geometry_output": str(GEOMETRY_OUTPUT_PATH.relative_to(PROJECT_ROOT)),
                 "metrics_output": str(METRICS_OUTPUT_PATH.relative_to(PROJECT_ROOT)),
