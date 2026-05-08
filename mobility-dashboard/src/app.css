@@ -1196,7 +1196,7 @@ input {
 
 .regionModuleLayout {
   display: grid;
-  grid-template-columns: minmax(560px, 1fr) minmax(280px, 320px);
+  grid-template-columns: minmax(560px, 1fr) minmax(300px, 340px);
   gap: 18px;
   align-items: start;
 }
@@ -1229,6 +1229,10 @@ input {
   display: grid;
   gap: 12px;
   padding: 18px;
+}
+
+.regionTransportModeField {
+  min-width: 220px;
 }
 
 .regionLegendMarkerList {
@@ -1284,19 +1288,18 @@ input {
   height: 14px;
   border: 1px solid rgba(24, 33, 43, 0.12);
   border-radius: 999px;
-  background: #dbeade;
+  background: linear-gradient(
+    90deg,
+    var(--region-legend-start, #dbeade) 0%,
+    var(--region-legend-end, #1f7a50) 100%
+  );
   overflow: hidden;
 }
 
-.regionLegendGradient::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 10px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #dbeade 0%, #1f7a50 100%);
+.regionSelectedModeValue strong {
+  color: var(--selected-mode-color, #18212b);
+  font-size: 1.35rem;
+  line-height: 1.1;
 }
 
 .regionLegendLabels {
@@ -1559,6 +1562,31 @@ input {
   border: 1px solid rgba(201, 213, 225, 0.78);
   border-radius: 12px;
   background: rgba(248, 251, 253, 0.82);
+}
+
+.regionSelectedModeSummary {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(201, 213, 225, 0.78);
+  border-radius: 12px;
+  background: rgba(248, 251, 253, 0.9);
+}
+
+.regionSelectedModeValue {
+  display: grid;
+  gap: 4px;
+}
+
+.regionSelectedModeValue strong {
+  color: #18212b;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.regionSelectedModeValue span {
+  color: #506070;
+  font-size: 0.94rem;
 }
 
 .regionTransportList {

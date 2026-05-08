@@ -6,20 +6,33 @@
     loadPlzMapDataset,
     buildVisiblePlzRegionMetrics,
   } from "../../data/plzMap";
-  import type { PlzMapDataset, PlzMapFeature } from "../../data/plzMap";
-  import {
-    dashboardFilters,
-    selectedStatusGroupKeys,
-  } from "../../stores/dashboardFilters";
+  import type {
+    PlzMapDataset,
+    PlzMapFeature,
+    PlzRegionMetric,
+  } from "../../data/plzMap";
+  import { selectedStatusGroupKeys } from "../../stores/dashboardFilters";
   import { formatSemesterTime } from "../../utils/semester";
 
   const MAP_WIDTH = 760;
   const MAP_HEIGHT = 520;
   const MAP_PADDING = 18;
   const MAP_EMPTY_COLOR = "#eef2ef";
-  const MAP_MIN_COLOR = "#dbeade";
-  const MAP_MAX_COLOR = "#1f7a50";
-  const MAP_COLOR_EXPONENT = 0.45;
+  const PARTICIPANT_MAP_MIN_COLOR = "#dbeade";
+  const PARTICIPANT_MAP_MAX_COLOR = "#1f7a50";
+  const transportModeColorByKey: Record<string, string> = {
+    "car-driver": "#4e79a7",
+    "car-passenger": "#f28e2b",
+    motorbike: "#e15759",
+    bus: "#76b7b2",
+    "train-short": "#59a14f",
+    "train-far": "#edc948",
+    bicycle: "#b07aa1",
+    ebike: "#d37295",
+    walk: "#9c755f",
+  };
+  const MAP_COUNT_COLOR_EXPONENT = 0.45;
+  const SMALL_REGION_N_THRESHOLD = 10;
   const UNIVERSITY_COORDINATES = {
     latitude: 48.997042971029316,
     longitude: 12.095752877124259,
@@ -28,6 +41,8 @@
     latitude: 49.01968765020921,
     longitude: 12.098372886274182,
   };
+
+  type MapDisplayMode = "participant-count" | "transport-share";
 
   type ProjectedFeature = {
     plz: string;
@@ -53,9 +68,20 @@
     y: number;
   };
 
+  const mapDisplayModeOptions: Array<{ key: MapDisplayMode; label: string }> = [
+    { key: "participant-count", label: "Antwortanzahl" },
+    { key: "transport-share", label: "Verkehrsmittelanteil" },
+  ];
+
+  const transportModeOptions = transportModeDefinitions
+    .slice()
+    .sort((left, right) => left.order - right.order);
+
   let error = $state<string | null>(null);
   let dataset = $state<PlzMapDataset | null>(null);
   let semesterTime = $state("ws_vl");
+  let mapDisplayMode = $state<MapDisplayMode>("participant-count");
+  let selectedMapTransportMode = $state("car-driver");
   let selectedPlz = $state<string | null>(null);
   let hoveredPlz = $state<string | null>(null);
   let mapSvgElement = $state<SVGSVGElement | null>(null);
@@ -75,6 +101,8 @@
   const MAX_ZOOM_SCALE = 6;
   const WHEEL_ZOOM_FACTOR = 1.2;
 
+  const semesterOptions = $derived(dataset?.semesterOptions ?? []);
+
   onMount(async () => {
     try {
       const nextDataset = await loadPlzMapDataset();
@@ -86,6 +114,47 @@
       error =
         loadError instanceof Error ? loadError.message : String(loadError);
     }
+  });
+
+  const selectedMapModeLabel = $derived.by(() => {
+    return (
+      mapDisplayModeOptions.find((option) => option.key === mapDisplayMode)
+        ?.label ?? "Antwortanzahl"
+    );
+  });
+
+  const selectedMapTransportDefinition = $derived.by(() => {
+    return (
+      transportModeOptions.find(
+        (definition) => definition.key === selectedMapTransportMode,
+      ) ?? transportModeOptions[0]
+    );
+  });
+
+  const selectedMapTransportLabel = $derived.by(() => {
+    return selectedMapTransportDefinition?.label ?? "Hauptverkehrsmittel";
+  });
+
+  const selectedMapTransportColor = $derived.by(() => {
+    return getTransportModeColor(selectedMapTransportMode);
+  });
+
+  const mapMetricLabel = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? `Anteil ${selectedMapTransportLabel}`
+      : "Antwortanzahl";
+  });
+
+  const sectionDescription = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? "Die Karte zeigt je PLZ den Anteil des gewählten Hauptverkehrsmittels innerhalb der aktuellen Auswahl. Ein Klick öffnet die regionale Detailansicht mit Fallzahl und Modal Split. Dom und Universität dienen als Orientierungspunkte."
+      : "Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels. Dom und Universität dienen als Orientierungspunkte.";
+  });
+
+  const sectionNote = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? "Die Kartenfarbe zeigt den Anteil des gewählten Hauptverkehrsmittels innerhalb der jeweiligen PLZ. Grundlage sind die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Absolute Fallzahlen werden als Kontext in Hover und Detailansicht gezeigt; kleine Fallzahlen sollten vorsichtig interpretiert werden."
+      : "Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt.";
   });
 
   const projection = $derived.by(() => {
@@ -149,6 +218,12 @@
     return regionMetrics.reduce((total, metric) => total + metric.n, 0);
   });
 
+  const maxParticipantCountInSelection = $derived.by(() => {
+    return regionMetrics.reduce((maxCount, metric) => {
+      return Math.max(maxCount, metric.n);
+    }, 0);
+  });
+
   const selectedRegion = $derived.by(() => {
     return selectedPlz ? (regionMetricsByPlz.get(selectedPlz) ?? null) : null;
   });
@@ -157,14 +232,21 @@
     return hoveredPlz ? (regionMetricsByPlz.get(hoveredPlz) ?? null) : null;
   });
 
+  const selectedModeSummary = $derived.by(() => {
+    if (!selectedRegion) return null;
+
+    return buildTransportModeSummary(selectedRegion);
+  });
+
   const selectedTransportRows = $derived.by(() => {
     if (!selectedRegion || selectedRegion.n === 0) return [];
 
-    return transportModeDefinitions
+    return transportModeOptions
       .map((definition) => ({
         key: definition.key,
         label: definition.label,
         order: definition.order,
+        color: getTransportModeColor(definition.key),
         count: selectedRegion.transportCounts[definition.key] ?? 0,
         share: selectedRegion.transportShares[definition.key] ?? 0,
       }))
@@ -175,22 +257,36 @@
       });
   });
 
-  const maxSelectedTransportCount = $derived.by(() => {
-    return selectedTransportRows.reduce((maxCount, row) => {
-      return Math.max(maxCount, row.count);
-    }, 0);
-  });
-
   const legendStops = $derived.by(() => {
-    if (!dataset) return [];
+    if (mapDisplayMode === "transport-share") {
+      return buildShareLegendStops();
+    }
 
-    const stops = buildLegendStops(dataset.maxParticipantCount);
+    const stops = buildParticipantLegendStops(maxParticipantCountInSelection);
 
     if (stops.length >= 2) {
       return stops.filter((_, index) => index !== stops.length - 2);
     }
 
     return stops;
+  });
+
+  const legendDescription = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? `Farbe: Anteil ${selectedMapTransportLabel} innerhalb der jeweiligen PLZ.`
+      : "Farbe: Fallzahl je PLZ in der aktuellen Auswahl.";
+  });
+
+  const legendGradientStart = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? getTransportModeScaleStart(selectedMapTransportMode)
+      : PARTICIPANT_MAP_MIN_COLOR;
+  });
+
+  const legendGradientEnd = $derived.by(() => {
+    return mapDisplayMode === "transport-share"
+      ? selectedMapTransportColor
+      : PARTICIPANT_MAP_MAX_COLOR;
   });
 
   const hoverPreview = $derived.by(() => {
@@ -334,26 +430,45 @@
     }).format(value);
   }
 
-  function formatSelectedTransportValue(count: number, share: number): string {
-    return $dashboardFilters.measureMode === "percent"
-      ? formatPercent(share)
-      : formatInteger(count);
+  function formatModalSplitValue(count: number, share: number): string {
+    return `${formatInteger(count)} · ${formatPercent(share)}`;
   }
 
-  function getSelectedTransportBarWidth(
-    count: number,
-    share: number,
-    maxCount: number,
-  ): string {
-    if ($dashboardFilters.measureMode === "percent") {
-      return `${Math.max(share * 100, 2)}%`;
+  function formatTransportModeCount(metric: PlzRegionMetric): string {
+    const count = metric.transportCounts[selectedMapTransportMode] ?? 0;
+    return `${formatInteger(count)} von ${formatInteger(metric.n)}`;
+  }
+
+  function formatMapMetricValue(metric: PlzRegionMetric): string {
+    if (metric.n === 0) return "keine Fälle";
+
+    if (mapDisplayMode === "transport-share") {
+      const share = metric.transportShares[selectedMapTransportMode] ?? 0;
+      return `${formatPercent(share)} · ${formatTransportModeCount(metric)}`;
     }
 
-    if (maxCount <= 0) {
-      return "2%";
+    return `n = ${formatInteger(metric.n)}`;
+  }
+
+  function buildTransportModeSummary(metric: PlzRegionMetric) {
+    return {
+      label: selectedMapTransportLabel,
+      color: getTransportModeColor(selectedMapTransportMode),
+      count: metric.transportCounts[selectedMapTransportMode] ?? 0,
+      share: metric.transportShares[selectedMapTransportMode] ?? 0,
+    };
+  }
+
+  function getSelectedTransportBarWidth(share: number): string {
+    return `${Math.max(share * 100, 2)}%`;
+  }
+
+  function getSmallSampleNote(metric: PlzRegionMetric): string | null {
+    if (metric.n > 0 && metric.n < SMALL_REGION_N_THRESHOLD) {
+      return "Kleines n: Prozentwerte in diesem PLZ-Bereich bitte vorsichtig interpretieren.";
     }
 
-    return `${Math.max((count / maxCount) * 100, 2)}%`;
+    return null;
   }
 
   function collectBounds(features: PlzMapFeature[]): Bounds {
@@ -414,7 +529,7 @@
     const offsetY =
       (MAP_HEIGHT - latitudeSpan * scale) / 2 + bounds.maxLatitude * scale;
 
-    return ([longitude, latitude]: [number, number]): ProjectedPoint => {
+    return ([longitude, latitude]: [number, number]) => {
       return {
         x: longitude * scale + offsetX,
         y: offsetY - latitude * scale,
@@ -493,12 +608,9 @@
     return Math.min(max, Math.max(min, value));
   }
 
-  function buildLegendStops(maxValue: number): LegendStop[] {
+  function buildParticipantLegendStops(maxValue: number): LegendStop[] {
     if (maxValue <= 0) {
-      return [
-        { value: 0, label: "0", position: 0 },
-        { value: 1, label: "1", position: 1 },
-      ];
+      return [{ value: 0, label: "0", position: 0 }];
     }
 
     const step = getNiceLegendStep(maxValue);
@@ -508,7 +620,7 @@
       stops.push({
         value,
         label: formatInteger(value),
-        position: getColorScaleRatio(value, maxValue),
+        position: getParticipantCountScaleRatio(value, maxValue),
       });
     }
 
@@ -521,6 +633,32 @@
     }
 
     return stops;
+  }
+
+  function getTransportModeColor(transportModeKey: string): string {
+    return (
+      transportModeColorByKey[transportModeKey] ?? PARTICIPANT_MAP_MAX_COLOR
+    );
+  }
+
+  function getTransportModeScaleStart(transportModeKey: string): string {
+    return interpolateHexColor(
+      "#ffffff",
+      getTransportModeColor(transportModeKey),
+      0.35,
+    );
+  }
+
+  function getTransportModeBarBackground(transportModeKey: string): string {
+    return `linear-gradient(90deg, ${getTransportModeScaleStart(transportModeKey)}, ${getTransportModeColor(transportModeKey)})`;
+  }
+
+  function buildShareLegendStops(): LegendStop[] {
+    return [0, 0.25, 0.5, 0.75, 1].map((value) => ({
+      value,
+      label: formatPercent(value),
+      position: value,
+    }));
   }
 
   function getNiceLegendStep(maxValue: number): number {
@@ -568,17 +706,30 @@
     };
   }
 
-  function getColorScaleRatio(value: number, maxValue: number): number {
+  function getParticipantCountScaleRatio(
+    value: number,
+    maxValue: number,
+  ): number {
     if (value <= 0 || maxValue <= 0) return 0;
-    return Math.pow(value / maxValue, MAP_COLOR_EXPONENT);
+    return Math.pow(value / maxValue, MAP_COUNT_COLOR_EXPONENT);
   }
 
-  function getRegionFillColor(value: number, maxValue: number): string {
-    if (value <= 0 || maxValue <= 0) return MAP_EMPTY_COLOR;
+  function getRegionFillColor(metric: PlzRegionMetric | null): string {
+    if (!metric || metric.n === 0) return MAP_EMPTY_COLOR;
+
+    if (mapDisplayMode === "transport-share") {
+      const share = metric.transportShares[selectedMapTransportMode] ?? 0;
+      return interpolateHexColor(
+        "#ffffff",
+        getTransportModeColor(selectedMapTransportMode),
+        0.35 + share * 0.65,
+      );
+    }
+
     return interpolateHexColor(
-      MAP_MIN_COLOR,
-      MAP_MAX_COLOR,
-      getColorScaleRatio(value, maxValue),
+      PARTICIPANT_MAP_MIN_COLOR,
+      PARTICIPANT_MAP_MAX_COLOR,
+      getParticipantCountScaleRatio(metric.n, maxParticipantCountInSelection),
     );
   }
 </script>
@@ -595,9 +746,9 @@
 {:else}
   <DashboardChartSection
     eyebrow="PLZ-Karte"
-    title="Wie verteilen sich die Teilnehmenden auf die sichtbaren PLZ-Bereiche?"
-    description="Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels. Dom und Universität dienen als Orientierungspunkte."
-    note="Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt."
+    title="Welche regionalen Muster zeigen die sichtbaren PLZ-Bereiche?"
+    description={sectionDescription}
+    note={sectionNote}
     hasToolbar={true}
     hasMeta={true}
   >
@@ -605,17 +756,41 @@
       <label class="field">
         <span>Semesterzeit</span>
         <select bind:value={semesterTime}>
-          {#each dataset.semesterOptions as option}
+          {#each semesterOptions as option}
             <option value={option}>{formatSemesterTime(option)}</option>
           {/each}
         </select>
       </label>
+
+      <label class="field">
+        <span>Kartenansicht</span>
+        <select bind:value={mapDisplayMode}>
+          {#each mapDisplayModeOptions as option}
+            <option value={option.key}>{option.label}</option>
+          {/each}
+        </select>
+      </label>
+
+      {#if mapDisplayMode === "transport-share"}
+        <label class="field regionTransportModeField">
+          <span>Hauptverkehrsmittel</span>
+          <select bind:value={selectedMapTransportMode}>
+            {#each transportModeOptions as option}
+              <option value={option.key}>{option.label}</option>
+            {/each}
+          </select>
+        </label>
+      {/if}
     {/snippet}
 
     {#snippet meta()}
       <p class="chartMeta">
         Semesterzeit:
         <strong>{formatSemesterTime(semesterTime)}</strong>
+      </p>
+      <p class="chartMeta">
+        Kartenansicht:
+        <strong>{selectedMapModeLabel}</strong>
       </p>
       <p class="chartMeta">
         Sichtbare PLZ mit Fällen:
@@ -678,10 +853,7 @@
                     class:is-selected={selectedPlz === feature.plz}
                     class:is-empty={!feature.metric || feature.metric.n === 0}
                     d={feature.path}
-                    fill={getRegionFillColor(
-                      feature.metric?.n ?? 0,
-                      dataset.maxParticipantCount,
-                    )}
+                    fill={getRegionFillColor(feature.metric)}
                     vector-effect="non-scaling-stroke"
                     role="button"
                     tabindex="0"
@@ -708,7 +880,7 @@
                       handleRegionMouseClick(event, feature.plz)}
                   >
                     <title>
-                      {`${feature.metric?.label ?? feature.label} · ${formatSemesterTime(semesterTime)} · n = ${formatInteger(feature.metric?.n ?? 0)}`}
+                      {`${feature.metric?.label ?? feature.label} · ${formatSemesterTime(semesterTime)} · ${mapMetricLabel}: ${feature.metric ? formatMapMetricValue(feature.metric) : "keine Fälle"}`}
                     </title>
                   </path>
                 {/each}
@@ -748,6 +920,7 @@
         <div class="regionMapSupportRow">
           <section class="panel regionInfoPanel regionLegendPanel">
             <h3 class="regionSubheading">Legende</h3>
+            <p class="regionSubtext">{legendDescription}</p>
 
             <div class="regionLegendMarkerList">
               <div class="regionLegendMarkerRow">
@@ -768,7 +941,11 @@
             </div>
 
             <div class="regionLegendScale">
-              <div class="regionLegendGradient" aria-hidden="true"></div>
+              <div
+                class="regionLegendGradient"
+                style={`--region-legend-start: ${legendGradientStart}; --region-legend-end: ${legendGradientEnd};`}
+                aria-hidden="true"
+              ></div>
 
               <div class="regionLegendLabels" aria-hidden="true">
                 {#each legendStops as stop}
@@ -783,7 +960,7 @@
           <section class="panel regionInfoPanel regionHoverPanel">
             <h3 class="regionSubheading">Hover-Vorschau</h3>
             <p class="regionSubtext">
-              Information zum PLZ-Bereich unter dem Cursor.
+              Temporäre Information zum PLZ-Bereich unter dem Cursor.
             </p>
 
             <dl class="regionDetailList regionDetailList--compact">
@@ -831,6 +1008,31 @@
               </div>
             </dl>
 
+            {#if mapDisplayMode === "transport-share" && selectedModeSummary}
+              <div class="regionSelectedModeSummary">
+                <p class="regionSplitHeading">
+                  Ausgewähltes Hauptverkehrsmittel
+                </p>
+                <div
+                  class="regionSelectedModeValue"
+                  style={`--selected-mode-color: ${selectedModeSummary.color};`}
+                >
+                  <strong>{formatPercent(selectedModeSummary.share)}</strong>
+                  <span>
+                    {selectedModeSummary.label}: {formatInteger(
+                      selectedModeSummary.count,
+                    )} von {formatInteger(selectedRegion.n)} Fällen
+                  </span>
+                </div>
+              </div>
+            {/if}
+
+            {#if getSmallSampleNote(selectedRegion)}
+              <p class="regionSampleNote">
+                {getSmallSampleNote(selectedRegion)}
+              </p>
+            {/if}
+
             <div class="regionSplitSection">
               <p class="regionSplitHeading">
                 Modal Split im ausgewählten Bereich
@@ -848,7 +1050,7 @@
                       <div class="regionTransportRowHeader">
                         <span class="regionTransportLabel">{row.label}</span>
                         <span class="regionTransportValues">
-                          {formatSelectedTransportValue(row.count, row.share)}
+                          {formatModalSplitValue(row.count, row.share)}
                         </span>
                       </div>
 
@@ -856,10 +1058,10 @@
                         <div
                           class="regionTransportBarFill"
                           style={`width: ${getSelectedTransportBarWidth(
-                            row.count,
                             row.share,
-                            maxSelectedTransportCount,
-                          )}`}
+                          )}; background: ${getTransportModeBarBackground(
+                            row.key,
+                          )};`}
                         ></div>
                       </div>
                     </li>
