@@ -154,7 +154,7 @@
   const sectionNote = $derived.by(() => {
     return mapDisplayMode === "transport-share"
       ? "Die Kartenfarbe zeigt den Anteil des gewählten Hauptverkehrsmittels innerhalb der jeweiligen PLZ. Grundlage sind die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Absolute Fallzahlen werden als Kontext in Hover und Detailansicht gezeigt; kleine Fallzahlen sollten vorsichtig interpretiert werden."
-      : "Die Karte zeigt surveybasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Für bessere Unterscheidbarkeit nutzt die Karte eine verstärkte Farbspreizung im unteren und mittleren Wertebereich. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt.";
+      : "Die Karte zeigt umfragebasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt.";
   });
 
   const projection = $derived.by(() => {

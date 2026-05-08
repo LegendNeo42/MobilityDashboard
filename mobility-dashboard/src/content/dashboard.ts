@@ -1,11 +1,11 @@
 export const dashboardContent = {
   title: "Unterwegs zur Universität Regensburg",
-  hook:
-    "Wenn Pendelmobilität einen großen Teil der universitätsbezogenen Emissionen verursacht, lohnt sich ein genauer Blick auf Wege, Distanzen und Barrieren.",
-  subtitle:
-    "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
-  intro:
-    "Es zeigt Ergebnisse der Mobilitätsumfrage im Wintersemester 2024/25 und verbindet den schnellen Überblick mit vertiefenden Analysen zu Verkehrsmitteln, Entfernungen, regionalen Mustern und Hürden.",
+  heroImage: {
+    src: "/bushaltestelle-der-uni.jpg",
+    alt: "Bushaltestelle auf dem Campus der Universität Regensburg",
+    message:
+      "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
+  },
   heroQuestions: [
     {
       question: "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
@@ -36,7 +36,7 @@ export const dashboardContent = {
   climateContext: {
     eyebrow: "Treibhausgasbilanz 2022",
     title: "Pendelmobilität als Einstiegspunkt",
-    text: "Die Grafik greift Pendelmobilität auf, weil sie in der Treibhausgasbilanz der Universität Regensburg die größte ausgewiesene Kategorie ist.",
+    text: "Das Dashboard konzentriert sich auf Pendelmobilität, weil Wege zur Universität in der Treibhausgasbilanz 2022 den größten ausgewiesenen Anteil ausmachen.",
     emphasis:
       "Wärme und Strom dienen hier nur als Vergleichskontext. Die folgenden Auswertungen konzentrieren sich auf Wege zur Universität.",
     items: [
@@ -60,7 +60,6 @@ export const dashboardContent = {
   overviewSection: {
     eyebrow: "Überblick",
     title: "Schneller Einstieg in die wichtigsten Bereiche",
-    text: "Von hier aus gelangen Sie zu den zentralen Auswertungen, räumlichen Perspektiven und methodischen Hinweisen.",
   },
   analysisSection: {
     eyebrow: "Analysen",

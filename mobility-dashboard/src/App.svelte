@@ -18,7 +18,6 @@
     <div class="sectionHeader">
       <p class="sectionEyebrow">{dashboardContent.overviewSection.eyebrow}</p>
       <h2>{dashboardContent.overviewSection.title}</h2>
-      <p class="sectionText">{dashboardContent.overviewSection.text}</p>
     </div>
 
     <SurveyOverviewSummary />

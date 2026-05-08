@@ -5,18 +5,20 @@
 <div class="appShell">
   <header class="hero">
     <div class="heroLayout">
-      <div class="heroContent">
-        <h1>{dashboardContent.title}</h1>
+      <h1>{dashboardContent.title}</h1>
 
-        <div class="heroNarrative">
-          <p class="heroHook">{dashboardContent.hook}</p>
+      <figure class="heroImagePanel">
+        <img
+          src={dashboardContent.heroImage.src}
+          alt={dashboardContent.heroImage.alt}
+          width="3000"
+          height="1899"
+        />
 
-          <div class="heroIntro">
-            <p class="heroSubtitle">{dashboardContent.subtitle}</p>
-            <p class="heroText">{dashboardContent.intro}</p>
-          </div>
-        </div>
-      </div>
+        <figcaption class="heroImageOverlay">
+          {dashboardContent.heroImage.message}
+        </figcaption>
+      </figure>
 
       <aside class="heroSpotlight" aria-label="Klimakontext zur Pendelmobilität">
         <div class="heroSpotlightInner">

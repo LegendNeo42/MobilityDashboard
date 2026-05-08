@@ -134,7 +134,7 @@
           Die Karte ist kein vollständiges Bild aller möglichen Wohnorte.
         </li>
         <li>
-          Sie zeigt surveybasierte Herkunftsbereiche, keine exakten Wohnorte oder
+          Sie zeigt umfragebasierte Herkunftsbereiche, keine exakten Wohnorte oder
           Pendelrouten.
         </li>
         <li>
