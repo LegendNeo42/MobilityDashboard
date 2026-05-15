@@ -6,31 +6,39 @@ export const dashboardContent = {
     message:
       "Dieses Dashboard macht sichtbar, wie Angehörige der Universität Regensburg zur Universität pendeln und wo sich Ansatzpunkte für Veränderung zeigen.",
   },
-  heroQuestions: [
+  sectionNavigation: [
     {
-      question: "Wie unterscheiden sich Pendelmuster nach Personengruppe?",
+      label: "Überblick",
+      question:
+        "Was zeigt der erste Blick auf die Mobilitätsdaten der Universität?",
+      targetId: "overview",
+      theme: "overview",
+    },
+    {
+      label: "Analyse",
+      question:
+        "Welche Verkehrsmittel werden genutzt und wie unterscheiden sich die Muster?",
       targetId: "analysis",
-      area: "Analysecharts",
+      theme: "analysis",
     },
     {
-      question: "Ab welcher Distanz verschieben sich die genutzten Verkehrsmittel?",
-      targetId: "distance",
-      area: "Verkehrsmittel & Distanz",
-    },
-    {
-      question: "Welche Probleme und Verbesserungsbedarfe werden sichtbar?",
-      targetId: "reasons",
-      area: "Hürden & Verbesserungen",
-    },
-    {
-      question: "Welche Themen tauchen in offenen Antworten auf?",
+      label: "Freitext",
+      question: "Welche Themen tauchen in den offenen Antworten besonders häufig auf?",
       targetId: "qualitative",
-      area: "Qualitative Hinweise",
+      theme: "analysis",
     },
     {
-      question: "Aus welchen PLZ-Bereichen pendeln Teilnehmende zur Universität?",
+      label: "Karte",
+      question: "Welche räumlichen Muster zeigen sich rund um die Universität?",
       targetId: "region",
-      area: "Regionale PLZ-Karte",
+      theme: "region",
+    },
+    {
+      label: "Kontext",
+      question:
+        "Wie sind die Daten zu interpretieren und welche Grenzen haben sie?",
+      targetId: "context",
+      theme: "context",
     },
   ],
   climateContext: {

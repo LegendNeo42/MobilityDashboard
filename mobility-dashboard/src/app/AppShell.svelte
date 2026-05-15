@@ -1,5 +1,35 @@
 <script lang="ts">
+  import { onMount, type Snippet } from "svelte";
   import { dashboardContent } from "../content/dashboard";
+
+  let { children }: { children: Snippet } = $props();
+
+  let heroQuestionsElement = $state<HTMLElement | null>(null);
+  let isCompactNavigationVisible = $state(false);
+
+  function updateCompactNavigationVisibility() {
+    if (!heroQuestionsElement) {
+      isCompactNavigationVisible = false;
+      return;
+    }
+
+    isCompactNavigationVisible =
+      heroQuestionsElement.getBoundingClientRect().bottom <= 0;
+  }
+
+  onMount(() => {
+    updateCompactNavigationVisibility();
+
+    window.addEventListener("scroll", updateCompactNavigationVisibility, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateCompactNavigationVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", updateCompactNavigationVisibility);
+      window.removeEventListener("resize", updateCompactNavigationVisibility);
+    };
+  });
 </script>
 
 <div class="appShell">
@@ -55,22 +85,48 @@
         </div>
       </aside>
 
-      <div class="heroQuestionBlock">
-        <p class="heroQuestionLabel">Fragen im Fokus</p>
+      <nav
+        bind:this={heroQuestionsElement}
+        class="heroQuestionBlock"
+        aria-label="Dashboard-Bereiche"
+      >
+        <p class="heroQuestionLabel">Dashboard-Bereiche</p>
 
         <div class="heroQuestionList">
-          {#each dashboardContent.heroQuestions as question}
-            <a class="heroQuestionChip" href={`#${question.targetId}`}>
-              <span class="heroQuestionArea">{question.area}</span>
-              <span>{question.question}</span>
+          {#each dashboardContent.sectionNavigation as item}
+            <a
+              class={`heroQuestionChip theme-${item.theme}`}
+              href={`#${item.targetId}`}
+            >
+              <span class="heroQuestionArea">{item.label}</span>
+              <span>{item.question}</span>
             </a>
           {/each}
         </div>
-      </div>
+      </nav>
     </div>
   </header>
 
+  <nav
+    class="sectionNavigationCompact"
+    class:sectionNavigationCompact--visible={isCompactNavigationVisible}
+    aria-label="Dashboard-Bereiche"
+    aria-hidden={!isCompactNavigationVisible}
+  >
+    <div class="sectionNavigationCompactInner">
+      {#each dashboardContent.sectionNavigation as item}
+        <a
+          class={`sectionNavigationCompactLink theme-${item.theme}`}
+          href={`#${item.targetId}`}
+          tabindex={isCompactNavigationVisible ? undefined : -1}
+        >
+          {item.label}
+        </a>
+      {/each}
+    </div>
+  </nav>
+
   <main class="dashboardMain">
-    <slot />
+    {@render children()}
   </main>
 </div>
