@@ -29,7 +29,7 @@ export type SurveyMetadata = {
   mainGroupResponses: number;
 };
 
-const SURVEY_LABEL = "Mobilitätsumfrage der Universität Regensburg";
+const SURVEY_LABEL = "Mobilitätsumfrage der UR";
 const SURVEY_PERIOD_LABEL = "Wintersemester 2024/25";
 const APPROX_FREE_TEXT_RESPONSES = 4500;
 const UNIVERSITY_PARTICIPATION_RATE_PERCENT = 12;

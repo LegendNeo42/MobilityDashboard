@@ -34,6 +34,21 @@
           <p class="sectionText">{dashboardContent.analysisSection.text}</p>
         </div>
 
+        <article class="panel analysisReadingAidPanel" aria-label="Lesehilfe für die Analysen">
+          <div class="overviewSupportHeader">
+            <p class="sectionEyebrow">Lesehilfe</p>
+          </div>
+
+          <div class="readingAidList" role="list">
+            {#each dashboardContent.analysisSection.readingAids as aid}
+              <div class="readingAidItem" role="listitem">
+                <strong>{aid.term}</strong>
+                <span>{aid.text}</span>
+              </div>
+            {/each}
+          </div>
+        </article>
+
         <VehicleUsageSection />
 
         <div id="distance" class="sectionAnchor"></div>

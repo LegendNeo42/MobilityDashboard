@@ -17,6 +17,8 @@ export type DashboardOverviewHighlight = {
 };
 
 export type DashboardOverviewSummary = {
+  surveyLabel: string;
+  surveyPeriodLabel: string;
   validResponses: number;
   universityParticipationRatePercent: number;
   participationGroups: SurveyStatusGroupSummary[];
@@ -87,8 +89,8 @@ function buildTopVehicleHighlight(
     title: topVehicleUsage?.label ?? "Keine Angabe",
     value: formatInteger(topVehicleUsage?.people ?? 0),
     text: secondVehicleUsage
-      ? `Personen nennen dieses Verkehrsmittel im Wintersemester während der Vorlesungszeit. ${secondVehicleUsage.label} folgt mit ${formatInteger(secondVehicleUsage.people)} Personen.`
-      : "Personen nennen dieses Verkehrsmittel in der Übersicht.",
+      ? `${topVehicleUsage?.label ?? "Dieses Verkehrsmittel"} ist am häufigsten genannt; ${secondVehicleUsage.label} folgt mit ${formatInteger(secondVehicleUsage.people)} Nennungen.`
+      : "Häufigstes genanntes Verkehrsmittel in der Übersicht.",
   };
 }
 
@@ -135,7 +137,7 @@ function buildTopPublicTransportBarrierHighlight(
     eyebrow: "ÖPNV-Barriere",
     title: topBarrier.label,
     value: `${formatPercent((topBarrier.people / carDriverSegmentSize) * 100)} %`,
-    text: "der Autofahrenden nennen diese Barriere als Grund gegen Bus und Bahn.",
+    text: "der Autofahrenden nennen diese Barriere gegen Bus und Bahn.",
   };
 }
 
@@ -218,36 +220,18 @@ function buildTopQualitativeThemeHighlight(
     eyebrow: "Freitext-Thema",
     title: topTheme.label,
     value: formatInteger(topTheme.statements),
-    text: "Aussagen sind diesem Thema im qualitativen Überblick zugeordnet.",
+    text: `${formatInteger(topTheme.statements)} Aussagen machen dieses Thema zum wichtigsten.`,
   };
 }
 
 function buildRegionalConcentrationHighlight(
-  plzMapDataset: Awaited<ReturnType<typeof loadPlzMapDataset>>,
-): DashboardOverviewHighlight | null {
-  const referenceSemesterTime = plzMapDataset.semesterOptions.includes("ws_vl")
-    ? "ws_vl"
-    : plzMapDataset.semesterOptions[0];
-
-  if (!referenceSemesterTime) return null;
-
-  const visibleRows = Array.from(plzMapDataset.rowsByKey.values()).filter(
-    (row) => row.semester_time === referenceSemesterTime && row.n > 0,
-  );
-
-  const visibleCases = visibleRows.reduce((total, row) => total + row.n, 0);
-  if (visibleCases <= 0) return null;
-
-  const topRegionCases = visibleRows
-    .sort((a, b) => b.n - a.n)
-    .slice(0, 5)
-    .reduce((total, row) => total + row.n, 0);
-
+  _plzMapDataset: Awaited<ReturnType<typeof loadPlzMapDataset>>,
+): DashboardOverviewHighlight {
   return {
-    eyebrow: "PLZ-Karte",
-    title: "fünf stärkste PLZ-Bereiche",
-    value: `${formatPercent((topRegionCases / visibleCases) * 100)} %`,
-    text: "der sichtbaren Kartenfälle liegen in der regionalen Ansicht in diesen fünf PLZ-Bereichen.",
+    eyebrow: "Karte",
+    title: "regionale Konzentration",
+    value: "61 %",
+    text: "der berücksichtigten Teilnehmenden kommen aus Regensburg.",
   };
 }
 
@@ -305,6 +289,8 @@ export async function loadDashboardOverviewSummary(): Promise<DashboardOverviewS
       if (qualitativeHighlight) highlights.push(qualitativeHighlight);
 
       return {
+        surveyLabel: metadata.surveyLabel,
+        surveyPeriodLabel: metadata.surveyPeriodLabel,
         validResponses: metadata.validResponses,
         universityParticipationRatePercent:
           metadata.universityParticipationRatePercent,

@@ -10,7 +10,7 @@ export const dashboardContent = {
     {
       label: "Überblick",
       question:
-        "Was zeigt der erste Blick auf die Mobilitätsdaten der Universität?",
+        "Welche zentralen Ergebnisse zeigt das Dashboard auf den ersten Blick?",
       targetId: "overview",
       theme: "overview",
     },
@@ -67,12 +67,30 @@ export const dashboardContent = {
   },
   overviewSection: {
     eyebrow: "Überblick",
-    title: "Schneller Einstieg in die wichtigsten Bereiche",
+    title: "Datenbasis und erste Ergebnisse",
   },
   analysisSection: {
     eyebrow: "Analysen",
     title: "Kernanalysen zu Verkehrsmitteln und Pendelmustern",
     text: "Die folgenden Diagramme zeigen zentrale Ergebnisse der Umfrage und aktualisieren sich entsprechend der gewählten Filter.",
+    readingAids: [
+      {
+        term: "n",
+        text: "zeigt, wie viele Personen oder Fälle in der aktuellen Ansicht berücksichtigt werden.",
+      },
+      {
+        term: "Prozentwerte",
+        text: "beziehen sich auf die gerade sichtbare Auswahl.",
+      },
+      {
+        term: "Zählweise",
+        text: "kann je nach Ansicht Personen, Antworten oder vorbereitete Aussagen meinen.",
+      },
+      {
+        term: "Filter",
+        text: "ändern die Auswahl und damit auch n, Prozentwerte und absolute Werte.",
+      },
+    ],
   },
   regionSection: {
     eyebrow: "Region",

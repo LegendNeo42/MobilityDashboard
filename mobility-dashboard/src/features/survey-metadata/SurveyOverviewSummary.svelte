@@ -6,63 +6,6 @@
   let error = $state<string | null>(null);
   let overview = $state<DashboardOverviewSummary | null>(null);
 
-  const dashboardAreas = [
-    {
-      label: "Überblick",
-      text: "Beteiligung und zentrale Kernaussagen.",
-      targetId: "overview",
-      arrow: "↑",
-      theme: "overview",
-    },
-    {
-      label: "Analyse",
-      text: "Verkehrsmittel, Distanzen und Hürden.",
-      targetId: "analysis",
-      arrow: "↓",
-      theme: "analysis",
-    },
-    {
-      label: "Freitext",
-      text: "Themen aus offenen Antworten.",
-      targetId: "qualitative",
-      arrow: "↓",
-      theme: "analysis",
-    },
-    {
-      label: "Region",
-      text: "PLZ-Karte mit regionalen Mustern.",
-      targetId: "region",
-      arrow: "↓",
-      theme: "region",
-    },
-    {
-      label: "Kontext",
-      text: "Datengrundlage und Einordnung.",
-      targetId: "context",
-      arrow: "↓",
-      theme: "context",
-    },
-  ];
-
-  const readingAids = [
-    {
-      term: "n",
-      text: "zeigt, wie viele Personen oder Fälle in der aktuellen Ansicht berücksichtigt werden.",
-    },
-    {
-      term: "Prozentwerte",
-      text: "beziehen sich immer auf die gerade sichtbare Auswahl, nicht auf alle Universitätsangehörigen.",
-    },
-    {
-      term: "Zählweise",
-      text: "variiert je nach Ansicht: Manche Diagramme zählen Personen, andere Antworten oder vorbereitete Aussagen.",
-    },
-    {
-      term: "Filter",
-      text: "ändern die sichtbare Auswahl und damit auch n, Prozentwerte und absolute Werte.",
-    },
-  ];
-
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
   }
@@ -105,26 +48,27 @@
       <article class="panel participationPanel">
         <div class="participationHeader">
           <p class="sectionEyebrow">Beteiligung</p>
-          <h3>So verteilt sich die Stichprobe</h3>
-          <p class="sectionText">
-            <strong>{formatInteger(overview.validResponses)} Antworten</strong>
-            liegen insgesamt vor. Das entspricht
-            <strong>
-              {formatWholePercent(overview.universityParticipationRatePercent)} %</strong
-            >
-            der UR-Mitglieder.
-          </p>
-          <p class="sectionText">
-            Die drei Hauptgruppen (Studierende, Mitarbeitende, Professor:innen)
-            decken
-            {formatPercent(overview.mainGroupCoverageShare)}% der Antworten ab.
-          </p>
-          <p class="participationFootnote">
-            Die übrigen <strong
-              >{formatInteger(overview.otherGroupResponses)}</strong
-            >
-            Antworten werden in den Kernansichten nicht separat gezeigt.
-          </p>
+          <h3>Datenbasis und Stichprobe</h3>
+
+          <ul class="participationFactList" aria-label="Datenbasis und Beteiligung">
+            <li class="participationFactItem">
+              <span class="participationFactLabel">Basis</span>
+              <strong>{overview.surveyLabel}</strong>
+              <span>{overview.surveyPeriodLabel}</span>
+            </li>
+            <li class="participationFactItem">
+              <span class="participationFactLabel">Antworten</span>
+              <strong>{formatInteger(overview.validResponses)}</strong>
+              <span>in der Stichprobe</span>
+            </li>
+            <li class="participationFactItem">
+              <span class="participationFactLabel">Beteiligung</span>
+              <strong
+                >{formatWholePercent(overview.universityParticipationRatePercent)} %</strong
+              >
+              <span>der UR-Mitglieder</span>
+            </li>
+          </ul>
         </div>
 
         <div class="participationList" role="list">
@@ -145,7 +89,7 @@
 
               {#if group.participationRatePercent !== null}
                 <p class="participationRate">
-                  Beteiligungsquote:
+                  <span>Beteiligungsquote</span>
                   <strong
                     >{formatWholePercent(group.participationRatePercent)} %</strong
                   >
@@ -157,7 +101,7 @@
                 >
                   {#each group.participationRateBreakdown as rate}
                     <p>
-                      Beteiligungsquote {rate.label}:
+                      <span>{rate.label}</span>
                       <strong
                         >{formatWholePercent(rate.participationRatePercent)} %</strong
                       >
@@ -186,61 +130,6 @@
               </div>
               <p>{highlight.text}</p>
             </article>
-          {/each}
-        </div>
-      </article>
-    </div>
-
-    <div class="overviewSupportGrid">
-      <article class="panel overviewOrientationPanel">
-        <div class="overviewSupportHeader">
-          <p class="sectionEyebrow">Orientierung</p>
-          <h3>So ist das Dashboard aufgebaut</h3>
-          <p class="sectionText">
-            Die Bereiche bauen vom schnellen Überblick zu den Detailansichten
-            und zur methodischen Einordnung auf.
-          </p>
-        </div>
-
-        <ul class="dashboardAreaList">
-          {#each dashboardAreas as area}
-            <li class="dashboardAreaListItem">
-              <a
-                class="dashboardAreaItem"
-                class:theme-overview={area.theme === "overview"}
-                class:theme-analysis={area.theme === "analysis"}
-                class:theme-region={area.theme === "region"}
-                class:theme-context={area.theme === "context"}
-                href={`#${area.targetId}`}
-              >
-                <span class="dashboardAreaTitle">
-                  <span>{area.label}</span>
-                  <span class="dashboardAreaArrow" aria-hidden="true"
-                    >{area.arrow}</span
-                  >
-                </span>
-                <p>{area.text}</p>
-              </a>
-            </li>
-          {/each}
-        </ul>
-      </article>
-
-      <article class="panel overviewReadingAidPanel">
-        <div class="overviewSupportHeader">
-          <p class="sectionEyebrow">Lesehilfe</p>
-          <h3>Werte richtig einordnen</h3>
-          <p class="sectionText">
-            Diese Hinweise helfen beim Lesen der Diagramme und der Karte.
-          </p>
-        </div>
-
-        <div class="readingAidList" role="list">
-          {#each readingAids as aid}
-            <div class="readingAidItem" role="listitem">
-              <strong>{aid.term}</strong>
-              <span>{aid.text}</span>
-            </div>
           {/each}
         </div>
       </article>
