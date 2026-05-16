@@ -17,21 +17,23 @@
   const MAP_WIDTH = 760;
   const MAP_HEIGHT = 520;
   const MAP_PADDING = 18;
-  const MAP_EMPTY_COLOR = "#eef2ef";
-  const PARTICIPANT_MAP_MIN_COLOR = "#dbeade";
-  const PARTICIPANT_MAP_MAX_COLOR = "#1f7a50";
+  const MAP_EMPTY_COLOR = "#e4e8e5";
+  const MAP_ZERO_SHARE_COLOR = "#f7faf7";
+  const PARTICIPANT_MAP_SINGLE_CASE_COLOR = "#edf6ef";
+  const PARTICIPANT_MAP_MIN_COLOR = "#c7e0cf";
+  const PARTICIPANT_MAP_MAX_COLOR = "#075435";
   const transportModeColorByKey: Record<string, string> = {
     "car-driver": "#4e79a7",
     "car-passenger": "#f28e2b",
     motorbike: "#e15759",
-    bus: "#76b7b2",
+    bus: "#2f8f8a",
     "train-short": "#59a14f",
-    "train-far": "#edc948",
-    bicycle: "#b07aa1",
+    "train-far": "#b37a00",
+    bicycle: "#85509a",
     ebike: "#d37295",
     walk: "#9c755f",
   };
-  const MAP_COUNT_COLOR_EXPONENT = 0.45;
+  const MAP_COUNT_COLOR_EXPONENT = 0.62;
   const SMALL_REGION_N_THRESHOLD = 10;
   const UNIVERSITY_COORDINATES = {
     latitude: 48.997042971029316,
@@ -68,6 +70,8 @@
     y: number;
   };
 
+  type ReferenceMarkerKey = "university" | "cathedral";
+
   const mapDisplayModeOptions: Array<{ key: MapDisplayMode; label: string }> = [
     { key: "participant-count", label: "Antwortanzahl" },
     { key: "transport-share", label: "Verkehrsmittelanteil" },
@@ -84,6 +88,7 @@
   let selectedMapTransportMode = $state("car-driver");
   let selectedPlz = $state<string | null>(null);
   let hoveredPlz = $state<string | null>(null);
+  let hoveredReferenceMarker = $state<ReferenceMarkerKey | null>(null);
   let mapSvgElement = $state<SVGSVGElement | null>(null);
   let zoomScale = $state(1);
   let zoomTranslateX = $state(0);
@@ -98,7 +103,7 @@
 
   const DRAG_THRESHOLD = 4;
   const MIN_ZOOM_SCALE = 1;
-  const MAX_ZOOM_SCALE = 6;
+  const MAX_ZOOM_SCALE = 7;
   const WHEEL_ZOOM_FACTOR = 1.2;
 
   const semesterOptions = $derived(dataset?.semesterOptions ?? []);
@@ -146,16 +151,16 @@
   });
 
   const sectionDescription = $derived.by(() => {
+    const baseDescription =
+      "Dieser Bereich zeigt, aus welchen Postleitzahlbereichen Teilnehmende zur Universität pendeln und wie sich Muster regional unterscheiden.";
+
     return mapDisplayMode === "transport-share"
-      ? "Die Karte zeigt je PLZ den Anteil des gewählten Hauptverkehrsmittels innerhalb der aktuellen Auswahl. Ein Klick öffnet die regionale Detailansicht mit Fallzahl und Modal Split. Dom und Universität dienen als Orientierungspunkte."
-      : "Die Karte zeigt die Zahl der Teilnehmenden je Postleitzahlbereich in der aktuellen Auswahl. Ein Klick auf eine PLZ öffnet die regionale Detailansicht mit Modal Split auf Basis des Hauptverkehrsmittels. Dom und Universität dienen als Orientierungspunkte.";
+      ? `${baseDescription} Die Karte färbt PLZ-Bereiche nach dem Anteil des gewählten Hauptverkehrsmittels; ein Klick öffnet Fallzahl und Modal Split für den ausgewählten Bereich.`
+      : `${baseDescription} Die Karte färbt PLZ-Bereiche nach der Fallzahl in der aktuellen Auswahl; ein Klick öffnet Fallzahl und Modal Split für den ausgewählten Bereich.`;
   });
 
-  const sectionNote = $derived.by(() => {
-    return mapDisplayMode === "transport-share"
-      ? "Die Kartenfarbe zeigt den Anteil des gewählten Hauptverkehrsmittels innerhalb der jeweiligen PLZ. Grundlage sind die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Absolute Fallzahlen werden als Kontext in Hover und Detailansicht gezeigt; kleine Fallzahlen sollten vorsichtig interpretiert werden."
-      : "Die Karte zeigt umfragebasierte regionale Muster für die aktuell gewählte Semesterzeit und die sichtbaren Personengruppen. Die Kartenfarbe zeigt die absolute Fallzahl je PLZ unter diesen Filtern. Sehr weit entfernte Einzelfälle oder nicht zuordenbare Postleitzahlen liegen in dieser fokussierten Regionalsicht nicht im sichtbaren Kartenausschnitt.";
-  });
+  const sectionNote =
+    "PLZ-Angaben können falsch sein, da manche Wohnadressen veraltet sind. Regionale Muster und kleine Fallzahlen bitte vorsichtig interpretieren.";
 
   const projection = $derived.by(() => {
     if (!dataset) return null;
@@ -258,29 +263,21 @@
   });
 
   const legendStops = $derived.by(() => {
-    if (mapDisplayMode === "transport-share") {
-      return buildShareLegendStops();
-    }
-
-    const stops = buildParticipantLegendStops(maxParticipantCountInSelection);
-
-    if (stops.length >= 2) {
-      return stops.filter((_, index) => index !== stops.length - 2);
-    }
-
-    return stops;
+    return mapDisplayMode === "transport-share"
+      ? buildShareLegendStops()
+      : buildParticipantLegendStops(maxParticipantCountInSelection);
   });
 
   const legendDescription = $derived.by(() => {
     return mapDisplayMode === "transport-share"
-      ? `Farbe: Anteil ${selectedMapTransportLabel} innerhalb der jeweiligen PLZ.`
-      : "Farbe: Fallzahl je PLZ in der aktuellen Auswahl.";
+      ? `Dunkler = höherer Anteil. Die Farben zeigen Prozentwerte für ${selectedMapTransportLabel} innerhalb der jeweiligen PLZ; absolute Fallzahlen stehen als Kontext in Hover und Detailansicht.`
+      : "Dunkler = mehr Fälle. Die Farben zeigen absolute Fallzahlen je PLZ in der aktuellen Auswahl; 0 Fälle erscheinen neutral grau.";
   });
 
   const legendGradientStart = $derived.by(() => {
     return mapDisplayMode === "transport-share"
       ? getTransportModeScaleStart(selectedMapTransportMode)
-      : PARTICIPANT_MAP_MIN_COLOR;
+      : PARTICIPANT_MAP_SINGLE_CASE_COLOR;
   });
 
   const legendGradientEnd = $derived.by(() => {
@@ -289,11 +286,27 @@
       : PARTICIPANT_MAP_MAX_COLOR;
   });
 
+  const legendKey = $derived.by(() => {
+    return `${mapDisplayMode}-${selectedMapTransportMode}-${maxParticipantCountInSelection}-${participantsInSelection}`;
+  });
+
   const hoverPreview = $derived.by(() => {
     return {
       label: hoveredRegion?.label ?? "–",
       n: hoveredRegion?.n ?? null,
     };
+  });
+
+  const cathedralMarkerScreenPosition = $derived.by(() => {
+    return cathedralMarkerPosition
+      ? transformProjectedPoint(cathedralMarkerPosition)
+      : null;
+  });
+
+  const universityMarkerScreenPosition = $derived.by(() => {
+    return universityMarkerPosition
+      ? transformProjectedPoint(universityMarkerPosition)
+      : null;
   });
 
   const hasMapTransform = $derived.by(() => {
@@ -333,6 +346,14 @@
     isPanning = false;
     isPointerDown = false;
     suppressNextRegionClick = false;
+  }
+
+  function showReferenceMarkerTooltip(marker: ReferenceMarkerKey) {
+    hoveredReferenceMarker = marker;
+  }
+
+  function hideReferenceMarkerTooltip() {
+    hoveredReferenceMarker = null;
   }
 
   function handleMapMouseDown(event: MouseEvent) {
@@ -428,6 +449,19 @@
       style: "percent",
       maximumFractionDigits: 0,
     }).format(value);
+  }
+
+  function formatPercentOneDecimal(value: number): string {
+    return new Intl.NumberFormat("de-DE", {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(value);
+  }
+
+  function formatRegionNWithSelectionShare(n: number): string {
+    if (participantsInSelection <= 0) return `n = ${formatInteger(n)}`;
+    return `n = ${formatInteger(n)} (${formatPercentOneDecimal(n / participantsInSelection)})`;
   }
 
   function formatModalSplitValue(count: number, share: number): string {
@@ -608,15 +642,24 @@
     return Math.min(max, Math.max(min, value));
   }
 
+  function transformProjectedPoint(point: ProjectedPoint): ProjectedPoint {
+    return {
+      x: point.x * zoomScale + zoomTranslateX,
+      y: point.y * zoomScale + zoomTranslateY,
+    };
+  }
+
   function buildParticipantLegendStops(maxValue: number): LegendStop[] {
-    if (maxValue <= 0) {
-      return [{ value: 0, label: "0", position: 0 }];
-    }
+    if (maxValue <= 0) return [];
+
+    const stops: LegendStop[] = [{ value: 1, label: "1", position: 0 }];
+
+    if (maxValue === 1) return stops;
 
     const step = getNiceLegendStep(maxValue);
-    const stops: LegendStop[] = [{ value: 0, label: "0", position: 0 }];
+    const firstStep = Math.max(2, step);
 
-    for (let value = step; value < maxValue; value += step) {
+    for (let value = firstStep; value < maxValue; value += step) {
       stops.push({
         value,
         label: formatInteger(value),
@@ -632,6 +675,16 @@
       });
     }
 
+    const lastStop = stops[stops.length - 1];
+    const previousStop = stops[stops.length - 2];
+    if (
+      lastStop &&
+      previousStop &&
+      lastStop.position - previousStop.position < 0.12
+    ) {
+      stops.splice(stops.length - 2, 1);
+    }
+
     return stops;
   }
 
@@ -643,9 +696,9 @@
 
   function getTransportModeScaleStart(transportModeKey: string): string {
     return interpolateHexColor(
-      "#ffffff",
+      MAP_ZERO_SHARE_COLOR,
       getTransportModeColor(transportModeKey),
-      0.35,
+      0.16,
     );
   }
 
@@ -710,8 +763,17 @@
     value: number,
     maxValue: number,
   ): number {
-    if (value <= 0 || maxValue <= 0) return 0;
-    return Math.pow(value / maxValue, MAP_COUNT_COLOR_EXPONENT);
+    if (value <= 1 || maxValue <= 1) return 0;
+    return Math.pow((value - 1) / (maxValue - 1), MAP_COUNT_COLOR_EXPONENT);
+  }
+
+  function getSampleColorStrength(n: number): number {
+    if (n <= 1) return 0.24;
+    if (n < SMALL_REGION_N_THRESHOLD) {
+      return 0.42 + ((n - 2) / (SMALL_REGION_N_THRESHOLD - 2)) * 0.28;
+    }
+
+    return 1;
   }
 
   function getRegionFillColor(metric: PlzRegionMetric | null): string {
@@ -719,12 +781,17 @@
 
     if (mapDisplayMode === "transport-share") {
       const share = metric.transportShares[selectedMapTransportMode] ?? 0;
+      const sampleStrength = getSampleColorStrength(metric.n);
+      const shareStrength = Math.pow(share, 0.82) * sampleStrength;
+
       return interpolateHexColor(
-        "#ffffff",
+        MAP_ZERO_SHARE_COLOR,
         getTransportModeColor(selectedMapTransportMode),
-        0.35 + share * 0.65,
+        Math.min(1, shareStrength),
       );
     }
+
+    if (metric.n === 1) return PARTICIPANT_MAP_SINGLE_CASE_COLOR;
 
     return interpolateHexColor(
       PARTICIPANT_MAP_MIN_COLOR,
@@ -762,14 +829,29 @@
         </select>
       </label>
 
-      <label class="field">
+      <div class="field regionMapModeField">
         <span>Kartenansicht</span>
-        <select bind:value={mapDisplayMode}>
+
+        <div
+          class="measureModeButtonGroup regionMapModeButtonGroup"
+          role="group"
+          aria-label="Kartenansicht wählen"
+        >
           {#each mapDisplayModeOptions as option}
-            <option value={option.key}>{option.label}</option>
+            <button
+              type="button"
+              class="measureModeButton regionMapModeButton"
+              class:is-active={mapDisplayMode === option.key}
+              aria-pressed={mapDisplayMode === option.key}
+              onclick={() => {
+                mapDisplayMode = option.key;
+              }}
+            >
+              {option.label}
+            </button>
           {/each}
-        </select>
-      </label>
+        </div>
+      </div>
 
       {#if mapDisplayMode === "transport-share"}
         <label class="field regionTransportModeField">
@@ -784,10 +866,6 @@
     {/snippet}
 
     {#snippet meta()}
-      <p class="chartMeta">
-        Semesterzeit:
-        <strong>{formatSemesterTime(semesterTime)}</strong>
-      </p>
       <p class="chartMeta">
         Kartenansicht:
         <strong>{selectedMapModeLabel}</strong>
@@ -804,125 +882,163 @@
 
     <div class="regionModuleLayout">
       <div class="regionMapColumn">
-        <div class="regionMapCard">
-          <div
-            class:regionMapFrame={true}
-            class:is-panning={isPanning}
-            role="presentation"
-            style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "default"};`}
-            onmousedown={handleMapMouseDown}
-            onwheel={handleMapWheel}
-          >
-            <div class="regionMapOverlay">
-              <div class="regionMapOverlayLeft">
-                <div class="regionMapInteractionHint">
-                  Mausrad: Zoomen · Ziehen: Verschieben
-                </div>
-
-                <div class="regionNorthIndicator" aria-label="Nordrichtung">
-                  <span>N</span>
-                </div>
+        <div
+          class:regionMapFrame={true}
+          class:is-panning={isPanning}
+          role="presentation"
+          style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "default"};`}
+          onmousedown={handleMapMouseDown}
+          onwheel={handleMapWheel}
+        >
+          <div class="regionMapOverlay">
+            <div class="regionMapOverlayLeft">
+              <div class="regionMapInteractionHint">
+                Mausrad: Zoomen · Ziehen: Verschieben
               </div>
 
-              <button
-                type="button"
-                class="regionResetButton regionMapResetButton"
-                disabled={!hasMapTransform}
-                aria-disabled={!hasMapTransform}
-                onmousedown={(event) => event.stopPropagation()}
-                onclick={resetMapView}
-              >
-                Ansicht zurücksetzen
-              </button>
+              <div class="regionNorthIndicator" aria-label="Nordrichtung">
+                <span>N</span>
+              </div>
             </div>
 
-            <svg
-              bind:this={mapSvgElement}
-              class="regionMapSvg"
-              viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-              role="img"
-              aria-label="PLZ-Karte der fokussierten Region um Regensburg mit Dom und Universität als Orientierungspunkten"
+            <button
+              type="button"
+              class="regionResetButton regionMapResetButton"
+              disabled={!hasMapTransform}
+              aria-disabled={!hasMapTransform}
+              onmousedown={(event) => event.stopPropagation()}
+              onclick={resetMapView}
             >
-              <g
-                transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}
-              >
-                {#each mapFeatures as feature}
-                  <path
-                    class="regionPath"
-                    class:is-hovered={!isPanning && hoveredPlz === feature.plz}
-                    class:is-selected={selectedPlz === feature.plz}
-                    class:is-empty={!feature.metric || feature.metric.n === 0}
-                    d={feature.path}
-                    fill={getRegionFillColor(feature.metric)}
-                    vector-effect="non-scaling-stroke"
-                    role="button"
-                    tabindex="0"
-                    aria-label={`PLZ-Bereich ${feature.metric?.label ?? feature.label}`}
-                    style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
-                    onmouseenter={() => {
-                      if (isPanning) return;
-                      hoveredPlz = feature.plz;
-                    }}
-                    onmouseleave={() => {
-                      hoveredPlz = null;
-                    }}
-                    onfocus={() => {
-                      if (isPanning) return;
-                      hoveredPlz = feature.plz;
-                    }}
-                    onblur={() => {
-                      hoveredPlz = null;
-                    }}
-                    onmousedown={handleRegionPointerDown}
-                    onkeydown={(event) =>
-                      handleRegionKeydown(event, feature.plz)}
-                    onclick={(event) =>
-                      handleRegionMouseClick(event, feature.plz)}
-                  >
-                    <title>
-                      {`${feature.metric?.label ?? feature.label} · ${formatSemesterTime(semesterTime)} · ${mapMetricLabel}: ${feature.metric ? formatMapMetricValue(feature.metric) : "keine Fälle"}`}
-                    </title>
-                  </path>
-                {/each}
-
-                {#if cathedralMarkerPosition}
-                  <rect
-                    class="regionReferenceMarker regionReferenceMarker--cathedral"
-                    x={cathedralMarkerPosition.x - 2}
-                    y={cathedralMarkerPosition.y - 2}
-                    width="4"
-                    height="4"
-                    transform={`rotate(45 ${cathedralMarkerPosition.x} ${cathedralMarkerPosition.y})`}
-                    vector-effect="non-scaling-stroke"
-                    aria-label="Regensburger Dom"
-                  >
-                    <title>Regensburger Dom</title>
-                  </rect>
-                {/if}
-
-                {#if universityMarkerPosition}
-                  <circle
-                    class="regionReferenceMarker regionReferenceMarker--university"
-                    cx={universityMarkerPosition.x}
-                    cy={universityMarkerPosition.y}
-                    r="2"
-                    vector-effect="non-scaling-stroke"
-                    aria-label="Universität Regensburg"
-                  >
-                    <title>Universität Regensburg</title>
-                  </circle>
-                {/if}
-              </g>
-            </svg>
+              Ansicht zurücksetzen
+            </button>
           </div>
+
+          <svg
+            bind:this={mapSvgElement}
+            class="regionMapSvg"
+            viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+            role="img"
+            aria-label="PLZ-Karte der fokussierten Region um Regensburg mit Dom und Universität als Orientierungspunkten"
+          >
+            <g
+              transform={`translate(${zoomTranslateX} ${zoomTranslateY}) scale(${zoomScale})`}
+            >
+              {#each mapFeatures as feature}
+                <path
+                  class="regionPath"
+                  class:is-hovered={!isPanning && hoveredPlz === feature.plz}
+                  class:is-selected={selectedPlz === feature.plz}
+                  class:is-empty={!feature.metric || feature.metric.n === 0}
+                  d={feature.path}
+                  fill={getRegionFillColor(feature.metric)}
+                  vector-effect="non-scaling-stroke"
+                  role="button"
+                  tabindex="0"
+                  aria-label={`PLZ-Bereich ${feature.metric?.label ?? feature.label}`}
+                  style={`cursor: ${isPanning ? "grabbing" : hasMapTransform ? "grab" : "pointer"};`}
+                  onmouseenter={() => {
+                    if (isPanning) return;
+                    hoveredPlz = feature.plz;
+                  }}
+                  onmouseleave={() => {
+                    hoveredPlz = null;
+                  }}
+                  onfocus={() => {
+                    if (isPanning) return;
+                    hoveredPlz = feature.plz;
+                  }}
+                  onblur={() => {
+                    hoveredPlz = null;
+                  }}
+                  onmousedown={handleRegionPointerDown}
+                  onkeydown={(event) => handleRegionKeydown(event, feature.plz)}
+                  onclick={(event) =>
+                    handleRegionMouseClick(event, feature.plz)}
+                >
+                  <title>
+                    {`${feature.metric?.label ?? feature.label} · ${formatSemesterTime(semesterTime)} · ${mapMetricLabel}: ${feature.metric ? formatMapMetricValue(feature.metric) : "keine Fälle"}`}
+                  </title>
+                </path>
+              {/each}
+
+              {#if cathedralMarkerPosition}
+                <rect
+                  class="regionReferenceMarker regionReferenceMarker--cathedral"
+                  x={cathedralMarkerPosition.x - 2}
+                  y={cathedralMarkerPosition.y - 2}
+                  width="4"
+                  height="4"
+                  transform={`rotate(45 ${cathedralMarkerPosition.x} ${cathedralMarkerPosition.y})`}
+                  vector-effect="non-scaling-stroke"
+                  role="img"
+                  aria-label="Regensburger Dom"
+                  onmouseenter={() => showReferenceMarkerTooltip("cathedral")}
+                  onmouseleave={hideReferenceMarkerTooltip}
+                ></rect>
+              {/if}
+
+              {#if universityMarkerPosition}
+                <circle
+                  class="regionReferenceMarker regionReferenceMarker--university"
+                  cx={universityMarkerPosition.x}
+                  cy={universityMarkerPosition.y}
+                  r="2"
+                  vector-effect="non-scaling-stroke"
+                  role="img"
+                  aria-label="Universität Regensburg"
+                  onmouseenter={() => showReferenceMarkerTooltip("university")}
+                  onmouseleave={hideReferenceMarkerTooltip}
+                ></circle>
+              {/if}
+            </g>
+
+            {#if hoveredReferenceMarker === "cathedral" && cathedralMarkerScreenPosition}
+              <g
+                class="regionReferenceTooltip"
+                transform={`translate(${cathedralMarkerScreenPosition.x + 8} ${cathedralMarkerScreenPosition.y - 30})`}
+              >
+                <rect width="118" height="24" rx="8"></rect>
+                <text x="10" y="16">Regensburger Dom</text>
+              </g>
+            {/if}
+
+            {#if hoveredReferenceMarker === "university" && universityMarkerScreenPosition}
+              <g
+                class="regionReferenceTooltip"
+                transform={`translate(${universityMarkerScreenPosition.x + 8} ${universityMarkerScreenPosition.y - 30})`}
+              >
+                <rect width="142" height="24" rx="8"></rect>
+                <text x="10" y="16">Universität Regensburg</text>
+              </g>
+            {/if}
+          </svg>
         </div>
 
-        <div class="regionMapSupportRow">
-          <section class="panel regionInfoPanel regionLegendPanel">
-            <h3 class="regionSubheading">Legende</h3>
-            <p class="regionSubtext">{legendDescription}</p>
+        <section class="panel regionInfoPanel regionLegendPanel">
+          <h3 class="regionSubheading">Legende</h3>
 
-            <div class="regionLegendMarkerList">
+          <div class="regionLegendMain">
+            {#key legendKey}
+              <div class="regionLegendScale">
+                <div
+                  class="regionLegendGradient"
+                  style={`--region-legend-start: ${legendGradientStart}; --region-legend-end: ${legendGradientEnd};`}
+                  aria-hidden="true"
+                ></div>
+
+                <div class="regionLegendLabels" aria-hidden="true">
+                  {#each legendStops as stop}
+                    <span style={`left: ${stop.position * 100}%;`}
+                      >{stop.label}</span
+                    >
+                  {/each}
+                </div>
+              </div>
+            {/key}
+
+            <div
+              class="regionLegendMarkerList regionLegendMarkerList--besideScale"
+            >
               <div class="regionLegendMarkerRow">
                 <span
                   class="regionLegendMarker regionLegendMarker--university"
@@ -936,63 +1052,44 @@
                   class="regionLegendMarker regionLegendMarker--cathedral"
                   aria-hidden="true"
                 ></span>
-                <span>Regensburger Dom</span>
+                <span>Dom</span>
               </div>
             </div>
-
-            <div class="regionLegendScale">
-              <div
-                class="regionLegendGradient"
-                style={`--region-legend-start: ${legendGradientStart}; --region-legend-end: ${legendGradientEnd};`}
-                aria-hidden="true"
-              ></div>
-
-              <div class="regionLegendLabels" aria-hidden="true">
-                {#each legendStops as stop}
-                  <span style={`left: ${stop.position * 100}%;`}
-                    >{stop.label}</span
-                  >
-                {/each}
-              </div>
-            </div>
-          </section>
-
-          <section class="panel regionInfoPanel regionHoverPanel">
-            <h3 class="regionSubheading">Hover-Vorschau</h3>
-            <p class="regionSubtext">
-              Temporäre Information zum PLZ-Bereich unter dem Cursor.
-            </p>
-
-            <dl class="regionDetailList regionDetailList--compact">
-              <div>
-                <dt>PLZ-Bereich</dt>
-                <dd>{hoverPreview.label}</dd>
-              </div>
-              <div>
-                <dt>Fallzahl</dt>
-                <dd>
-                  {hoverPreview.n === null
-                    ? "–"
-                    : `n = ${formatInteger(hoverPreview.n)}`}
-                </dd>
-              </div>
-            </dl>
-          </section>
-        </div>
+          </div>
+          <p class="regionSubtext">{legendDescription}</p>
+          <p class="regionLegendHint">
+            Sehr kleine Fallzahlen, besonders n = 1, sind heller dargestellt.
+            Hohe Prozentwerte bei kleinem n sind nur vorsichtig interpretierbar.
+          </p>
+        </section>
       </div>
 
       <aside
         class="regionDetailColumn"
         aria-label="Regionale Detailinformationen"
       >
+        <section class="panel regionInfoPanel regionHoverPanel">
+          <h3 class="regionSubheading">Hover-Vorschau</h3>
+          <dl class="regionDetailList regionDetailList--compact">
+            <div>
+              <dt>PLZ-Bereich</dt>
+              <dd>{hoverPreview.label}</dd>
+            </div>
+            <div>
+              <dt>Fallzahl</dt>
+              <dd>
+                {hoverPreview.n === null
+                  ? "–"
+                  : formatRegionNWithSelectionShare(hoverPreview.n)}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
         <section class="panel regionInfoPanel regionSelectionPanel">
           <div class="regionSelectionHeader">
             <div>
               <h3 class="regionSubheading">Ausgewählter PLZ-Bereich</h3>
-              <p class="regionSubtext">
-                Die Detailansicht zeigt Fallzahl und Modal Split für den
-                ausgewählten PLZ-Bereich.
-              </p>
             </div>
           </div>
 
@@ -1004,7 +1101,7 @@
               </div>
               <div>
                 <dt>Fallzahl</dt>
-                <dd>n = {formatInteger(selectedRegion.n)}</dd>
+                <dd>{formatRegionNWithSelectionShare(selectedRegion.n)}</dd>
               </div>
             </dl>
 

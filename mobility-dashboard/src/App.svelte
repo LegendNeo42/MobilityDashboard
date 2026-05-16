@@ -64,12 +64,6 @@
       </section>
 
       <section id="region" class="dashboardSection dashboardSection--region">
-        <div class="sectionHeader">
-          <p class="sectionEyebrow">{dashboardContent.regionSection.eyebrow}</p>
-          <h2>{dashboardContent.regionSection.title}</h2>
-          <p class="sectionText">{dashboardContent.regionSection.text}</p>
-        </div>
-
         <PlzRegionSection />
       </section>
     </div>
