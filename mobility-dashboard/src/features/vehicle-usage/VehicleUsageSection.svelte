@@ -13,7 +13,8 @@
   let error = $state<string | null>(null);
   let dataset = $state<VehicleUsageByGroupDataset | null>(null);
   let semesterTime = $state("");
-  let sortMode = $state<"fixed" | "frequency">("fixed");
+  let sortMode = $state<"fixed" | "frequency">("frequency");
+  let semesterOptions = $derived(dataset?.semesterOptions ?? []);
 
   let xAxisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
@@ -25,7 +26,9 @@
     try {
       const nextDataset = await loadVehicleUsageByGroupData();
       dataset = nextDataset;
-      semesterTime = nextDataset.semesterOptions[0] ?? "";
+      semesterTime = nextDataset.semesterOptions.includes("ws_vl")
+        ? "ws_vl"
+        : (nextDataset.semesterOptions[0] ?? "");
     } catch (loadError) {
       error = loadError instanceof Error ? loadError.message : String(loadError);
     }
@@ -83,7 +86,7 @@
       <label class="field">
         <span>Zeitraum</span>
         <select bind:value={semesterTime}>
-          {#each dataset.semesterOptions as option}
+          {#each semesterOptions as option}
             <option value={option}>{formatSemesterTime(option)}</option>
           {/each}
         </select>

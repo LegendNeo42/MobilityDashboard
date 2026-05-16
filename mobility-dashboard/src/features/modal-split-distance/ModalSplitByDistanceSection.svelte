@@ -29,14 +29,18 @@
   let error = $state<string | null>(null);
   let dataset = $state<ModalSplitByDistanceDataset | null>(null);
   let semesterTime = $state("");
+  let semesterOptions = $derived(dataset?.semesterOptions ?? []);
 
   onMount(async () => {
     try {
       const nextDataset = await loadModalSplitByDistanceData();
       dataset = nextDataset;
-      semesterTime = nextDataset.semesterOptions[0] ?? "";
+      semesterTime = nextDataset.semesterOptions.includes("ws_vl")
+        ? "ws_vl"
+        : (nextDataset.semesterOptions[0] ?? "");
     } catch (loadError) {
-      error = loadError instanceof Error ? loadError.message : String(loadError);
+      error =
+        loadError instanceof Error ? loadError.message : String(loadError);
     }
   });
 
@@ -88,7 +92,8 @@
     const bucketParticipantsByKey = new Map<string, number>();
 
     for (const summary of filteredBucketSummaries) {
-      const currentValue = bucketParticipantsByKey.get(summary.distance_bucket) ?? 0;
+      const currentValue =
+        bucketParticipantsByKey.get(summary.distance_bucket) ?? 0;
       bucketParticipantsByKey.set(
         summary.distance_bucket,
         currentValue + summary.participants,
@@ -114,7 +119,8 @@
         vehicle_label: row.vehicle_label,
         vehicle_order: row.vehicle_order,
         people: row.people,
-        bucket_participants: bucketParticipantsByKey.get(row.distance_bucket) ?? 0,
+        bucket_participants:
+          bucketParticipantsByKey.get(row.distance_bucket) ?? 0,
       });
     }
 
@@ -157,7 +163,7 @@
       <label class="field">
         <span>Zeitraum</span>
         <select bind:value={semesterTime}>
-          {#each dataset.semesterOptions as option}
+          {#each semesterOptions as option}
             <option value={option}>{formatSemesterTime(option)}</option>
           {/each}
         </select>
@@ -174,7 +180,11 @@
       </p>
       <p class="chartMeta">
         Nur hier ausgeblendete Werte:
-        <strong>{formatInteger(excludedZeroDistanceCount + excludedLongWalkCount)}</strong>
+        <strong
+          >{formatInteger(
+            excludedZeroDistanceCount + excludedLongWalkCount,
+          )}</strong
+        >
       </p>
     {/snippet}
 

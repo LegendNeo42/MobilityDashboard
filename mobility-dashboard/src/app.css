@@ -2424,3 +2424,15 @@ input {
     font-size: 0.76rem;
   }
 }
+
+.dashboardSection--overview + .analysisWorkspace {
+  margin-top: 24px;
+}
+
+.dashboardSection--analysis + .dashboardSection--region {
+  margin-top: 24px;
+}
+
+.analysisWorkspace + .dashboardSection--context {
+  margin-top: 24px;
+}

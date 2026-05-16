@@ -22,6 +22,7 @@
     people: number;
     segment_participants: number;
     segment_context_label: string;
+    barrier_sort_rank: number;
   };
 
   const ALL_SEGMENTS_KEY = "all";
@@ -30,6 +31,7 @@
   let error = $state<string | null>(null);
   let dataset = $state<PublicTransportBarrierDataset | null>(null);
   let segmentKey = $state("car-driver");
+  let sortMode = $state<"fixed" | "frequency">("frequency");
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
@@ -127,16 +129,40 @@
         people: row.people,
         segment_participants: participantsInSelection,
         segment_context_label: selectedSegmentContextLabel,
+        barrier_sort_rank: row.barrier_order,
       });
     }
 
-    return Array.from(rowsByKey.values()).sort((a, b) => {
+    const sortedRows = Array.from(rowsByKey.values()).sort((a, b) => {
+      if (sortMode === "frequency") {
+        const aMetric =
+          $dashboardFilters.measureMode === "absolute"
+            ? a.people
+            : a.segment_participants > 0
+              ? a.people / a.segment_participants
+              : 0;
+        const bMetric =
+          $dashboardFilters.measureMode === "absolute"
+            ? b.people
+            : b.segment_participants > 0
+              ? b.people / b.segment_participants
+              : 0;
+        const metricDifference = bMetric - aMetric;
+
+        if (metricDifference !== 0) return metricDifference;
+      }
+
       if (a.barrier_order !== b.barrier_order) {
         return a.barrier_order - b.barrier_order;
       }
 
-      return 0;
+      return a.barrier_label.localeCompare(b.barrier_label, "de-DE");
     });
+
+    return sortedRows.map((row, index) => ({
+      ...row,
+      barrier_sort_rank: sortMode === "frequency" ? index + 1 : row.barrier_order,
+    }));
   });
 
   let visibleBarrierCount = $derived.by(() => {
@@ -170,6 +196,14 @@
           {#each dataset?.segmentOptions ?? [] as option}
             <option value={option.key}>{option.label}</option>
           {/each}
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Sortierung</span>
+        <select bind:value={sortMode}>
+          <option value="fixed">Feste Reihenfolge</option>
+          <option value="frequency">Nach Häufigkeit/Anteil</option>
         </select>
       </label>
     {/snippet}

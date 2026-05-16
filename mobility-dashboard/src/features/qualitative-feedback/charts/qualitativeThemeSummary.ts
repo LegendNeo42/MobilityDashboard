@@ -33,11 +33,15 @@ export function createQualitativeThemeSummarySpec(options?: {
     ],
     encoding: {
       y: {
-        field: "theme_label",
+        field: "theme_axis_label",
         type: "nominal",
         title: null,
         sort: themeSortOrder,
-        axis: { labelLimit },
+        axis: {
+          labelLimit,
+          labelLineHeight: 12,
+          labelExpr: "split(datum.label, '|||')",
+        },
       },
       yOffset: {
         field: "group_label",

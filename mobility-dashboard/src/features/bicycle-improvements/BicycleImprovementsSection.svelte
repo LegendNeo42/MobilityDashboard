@@ -51,7 +51,7 @@
 
   let error = $state<string | null>(null);
   let dataset = $state<BicycleImprovementDataset | null>(null);
-  let sortMode = $state<"fixed" | "positive">("fixed");
+  let sortMode = $state<"fixed" | "positive">("positive");
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"

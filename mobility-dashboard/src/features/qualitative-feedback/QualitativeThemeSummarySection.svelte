@@ -21,6 +21,7 @@
   type QualitativeThemeChartRow = {
     theme_key: string;
     theme_label: string;
+    theme_axis_label: string;
     theme_order: number;
     theme_rank: number;
     group_key: StatusGroupKey;
@@ -36,7 +37,7 @@
   let error = $state<string | null>(null);
   let dataset = $state<QualitativePreparedDataset | null>(null);
   let selectedThemeKey = $state<string | null>(null);
-  let sortMode = $state<"fixed" | "frequency">("fixed");
+  let sortMode = $state<"fixed" | "frequency">("frequency");
 
   onMount(async () => {
     try {
@@ -143,7 +144,7 @@
   });
 
   let themeSortOrder = $derived.by(() => {
-    return visibleThemes.map((theme) => theme.label);
+    return visibleThemes.map((theme) => wrapThemeLabel(theme.label));
   });
 
   let visibleThemeRows = $derived.by(() => {
@@ -151,6 +152,7 @@
       theme.statusGroupEntries.map((groupEntry) => ({
         theme_key: theme.key,
         theme_label: theme.label,
+        theme_axis_label: wrapThemeLabel(theme.label),
         theme_order: theme.order,
         theme_rank: theme.rank,
         group_key: groupEntry.key,
@@ -228,6 +230,37 @@
 
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
+  }
+
+  function wrapThemeLabel(label: string): string {
+    if (label.length <= 34) return label;
+
+    const splitCandidates = [": ", " und ", ", "];
+    const target = label.length / 2;
+    let bestIndex = -1;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const candidate of splitCandidates) {
+      let searchFrom = 0;
+      while (searchFrom < label.length) {
+        const index = label.indexOf(candidate, searchFrom);
+        if (index === -1) break;
+
+        const splitIndex = candidate === " und " ? index : index + candidate.length;
+        const distance = Math.abs(splitIndex - target);
+
+        if (distance < bestDistance) {
+          bestIndex = splitIndex;
+          bestDistance = distance;
+        }
+
+        searchFrom = index + candidate.length;
+      }
+    }
+
+    if (bestIndex === -1) return label;
+
+    return `${label.slice(0, bestIndex).trim()}|||${label.slice(bestIndex).trim()}`;
   }
 
   function pickVisibleQuotes(

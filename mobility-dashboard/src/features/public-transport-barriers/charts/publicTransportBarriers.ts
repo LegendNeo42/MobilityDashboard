@@ -1,9 +1,3 @@
-import { publicTransportBarrierDefinitions } from "../../../data/domain";
-
-const barrierLabels = publicTransportBarrierDefinitions.map(
-  (definition) => definition.label,
-);
-
 export function createPublicTransportBarrierSpec() {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v6.json",
@@ -35,7 +29,7 @@ export function createPublicTransportBarrierSpec() {
         field: "barrier_label",
         type: "nominal",
         title: null,
-        sort: barrierLabels,
+        sort: { field: "barrier_sort_rank", order: "ascending" },
         axis: {
           labelLimit: 160,
         },
