@@ -10,7 +10,6 @@
     dashboardFilters,
     selectedStatusGroupKeys,
   } from "../../stores/dashboardFilters";
-  import { getSymmetricDivergingExtent } from "../../utils/divergingDomain";
   import { createPublicTransportBarrierSpec } from "./charts/publicTransportBarriers";
 
   type PublicTransportBarrierChartRow = {
@@ -34,8 +33,8 @@
 
   let axisTitle = $derived.by(() =>
     $dashboardFilters.measureMode === "absolute"
-      ? "Antworten zu Gründen gegen Bus und Bahn (Nein links, Ja rechts)"
-      : "Anteil der gezeigten Personen je Grund gegen Bus und Bahn (%)",
+      ? "Personen, die den Grund genannt haben"
+      : "Anteil der gezeigten Personen, die den Grund genannt haben (%)",
   );
 
   onMount(async () => {
@@ -108,7 +107,9 @@
         continue;
       }
 
-      const aggregationKey = `${row.barrier}|${row.response_key}`;
+      if (row.response_key !== "yes") continue;
+
+      const aggregationKey = row.barrier;
       const existingRow = rowsByKey.get(aggregationKey);
 
       if (existingRow) {
@@ -134,17 +135,13 @@
         return a.barrier_order - b.barrier_order;
       }
 
-      return a.response_order - b.response_order;
+      return 0;
     });
   });
 
   let visibleBarrierCount = $derived.by(() => {
     return new Set(visibleValues.map((row) => row.barrier)).size;
   });
-
-  let absoluteDomainExtent = $derived.by(() =>
-    getSymmetricDivergingExtent(visibleValues, ["people"]),
-  );
 
   function formatInteger(value: number): string {
     return new Intl.NumberFormat("de-DE").format(value);
@@ -158,9 +155,9 @@
 {:else}
   <DashboardChartSection
     eyebrow="Hürden"
-    title="Warum werden Bus und Bahn nicht genutzt?"
-    description="Die Balken zeigen immer Gründe gegen Bus und Bahn. Der lokale Filter legt fest, von Personen mit welchem aktuellen Hauptverkehrsmittel diese Antworten stammen."
-    note="Der lokale Filter ändert nicht das Thema des Diagramms: Es geht immer um Gründe gegen Bus und Bahn. Prozentwerte beziehen sich auf die gezeigten Personen mit dem gewählten Hauptverkehrsmittel und den aktuell sichtbaren Personengruppen. Ja-Antworten liegen rechts, Nein-Antworten links."
+    title="Welche Gründe sprechen gegen Bus und Bahn?"
+    description="Die Balken zeigen, wie häufig ein Grund gegen Bus und Bahn in der aktuellen Auswahl genannt wurde."
+    note="Gezeigt werden nur genannte Gründe gegen Bus und Bahn. Prozentwerte beziehen sich auf die gezeigten Personen mit dem gewählten Hauptverkehrsmittel und den aktuell sichtbaren Personengruppen."
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}
@@ -170,7 +167,7 @@
         <span>Antworten von Personen mit Hauptverkehrsmittel</span>
         <select bind:value={segmentKey}>
           <option value={ALL_SEGMENTS_KEY}>Alle Hauptverkehrsmittel</option>
-          {#each dataset.segmentOptions as option}
+          {#each dataset?.segmentOptions ?? [] as option}
             <option value={option.key}>{option.label}</option>
           {/each}
         </select>
@@ -198,7 +195,6 @@
         dataValues={visibleValues}
         signals={{
           measureMode: $dashboardFilters.measureMode,
-          absoluteDomainExtent,
         }}
       />
     {:else}

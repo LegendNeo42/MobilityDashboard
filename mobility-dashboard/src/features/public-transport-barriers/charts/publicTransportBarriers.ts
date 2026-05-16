@@ -11,10 +11,7 @@ export function createPublicTransportBarrierSpec() {
     height: 420,
     autosize: { type: "fit-x", contains: "padding" },
     padding: { left: 29, right: 14, top: 10, bottom: 0 },
-    params: [
-      { name: "measureMode", value: "absolute" },
-      { name: "absoluteDomainExtent", value: 1 },
-    ],
+    params: [{ name: "measureMode", value: "absolute" }],
     data: { name: "table" },
     transform: [
       {
@@ -29,19 +26,10 @@ export function createPublicTransportBarrierSpec() {
       {
         calculate:
           "measureMode === 'absolute' ? datum.people : datum.segment_share_percent_1",
-        as: "unsigned_metric_value",
-      },
-      {
-        calculate:
-          "datum.response_key === 'yes' ? datum.unsigned_metric_value : -datum.unsigned_metric_value",
         as: "metric_value",
       },
-      {
-        calculate: "datum.response_key === 'yes' ? 'Ja' : 'Nein'",
-        as: "response_side_label",
-      },
     ],
-    mark: { type: "bar" },
+    mark: { type: "bar", color: "#6f8f8a" },
     encoding: {
       y: {
         field: "barrier_label",
@@ -58,45 +46,23 @@ export function createPublicTransportBarrierSpec() {
         title: null,
         axis: {
           grid: true,
-          tickMinStep: 1,
+          tickCount: 18,
+          labelOverlap: "greedy",
           labelExpr:
-            "measureMode === 'absolute' ? format(abs(datum.value), ',d') : format(abs(datum.value), '.0f') + '%'",
+            "measureMode === 'absolute' ? format(datum.value, ',d') : format(datum.value, '.0f') + '%'",
         },
         scale: {
           zero: true,
           domainRaw: {
-            signal:
-              "measureMode === 'percent' ? [-100, 100] : [-absoluteDomainExtent, absoluteDomainExtent]",
+            signal: "measureMode === 'percent' ? [0, 100] : null",
           },
         },
-      },
-      color: {
-        field: "response_side_label",
-        type: "nominal",
-        title: "Antwort",
-        scale: {
-          domain: ["Nein", "Ja"],
-          range: ["#9fb3c8", "#f58518"],
-        },
-        legend: {
-          orient: "bottom",
-          direction: "horizontal",
-          symbolType: "square",
-          offset: 20,
-          labelFontSize: 12,
-          titleFontSize: 13,
-        },
-      },
-      order: {
-        field: "response_order",
-        type: "quantitative",
-        sort: "ascending",
       },
       tooltip: [
         {
           field: "barrier_label",
           type: "nominal",
-          title: "Grund gegen Bus und Bahn",
+          title: "Genannter Grund gegen Bus und Bahn",
         },
         {
           field: "segment_context_label",
@@ -104,19 +70,14 @@ export function createPublicTransportBarrierSpec() {
           title: "Gezeigte Antworten von",
         },
         {
-          field: "response_side_label",
-          type: "nominal",
-          title: "Antwort auf diesen Grund",
-        },
-        {
           field: "people",
           type: "quantitative",
-          title: "Personen mit dieser Antwort",
+          title: "Personen, die diesen Grund genannt haben",
         },
         {
           field: "segment_share_percent_1",
           type: "quantitative",
-          title: "Anteil dieser Personen (%)",
+          title: "Anteil der gezeigten Personen (%)",
           format: ".1f",
         },
         {
