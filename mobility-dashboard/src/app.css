@@ -1181,36 +1181,72 @@ input {
 }
 
 .statusGroupList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  gap: 9px;
 }
 
 .filterChip {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
+  width: 100%;
   min-height: 42px;
-  padding: 0 14px;
+  padding: 0 13px;
   border: 1px solid #c8d2dc;
-  border-radius: 999px;
-  background: #ffffff;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
   color: #314252;
   cursor: pointer;
   transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.1s ease,
+    background-color 0.1s ease,
+    box-shadow 0.1s ease,
+    transform 0.01s ease;
 }
 
 .filterChip:hover {
   border-color: #9fb0c1;
+  transform: translateY(-1px);
 }
 
 .filterChip.is-active {
-  background: #eef4fb;
-  border-color: #7b98b7;
-  box-shadow: inset 0 0 0 1px rgba(70, 97, 124, 0.12);
+  background: linear-gradient(180deg, #edf6ff 0%, #f8fbff 100%);
+  border-color: #6f91b6;
+  color: #18212b;
+  box-shadow:
+    inset 0 0 0 1px rgba(70, 97, 124, 0.16),
+    0 8px 18px rgba(24, 33, 43, 0.08);
+}
+
+.filterChipIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #b9c7d6;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.filterChip.is-active .filterChipIndicator {
+  border-color: #2d5f8f;
+  background: #2d5f8f;
+  color: #ffffff;
+}
+
+.filterChip.is-active .filterChipSwatch {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.94);
+}
+
+.filterChip.is-active .filterChipLabel {
+  color: #18212b;
 }
 
 .filterChipSwatch {
@@ -1222,6 +1258,44 @@ input {
 
 .filterChipLabel {
   white-space: nowrap;
+  font-weight: 700;
+}
+
+.measureModeButtonGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.measureModeButton {
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid #c8d2dc;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #314252;
+  cursor: pointer;
+  font-weight: 750;
+  line-height: 1.15;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.measureModeButton:hover {
+  border-color: #9fb0c1;
+  transform: translateY(-1px);
+}
+
+.measureModeButton.is-active {
+  border-color: #2d5f8f;
+  background: linear-gradient(180deg, #dfefff 0%, #f4f9ff 100%);
+  color: #18304a;
+  box-shadow:
+    inset 0 0 0 1px rgba(45, 95, 143, 0.18),
+    0 8px 18px rgba(24, 33, 43, 0.08);
 }
 
 .chartSectionBody {

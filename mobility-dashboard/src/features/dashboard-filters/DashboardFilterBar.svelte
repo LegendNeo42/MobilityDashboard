@@ -2,16 +2,18 @@
   import { measureModes, statusGroupDefinitions } from "../../data/domain";
   import type { MeasureMode, StatusGroupKey } from "../../data/domain";
   import {
-    allStatusGroupsSelected,
     dashboardFilters,
-    selectAllStatusGroupFilters,
     setMeasureModeFilter,
     toggleStatusGroupFilter,
   } from "../../stores/dashboardFilters";
 
-  function handleMeasureModeChange(event: Event) {
-    const target = event.currentTarget as HTMLSelectElement;
-    setMeasureModeFilter(target.value as MeasureMode);
+  const measureModeLabels: Record<MeasureMode, string> = {
+    absolute: "Absolut",
+    percent: "Prozent",
+  };
+
+  function handleMeasureModeChange(value: MeasureMode) {
+    setMeasureModeFilter(value);
   }
 
   function handleStatusGroupToggle(key: StatusGroupKey) {
@@ -22,34 +24,31 @@
 <aside class="dashboardFilterSection" aria-label="Dashboard-Filter">
   <div class="panel dashboardFilterPanel">
     <div class="sectionHeader dashboardFilterHeader">
-      <p class="sectionEyebrow">Filter</p>
+      <p class="sectionEyebrow">Globaler Filter</p>
       <h2>Analyse filtern</h2>
       <p class="sectionText dashboardFilterText">
-        Diese Auswahl gilt für alle Diagramme im Analysebereich.
+        Personengruppen gelten für alle Bereiche des Dashboards.  
       </p>
     </div>
 
     <div class="dashboardFilterToolbar">
       <div class="field statusGroupField">
         <span>Personengruppen</span>
-
         <div class="statusGroupList" role="group" aria-label="Personengruppen">
-          <button
-            type="button"
-            class="filterChip"
-            class:is-active={$allStatusGroupsSelected}
-            on:click={selectAllStatusGroupFilters}
-          >
-            <span class="filterChipLabel">Alle</span>
-          </button>
-
           {#each statusGroupDefinitions as definition}
+            {@const isActive = $dashboardFilters.statusGroups.includes(
+              definition.key,
+            )}
             <button
               type="button"
               class="filterChip"
-              class:is-active={$dashboardFilters.statusGroups.includes(definition.key)}
-              on:click={() => handleStatusGroupToggle(definition.key)}
+              class:is-active={isActive}
+              aria-pressed={isActive}
+              onclick={() => handleStatusGroupToggle(definition.key)}
             >
+              <span class="filterChipIndicator" aria-hidden="true">
+                {isActive ? "✓" : ""}
+              </span>
               <span
                 class="filterChipSwatch"
                 style={`background-color: ${definition.color};`}
@@ -61,14 +60,28 @@
         </div>
       </div>
 
-      <label class="field dashboardFilterMeasureField">
-        <span>Werte anzeigen als</span>
-        <select value={$dashboardFilters.measureMode} on:change={handleMeasureModeChange}>
+      <div class="field dashboardFilterMeasureField">
+        <span>Diagrammwerte</span>
+
+        <div
+          class="measureModeButtonGroup"
+          role="group"
+          aria-label="Diagrammwerte"
+        >
           {#each measureModes as option}
-            <option value={option.key}>{option.label}</option>
+            {@const isActive = $dashboardFilters.measureMode === option.key}
+            <button
+              type="button"
+              class="measureModeButton"
+              class:is-active={isActive}
+              aria-pressed={isActive}
+              onclick={() => handleMeasureModeChange(option.key)}
+            >
+              {measureModeLabels[option.key]}
+            </button>
           {/each}
-        </select>
-      </label>
+        </div>
+      </div>
     </div>
   </div>
 </aside>
