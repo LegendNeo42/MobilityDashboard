@@ -77,7 +77,13 @@
     eyebrow="Verkehrsmittel"
     title="Welche Verkehrsmittel werden je Personengruppe genutzt?"
     description="Die Ansicht zeigt, welche Verkehrsmittel die sichtbaren Personengruppen im gewählten Zeitraum genannt haben."
-    note="Absolute Werte zeigen, wie viele Personen das jeweilige Verkehrsmittel in der aktuellen Auswahl genannt haben. Prozentwerte zeigen den Anteil innerhalb jeder sichtbaren Personengruppe. Mehrfachnennungen pro Person sind möglich, deshalb addieren sich die Anteile innerhalb einer Personengruppe nicht zu 100 %."
+    infoTitle="Verkehrsmittel lesen"
+    infoIntro="Die Ansicht zeigt genannte Verkehrsmittel in der aktuellen Auswahl."
+    infoItems={[
+      "Absolute Werte zeigen, wie viele Personen das jeweilige Verkehrsmittel genannt haben.",
+      "Prozentwerte zeigen den Anteil innerhalb jeder sichtbaren Personengruppe.",
+      "Mehrfachnennungen pro Person sind möglich, deshalb addieren sich die Anteile innerhalb einer Personengruppe nicht zu 100 %.",
+    ]}
     axisTitle={xAxisTitle}
     hasToolbar={true}
     hasMeta={true}

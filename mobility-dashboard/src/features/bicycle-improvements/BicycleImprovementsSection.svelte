@@ -255,7 +255,13 @@
     eyebrow="Fahrradinfrastruktur"
     title="Welche Verbesserungen für das Fahrrad werden als wichtig gesehen?"
     description="Diese Ansicht zeigt, wie die sichtbaren Personengruppen mögliche Verbesserungen rund um Radverkehr und Fahrradnutzung bewerten."
-    note="Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig. Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken. Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas."
+    infoTitle="Fahrrad-Bewertungen lesen"
+    infoIntro="Die Ansicht zeigt Bewertungen zu möglichen Verbesserungen rund um Radverkehr und Fahrradnutzung."
+    infoItems={[
+      "Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig.",
+      "Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken.",
+      "Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas.",
+    ]}
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}

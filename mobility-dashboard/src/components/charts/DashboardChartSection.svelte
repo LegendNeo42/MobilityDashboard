@@ -9,6 +9,9 @@
     axisTitle = "",
     hasToolbar = false,
     hasMeta = false,
+    infoTitle = "",
+    infoIntro = "",
+    infoItems = [],
     toolbar,
     meta,
     children,
@@ -20,17 +23,53 @@
     axisTitle?: string;
     hasToolbar?: boolean;
     hasMeta?: boolean;
+    infoTitle?: string;
+    infoIntro?: string;
+    infoItems?: string[];
     toolbar?: Snippet;
     meta?: Snippet;
     children?: Snippet;
   }>();
+
+  let hasInfo = $derived(infoItems.length > 0 || Boolean(infoIntro));
 </script>
 
 <article class="panel chartModule">
   <div class="sectionHeader">
-    <div>
+    <div class="sectionHeaderMain">
       <p class="sectionEyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+      <div class="sectionTitleRow">
+        <h2>{title}</h2>
+
+        {#if hasInfo}
+          <div class="sectionInfoTooltip">
+            <button
+              type="button"
+              class="sectionInfoButton"
+              aria-label={`Hinweise zu ${title}`}
+            >
+              i
+            </button>
+            <div class="sectionInfoPopover" role="tooltip">
+              {#if infoTitle}
+                <p class="sectionInfoPopoverTitle">{infoTitle}</p>
+              {/if}
+
+              {#if infoIntro}
+                <p class="sectionInfoPopoverIntro">{infoIntro}</p>
+              {/if}
+
+              {#if infoItems.length > 0}
+                <ul class="sectionInfoPopoverList">
+                  {#each infoItems as item}
+                    <li>{item}</li>
+                  {/each}
+                </ul>
+              {/if}
+            </div>
+          </div>
+        {/if}
+      </div>
       <p class="sectionText">{description}</p>
     </div>
   </div>

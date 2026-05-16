@@ -154,8 +154,16 @@
     eyebrow="Distanz"
     title="Wie verändert sich der Modal Split mit der Distanz?"
     axisTitle="Distanzklasse beim Hauptverkehrsmittel"
-    description="Der Modal Split beschreibt die Verteilung der Hauptverkehrsmittel innerhalb der sichtbaren Distanzklassen. Als Hauptverkehrsmittel gilt das Verkehrsmittel, das eine Person für den Weg zur Universität als wichtigstes angegeben hat."
-    note="Die Auswertung verwendet nur das jeweilige Hauptverkehrsmittel pro Person. Prozentwerte zeigen den Anteil innerhalb jeder Distanzklasse. Werte mit 0,0 km sowie Fußwege über 50 km werden nur in dieser Distanzansicht ausgeblendet."
+    description="Die Ansicht zeigt den Modal Split nach Distanzklasse, also wie sich die Hauptverkehrsmittel je Entfernung verteilen."
+    infoTitle="Hinweise zur Distanzdarstellung"
+    infoIntro="Die Distanzansicht zeigt Muster entlang von Entfernungsbereichen, keine exakte Rekonstruktion einzelner Wege."
+    infoItems={[
+      "Gezeigt wird das jeweilige Hauptverkehrsmittel pro Person.",
+      "Prozentwerte beziehen sich auf die sichtbare Auswahl innerhalb jeder Distanzklasse.",
+      "Die Distanz basiert auf der Angabe zum Hauptverkehrsmittel und entspricht nicht zwingend der gesamten Strecke zwischen Wohnort und Universität.",
+      "Exakte 0,0-km-Angaben sowie Fußwege über 50 km werden nur in dieser Distanzansicht ausgeblendet.",
+      "Die übrigen Auswertungen bleiben davon unberührt.",
+    ]}
     hasToolbar={true}
     hasMeta={true}
   >

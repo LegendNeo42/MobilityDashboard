@@ -150,17 +150,8 @@
       : "Antwortanzahl";
   });
 
-  const sectionDescription = $derived.by(() => {
-    const baseDescription =
-      "Dieser Bereich zeigt, aus welchen Postleitzahlbereichen Teilnehmende zur Universität pendeln und wie sich Muster regional unterscheiden.";
-
-    return mapDisplayMode === "transport-share"
-      ? `${baseDescription} Die Karte färbt PLZ-Bereiche nach dem Anteil des gewählten Hauptverkehrsmittels; ein Klick öffnet Fallzahl und Modal Split für den ausgewählten Bereich.`
-      : `${baseDescription} Die Karte färbt PLZ-Bereiche nach der Fallzahl in der aktuellen Auswahl; ein Klick öffnet Fallzahl und Modal Split für den ausgewählten Bereich.`;
-  });
-
-  const sectionNote =
-    "PLZ-Angaben können falsch sein, da manche Wohnadressen veraltet sind. Regionale Muster und kleine Fallzahlen bitte vorsichtig interpretieren.";
+  const sectionDescription =
+    "Die Karte zeigt, aus welchen Postleitzahlbereichen Teilnehmende zur Universität pendeln und wie sich regionale Muster unterscheiden.";
 
   const projection = $derived.by(() => {
     if (!dataset) return null;
@@ -815,7 +806,15 @@
     eyebrow="PLZ-Karte"
     title="Welche regionalen Muster zeigen die sichtbaren PLZ-Bereiche?"
     description={sectionDescription}
-    note={sectionNote}
+    infoTitle="Regionale PLZ-Karte"
+    infoIntro="Die Karte ist eine vorbereitete Fokusansicht auf die Region um Regensburg."
+    infoItems={[
+      "Antwortanzahl färbt PLZ-Bereiche nach absoluten Fallzahlen in der aktuellen Auswahl.",
+      "Verkehrsmittelanteil färbt PLZ-Bereiche nach dem prozentualen Anteil des gewählten Hauptverkehrsmittels innerhalb der PLZ.",
+      "Ein Klick auf eine PLZ öffnet Fallzahl und Modal Split für den ausgewählten Bereich.",
+      "PLZ-Angaben können veraltet sein und zeigen Herkunftsbereiche, keine exakten Wohnorte oder Pendelrouten.",
+      "Kleine Fallzahlen sind vorsichtig zu interpretieren.",
+    ]}
     hasToolbar={true}
     hasMeta={true}
   >

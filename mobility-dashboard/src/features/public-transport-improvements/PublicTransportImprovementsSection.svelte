@@ -251,7 +251,13 @@
     eyebrow="ÖPNV"
     title="Welche Verbesserungen beim ÖPNV werden als wichtig gesehen?"
     description="Die Ansicht zeigt, wie die sichtbaren Personengruppen einzelne Verbesserungen bei Bus und Bahn bewerten."
-    note="Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig. Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken. Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas."
+    infoTitle="ÖPNV-Bewertungen lesen"
+    infoIntro="Die Ansicht zeigt Bewertungen zu möglichen Verbesserungen bei Bus und Bahn."
+    infoItems={[
+      "Die Balken enthalten nur die fünf geordneten Bewertungen von sehr unwichtig bis sehr wichtig.",
+      "Antworten ohne Wertung oder ohne Angabe sind nicht Teil der Balken.",
+      "Prozentwerte zeigen den Anteil innerhalb des jeweiligen Themas.",
+    ]}
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}

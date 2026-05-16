@@ -183,7 +183,13 @@
     eyebrow="Hürden"
     title="Welche Gründe sprechen gegen Bus und Bahn?"
     description="Die Balken zeigen, wie häufig ein Grund gegen Bus und Bahn in der aktuellen Auswahl genannt wurde."
-    note="Gezeigt werden nur genannte Gründe gegen Bus und Bahn. Prozentwerte beziehen sich auf die gezeigten Personen mit dem gewählten Hauptverkehrsmittel und den aktuell sichtbaren Personengruppen."
+    infoTitle="Hürden lesen"
+    infoIntro="Die Ansicht zeigt nur genannte Gründe gegen Bus und Bahn."
+    infoItems={[
+      "Der Filter wählt aus, von Personen mit welchem aktuellen Hauptverkehrsmittel die Antworten gezeigt werden.",
+      "Absolute Werte zeigen, wie viele Personen den jeweiligen Grund genannt haben.",
+      "Prozentwerte beziehen sich auf die gezeigten Personen mit dem gewählten Hauptverkehrsmittel und den aktuell sichtbaren Personengruppen.",
+    ]}
     axisTitle={axisTitle}
     hasToolbar={true}
     hasMeta={true}

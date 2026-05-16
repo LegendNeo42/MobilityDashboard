@@ -326,8 +326,16 @@
   <DashboardChartSection
     eyebrow="Qualitative Hinweise"
     title="Welche Themen tauchen in den Freitextantworten besonders häufig auf?"
-    description="Die qualitative Übersicht ergänzt die Diagramme zu Hürden und Verbesserungswünschen um wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
-    note="Im absoluten Modus zeigen die Balken, wie viele vorbereitete Aussagen dem jeweiligen Thema zugeordnet wurden. Im Prozentmodus zeigen sie den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat. Die Übersicht basiert auf einer einfachen, regelbasierten Themenzuordnung und kann in seltenen Grenzfällen ungenau sein."
+    description="Die Ansicht zeigt wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
+    infoTitle="Qualitative Themenübersicht"
+    infoIntro="Die qualitative Übersicht verdichtet offene Kommentare aus der Mobilitätsumfrage."
+    infoItems={[
+      "Die Antworten wurden bereinigt und zu einer kleinen Zahl wiederkehrender Themen gebündelt.",
+      "Jede vorbereitete Aussage wurde genau einem Hauptthema zugeordnet.",
+      "Absolutwerte zeigen gezählte Aussagen je Thema.",
+      "Prozentwerte zeigen den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat.",
+      "Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein.",
+    ]}
     hasToolbar={true}
     hasMeta={true}
   >
