@@ -1,43 +1,146 @@
-# Svelte + Vite
+# Mobilitätsdashboard der Universität Regensburg
 
-This template should help get you started developing with Svelte in Vite.
+Interaktives Dashboard zur Exploration und Kommunikation der Mobilitätsumfrage der Universität Regensburg. Die Anwendung zeigt zentrale Ergebnisse zu Pendelmobilität, Verkehrsmitteln, Distanzen, ÖPNV-Hürden, Verbesserungswünschen, qualitativen Freitextaussagen und regionalen Mustern nach PLZ.
 
-## Recommended IDE Setup
+Die Anwendung ist als Single-Page-Dashboard mit Svelte 5 und Vite umgesetzt. Standarddiagramme werden mit Vega-Lite gerendert, die PLZ-Karte wird mit D3/SVG dargestellt.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Technischer Stack
 
-## Need an official Svelte framework?
+- Svelte 5
+- Vite
+- Vega, Vega-Lite und vega-embed
+- D3-DSV für CSV-Verarbeitung
+- D3-basierte PLZ-Karte
+- Node.js für die qualitative Datenaufbereitung
+- Python + Shapely für die PLZ-Datenaufbereitung
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Projektstruktur
 
-## Technical considerations
+```text
+src/
+  app/                         Dashboard-Shell und Hauptlayout
+  components/                  Wiederverwendbare UI- und Chart-Komponenten
+  content/                     Zentrale sichtbare Dashboard-Texte
+  data/                        Datenloader, Aggregationen und Domain-Definitionen
+  features/                    Dashboard-Bereiche und Feature-Module
+  stores/                      Globaler Dashboard-Filterzustand
+  utils/                       Hilfsfunktionen
 
-**Why use this over SvelteKit?**
+public/data/                   Öffentliche, frontend-seitig geladene CSV/JSON-Daten
+public/data/plz-map/           Vorbereitete PLZ-Geometrien und PLZ-Metriken
+public/data/qualitative-data/  Vorbereitete qualitative Summary-Daten
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+data-private/                 Private Rohdaten und Kontrollausgaben
+scripts/                       Datenaufbereitungsskripte
+```
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Installation
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+```bash
+npm install
+```
 
-**Why include `.vscode/extensions.json`?**
+Alternativ für eine reproduzierbare Installation mit vorhandener `package-lock.json`:
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+```bash
+npm ci
+```
 
-**Why enable `checkJs` in the JS template?**
+## Entwicklung starten
 
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
+```bash
+npm run dev
+```
 
-**Why is HMR not preserving my local component state?**
+Die Anwendung läuft danach lokal über den von Vite ausgegebenen Link, meist:
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
+```text
+http://localhost:5173/
+```
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+## Produktionsbuild erstellen
 
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm run build
+```
+
+Der fertige Build wird in `dist/` erzeugt.
+
+Zum lokalen Prüfen des Builds:
+
+```bash
+npm run preview
+```
+
+## Datenaufbereitung
+
+Die Anwendung lädt vorbereitete CSV- und JSON-Dateien aus `public/data/`. Die Rohdaten und Kontrollausgaben liegen in `data-private/` und sollten nicht öffentlich deployed werden.
+
+### Qualitative Freitextdaten neu erzeugen
+
+Dieses Script bereitet die offenen Freitextantworten auf, filtert nicht-informative Aussagen, ordnet Aussagen einfachen Themen zu und erzeugt die frontend-seitige Summary-JSON.
+
+```bash
+npm run prepare:qualitative
+```
+
+Eingabe:
+
+```text
+data-private/qualitative_feedback_plz.csv
+```
+
+Wichtige Ausgaben:
+
+```text
+public/data/qualitative-data/qualitative_theme_summary.json
+data-private/qualitative_feedback_normalized.csv
+data-private/qualitative_feedback_dropped.csv
+```
+
+Nach Änderungen an den qualitativen Rohdaten oder am Script sollte `npm run prepare:qualitative` erneut ausgeführt werden.
+
+### PLZ-Kartendaten neu erzeugen
+
+Dieses Script bereitet die PLZ-Geometrien und regionalen Metriken für die Karte vor. Dafür wird Shapely benötigt.
+
+```bash
+pip install shapely
+npm run prepare:plz-map
+```
+
+Eingaben:
+
+```text
+data-private/plz_shape_coords.csv (Diese Datei befindet sich aufgrund ihrer Größe (>150MB) nicht im Projekt)
+data-private/plz_mapping.csv
+public/data/data_vehicle.csv
+```
+
+Wichtige Ausgaben:
+
+```text
+public/data/plz-map/plz_focus_regions.geojson
+public/data/plz-map/plz_focus_metrics.json
+data-private/plz_map_join_inspection.csv
+```
+
+Das Script muss nur erneut ausgeführt werden, wenn sich die PLZ-Rohdaten, das Mapping, die Verkehrsmitteldaten oder die PLZ-Aufbereitung ändern.
+
+## Wichtige Hinweise zur Interpretation
+
+- Die Daten stammen aus einer Mobilitätsumfrage und sind keine Vollerhebung.
+- Die sichtbaren Hauptgruppen im Dashboard sind Studierende, Mitarbeitende und Professor:innen.
+- Prozentwerte haben je nach Diagramm unterschiedliche Bezugsgrößen; die Hinweise direkt bei den Diagrammen erklären den jeweiligen Nenner.
+- Die qualitative Ansicht zeigt vorbereitete, thematisch gruppierte Freitextaussagen. Die Beispiele sind ausgewählte, lesbare Originalaussagen und nicht als vollständige qualitative Analyse zu verstehen.
+- Die PLZ-Karte zeigt surveybasierte regionale Muster im vorbereiteten Fokusbereich, keine exakten Pendelrouten.
+
+## Nützliche Befehle
+
+```bash
+npm run dev                  # Entwicklungsserver starten
+npm run build                # Produktionsbuild erstellen
+npm run preview              # Produktionsbuild lokal prüfen
+npm run prepare:qualitative  # qualitative Summary-Daten neu erzeugen
+npm run prepare:plz-map      # PLZ-Geometrien und PLZ-Metriken neu erzeugen
 ```
