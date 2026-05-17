@@ -138,7 +138,6 @@ const themeDefinitionByKey = new Map(
   themeDefinitions.map((definition) => [definition.key, definition]),
 );
 
-const quotesPerStatusGroup = 5;
 
 const nonInformativeValues = new Set([
   '',
@@ -781,6 +780,7 @@ function buildThemeSummary(
       .map(({ order, ...entry }) => entry);
 
     const quotes = dashboardStatusGroupDefinitions.flatMap((groupDefinition) => {
+      // Keep every safe quote candidate so the UI can paginate examples.
       return selectableThemeStatements
         .filter((statement) => statement.status_group === groupDefinition.key)
         .filter(isQuoteCandidate)
@@ -791,7 +791,6 @@ function buildThemeSummary(
           );
           return firstIndex === index;
         })
-        .slice(0, quotesPerStatusGroup)
         .map((statement) => ({
           text: statement.comment_clean,
           sourceField: statement.source_field,

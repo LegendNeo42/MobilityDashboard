@@ -32,12 +32,14 @@
     participant_share_percent: number;
   };
 
-  const maxVisibleQuotes = 5;
+  const quotesPerPage = 5;
 
   let error = $state<string | null>(null);
   let dataset = $state<QualitativePreparedDataset | null>(null);
   let selectedThemeKey = $state<string | null>(null);
   let sortMode = $state<"fixed" | "frequency">("frequency");
+  let quotePageIndex = $state(0);
+  let quotePoolResetSignature = "";
 
   onMount(async () => {
     try {
@@ -193,15 +195,48 @@
     );
   });
 
-  let selectedThemeQuotes = $derived.by(() => {
+  let selectedThemeQuotePool = $derived.by(() => {
     if (!selectedTheme) return [] as QualitativeThemeQuote[];
 
-    return pickVisibleQuotes(
-      selectedTheme.quotes,
-      $selectedStatusGroupKeys,
-      maxVisibleQuotes,
-    );
+    return buildVisibleQuotePool(selectedTheme.quotes, $selectedStatusGroupKeys);
   });
+
+  let quotePageCount = $derived.by(() =>
+    Math.ceil(selectedThemeQuotePool.length / quotesPerPage),
+  );
+
+  let currentQuotePageIndex = $derived.by(() => {
+    const maxPageIndex = Math.max(0, quotePageCount - 1);
+    return Math.min(quotePageIndex, maxPageIndex);
+  });
+
+  let quoteStartIndex = $derived.by(() =>
+    currentQuotePageIndex * quotesPerPage,
+  );
+
+  let quoteEndIndex = $derived.by(() =>
+    Math.min(quoteStartIndex + quotesPerPage, selectedThemeQuotePool.length),
+  );
+
+  let selectedThemeQuotes = $derived.by(() => {
+    return selectedThemeQuotePool.slice(quoteStartIndex, quoteEndIndex);
+  });
+
+  let quoteRangeLabel = $derived.by(() => {
+    if (selectedThemeQuotePool.length === 0) {
+      return "Keine Beispiele verfügbar";
+    }
+
+    return `${formatInteger(quoteStartIndex + 1)}–${formatInteger(
+      quoteEndIndex,
+    )} von ${formatInteger(selectedThemeQuotePool.length)} Beispielen`;
+  });
+
+  let canShowPreviousQuotePage = $derived.by(() => currentQuotePageIndex > 0);
+
+  let canShowNextQuotePage = $derived.by(
+    () => quoteEndIndex < selectedThemeQuotePool.length,
+  );
 
   let chartSpec = $derived.by(() => {
     const height = Math.max(500, visibleThemes.length * 52);
@@ -225,6 +260,25 @@
 
     if (!selectedThemeKey || !themeStillVisible) {
       selectedThemeKey = firstVisibleThemeKey;
+    }
+  });
+
+  $effect(() => {
+    const signature = `${selectedThemeKey ?? ""}|${$selectedStatusGroupKeys.join(
+      ",",
+    )}|${selectedThemeQuotePool.length}`;
+
+    if (signature !== quotePoolResetSignature) {
+      quotePoolResetSignature = signature;
+      quotePageIndex = 0;
+    }
+  });
+
+  $effect(() => {
+    const maxPageIndex = Math.max(0, quotePageCount - 1);
+
+    if (quotePageIndex > maxPageIndex) {
+      quotePageIndex = maxPageIndex;
     }
   });
 
@@ -263,37 +317,39 @@
     return `${label.slice(0, bestIndex).trim()}|||${label.slice(bestIndex).trim()}`;
   }
 
-  function pickVisibleQuotes(
+  function buildVisibleQuotePool(
     quotes: QualitativeThemeQuote[],
     selectedGroups: StatusGroupKey[],
-    limit: number,
   ): QualitativeThemeQuote[] {
+    const orderedSelectedGroups = statusGroupDefinitions
+      .map((definition) => definition.key)
+      .filter((groupKey) => selectedGroups.includes(groupKey));
     const quotesByGroup = new Map<StatusGroupKey, QualitativeThemeQuote[]>();
 
-    for (const groupKey of selectedGroups) {
+    for (const groupKey of orderedSelectedGroups) {
       quotesByGroup.set(groupKey, []);
     }
 
     for (const quote of quotes) {
       if (!quote.statusGroup) continue;
-      if (!selectedGroups.includes(quote.statusGroup)) continue;
+      if (!orderedSelectedGroups.includes(quote.statusGroup)) continue;
 
       const groupQuotes = quotesByGroup.get(quote.statusGroup);
       if (!groupQuotes) continue;
       groupQuotes.push(quote);
     }
 
-    if (selectedGroups.length === 1) {
-      return (quotesByGroup.get(selectedGroups[0]) ?? []).slice(0, limit);
+    if (orderedSelectedGroups.length === 1) {
+      return quotesByGroup.get(orderedSelectedGroups[0]) ?? [];
     }
 
     const result: QualitativeThemeQuote[] = [];
     let quoteIndex = 0;
 
-    while (result.length < limit) {
+    while (true) {
       let pickedInRound = false;
 
-      for (const groupKey of selectedGroups) {
+      for (const groupKey of orderedSelectedGroups) {
         const groupQuotes = quotesByGroup.get(groupKey) ?? [];
         const nextQuote = groupQuotes[quoteIndex];
 
@@ -301,10 +357,6 @@
 
         result.push(nextQuote);
         pickedInRound = true;
-
-        if (result.length >= limit) {
-          return result;
-        }
       }
 
       if (!pickedInRound) {
@@ -328,13 +380,15 @@
     title="Welche Themen tauchen in den Freitextantworten besonders häufig auf?"
     description="Die Ansicht zeigt wiederkehrende Themen aus offenen Kommentaren zur Mobilität."
     infoTitle="Qualitative Themenübersicht"
-    infoIntro="Die qualitative Übersicht verdichtet offene Kommentare aus der Mobilitätsumfrage."
+    infoIntro="Die qualitative Übersicht zeigt offene Kommentare aus der Mobilitätsumfrage."
     infoItems={[
-      "Die Antworten wurden bereinigt und zu einer kleinen Zahl wiederkehrender Themen gebündelt.",
+      "Die Antworten wurden zu einer kleinen Zahl wiederkehrender Themen gebündelt.",
       "Jede vorbereitete Aussage wurde genau einem Hauptthema zugeordnet.",
+      "Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein.",
+      "Es werden nur relevante Beispielaussagen angezeigt. Nicht aussagekräftige Kurzantworten, Dopplungen und ungeeignete Textstellen wurden herausgefiltert.",
       "Absolutwerte zeigen gezählte Aussagen je Thema.",
       "Prozentwerte zeigen den Anteil innerhalb der jeweiligen Personengruppe, der zu diesem Thema mindestens eine Aussage gemacht hat.",
-      "Einzelne Zuordnungen können in seltenen Grenzfällen ungenau sein.",
+      
     ]}
     hasToolbar={true}
     hasMeta={true}
@@ -378,8 +432,8 @@
             <p class="quoteSelectorLabel">Ausgewählte Beispielaussagen</p>
             <p class="quoteSelectorIntro">
               Die Balken zählen alle vorbereiteten Aussagen der sichtbaren
-              Auswahl. Die Beispiele darunter sind eine begrenzte Auswahl zum
-              Lesen und stehen nicht für alle gezählten Aussagen.
+              Auswahl. Die Beispiele darunter werden in Fünfer-Schritten gezeigt
+              und stehen nicht für alle gezählten Aussagen.
             </p>
           </div>
           <div
@@ -414,11 +468,40 @@
                 </p>
                 <h3>{selectedTheme.label}</h3>
               </div>
-              <p class="quotePanelMeta">
-                {formatInteger(selectedThemeVisibleStatementCount)} Aussagen im Diagramm
-                · {formatInteger(selectedThemeQuotes.length)} von bis zu
-                {maxVisibleQuotes} Beispielen sichtbar
-              </p>
+              <div class="quotePanelControls">
+                <p class="quotePanelMeta">
+                  {formatInteger(selectedThemeVisibleStatementCount)} Aussagen
+                  · {quoteRangeLabel}
+                </p>
+                {#if selectedThemeQuotePool.length > quotesPerPage}
+                  <div
+                    class="quotePagination"
+                    aria-label="Beispielaussagen durchblättern"
+                  >
+                    <button
+                      class="quotePaginationButton"
+                      type="button"
+                      disabled={!canShowPreviousQuotePage}
+                      onclick={() => {
+                        quotePageIndex = Math.max(0, currentQuotePageIndex - 1);
+                      }}
+                    >
+                      Zurück
+                    </button>
+                    <span class="quotePaginationRange">{quoteRangeLabel}</span>
+                    <button
+                      class="quotePaginationButton"
+                      type="button"
+                      disabled={!canShowNextQuotePage}
+                      onclick={() => {
+                        quotePageIndex = currentQuotePageIndex + 1;
+                      }}
+                    >
+                      Weiter
+                    </button>
+                  </div>
+                {/if}
+              </div>
             </div>
 
             <div class="quotePanelBody">
@@ -484,6 +567,7 @@
   .quoteSelectorIntro,
   .quotePanelEyebrow,
   .quotePanelMeta,
+  .quotePaginationRange,
   .quoteSource,
   .quoteThemeButtonMeta,
   .quoteThemeButtonLabel,
@@ -584,11 +668,58 @@
     color: #18212b;
   }
 
+  .quotePanelControls {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+  }
+
   .quotePanelMeta {
-    max-width: 36ch;
+    max-width: 42ch;
     font-size: 0.9rem;
     line-height: 1.4;
     text-align: right;
+  }
+
+  .quotePagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quotePaginationButton {
+    padding: 6px 11px;
+    border: 1px solid rgba(196, 210, 224, 0.95);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #314252;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .quotePaginationButton:hover:not(:disabled),
+  .quotePaginationButton:focus-visible:not(:disabled) {
+    border-color: rgba(83, 128, 179, 0.9);
+    background: #eef4fb;
+    outline: none;
+  }
+
+  .quotePaginationButton:disabled {
+    color: #9ba8b4;
+    cursor: not-allowed;
+    background: #f4f7fa;
+  }
+
+  .quotePaginationRange {
+    color: #506070;
+    font-size: 0.87rem;
+    line-height: 1.35;
   }
 
   .quotePanelBody {
@@ -682,9 +813,17 @@
       align-items: stretch;
     }
 
+    .quotePanelControls {
+      justify-items: start;
+    }
+
     .quotePanelMeta {
       max-width: none;
       text-align: left;
+    }
+
+    .quotePagination {
+      justify-content: flex-start;
     }
 
     .quotePanelBody {

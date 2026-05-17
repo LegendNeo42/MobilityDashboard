@@ -76,7 +76,7 @@
           unterscheiden.
         </li>
         <li>
-          Hinweise direkt bei den Diagrammen erklären jeweils den Nenner.
+          Prozentwerte haben je nach Diagramm unterschiedliche Bezugsgrößen. Die Hinweise bei den Diagrammen erklären diese jeweils kurz.
         </li>
       </ul>
     </article>
