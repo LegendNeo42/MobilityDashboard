@@ -470,8 +470,7 @@
               </div>
               <div class="quotePanelControls">
                 <p class="quotePanelMeta">
-                  {formatInteger(selectedThemeVisibleStatementCount)} Aussagen
-                  · {quoteRangeLabel}
+                  <strong>{formatInteger(selectedThemeVisibleStatementCount)} Aussagen</strong>
                 </p>
                 {#if selectedThemeQuotePool.length > quotesPerPage}
                   <div
